@@ -7,56 +7,34 @@ source("0-config.R")
 
 bd <- load_MICS_dataset("Bangladesh")
 cg <- load_MICS_dataset("Congo")
-iq <- load_MICS_dataset("Iraq")
+ki <- load_MICS_dataset("Kiribati")
+laPDR <- load_MICS_dataset("LaoPDR")
+le <- load_MICS_dataset("Lesotho")
+md <- load_MICS_dataset("Madagascar")
+mo <- load_MICS_dataset("Mongolia")
+np <- load_MICS_dataset("Nepal")
+ni <- load_MICS_dataset("Nigeria")
+pakPun <- load_MICS_dataset("PakistanPunjab")
+par <- load_MICS_dataset("Paraguay")
+SL <- load_MICS_dataset("SierraLeone")
+sur <- load_MICS_dataset("Suriname")
+tg <- load_MICS_dataset("Togo")
+tun <- load_MICS_dataset("Tunisia")
+ze <- load_MICS_dataset("Zimbabwe")
+bd13 <- load_MICS_dataset("Bangladesh2013")
+CI <- load_MICS_dataset("CoteIvoire")
+#DRC <- load_MICS_dataset("DRC") missing cleaned dataset
+gb <- load_MICS_dataset("Gambia")
+ga <- load_MICS_dataset("Georgia")
+gh <- load_MICS_dataset("Ghana")
 
-dim(bd)
-dim(cg)
-dim(iq)
-d <- bind_rows(bd, cg, iq)
+ls()
+d <- bind_rows(bd, bd13, cg,CI,ga,gb,
+     gh,ki,laPDR, 
+     #DRC, 
+     le,md,mo,          
+     ni, np, pakPun, par, SL,              
+     sur, tg, tun, ze)
 dim(d)
 
-table(d$country)
-
-table(d$country, d$san_imp)
-table(d$country, d$storage)
-table(d$country, d$childfaeces)
-table(d$country, d$treat_any)
-
-table(d$country, d$EC_result_H)
-table(d$country, d$EC_result_H100)
-table(d$EC_result_H, d$EC_risk_H_1, d$country)
-table(d$EC_result_H100, d$EC_risk_H_1, d$country)
-
-
-table(d$country, d$EC_risk_H_1)
-table(d$country, d$EC_risk_H_2)
-table(d$country, d$EC_risk_H_3)
-table(d$country, d$EC_risk_H_4)
-
-
-
-table(d$country, d$EC_risk_S_1)
-table(d$country, d$EC_risk_S_2)
-table(d$country, d$EC_risk_S_3)
-table(d$country, d$EC_risk_S_4)
-
-
-d_wc <- d %>% filter(EC_result_H!=0)
-
-
-prop.table(table(d_wc$country, d_wc$EC_risk_H_1),1)
-prop.table(table(d_wc$country, d_wc$EC_risk_H_2),1)
-prop.table(table(d_wc$country, d_wc$EC_risk_H_3),1)
-prop.table(table(d_wc$country, d_wc$EC_risk_H_4),1)
-
-
-
-prop.table(table(d_wc$country, d_wc$EC_risk_S_1),1)
-prop.table(table(d_wc$country, d_wc$EC_risk_S_2),1)
-prop.table(table(d_wc$country, d_wc$EC_risk_S_3),1)
-prop.table(table(d_wc$country, d_wc$EC_risk_S_4),1)
-
-
-
-
-
+saveRDS(d, here("data/compiled_raw_MICS_survey.rds"))
