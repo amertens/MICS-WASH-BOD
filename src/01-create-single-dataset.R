@@ -21,7 +21,7 @@ sur <- load_MICS_dataset("Suriname")
 tg <- load_MICS_dataset("Togo")
 tun <- load_MICS_dataset("Tunisia")
 ze <- load_MICS_dataset("Zimbabwe")
-bd13 <- load_MICS_dataset("Bangladesh2013")
+#bd13 <- load_MICS_dataset("Bangladesh2013")
 CI <- load_MICS_dataset("CoteIvoire")
 #DRC <- load_MICS_dataset("DRC") missing cleaned dataset
 gb <- load_MICS_dataset("Gambia")
@@ -29,7 +29,9 @@ ga <- load_MICS_dataset("Georgia")
 gh <- load_MICS_dataset("Ghana")
 
 ls()
-d <- bind_rows(bd, bd13, cg,CI,ga,gb,
+d <- bind_rows(bd, 
+               #bd13, 
+               cg,CI,ga,gb,
      gh,ki,laPDR, 
      #DRC, 
      le,md,mo,          

@@ -21,13 +21,16 @@ load_MICS_dataset <- function(country){
   #load and merge child health
   ch <- read_sav(data_path(ch_path))
   ch <- ch %>% rename(clust_num=HH1, HH_num=HH2)
+  hh <- read_sav(data_path(ch_path))
+  hh <- hh %>% rename(clust_num=HH1, HH_num=HH2)
   
-  lab<-makeVlist(d)
-  write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
+  #lab<-makeVlist(d)
+  #write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
   
   dim(ch)
   dim(d)
   d <- full_join(ch, d, by = c("clust_num","HH_num"))
+  d <- full_join(d, hh, by = c("clust_num","HH_num"))
   dim(d)
   d <- data.frame(d, country= country)
   d <- d %>%

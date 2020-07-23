@@ -1,0 +1,102 @@
+---
+title: "Data sparsity exploration"
+author: "Andrew Mertens"
+date: "6/18/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, include=F}
+
+source(here::here("0-config.R"))
+
+```
+
+
+#### Load compiled datasets (all cleaned datasets, which surveys of children under 5yrs merged in), and subset to households with water quality testing
+
+```{r}
+
+d <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
+d <- d %>% filter(EC_result_H!=0)
+```
+
+
+#### Make single categorical variables for E coli risk level in household and source drinking water, and tabulate by country.
+
+```{r}
+
+d <- d %>% mutate(
+  EC_risk_H = 
+  case_when(
+    EC_risk_H_1 ==100 ~ "Low",   
+    EC_risk_H_2 ==100 ~ "Medium",   
+    EC_risk_H_3 ==100 ~ "High",   
+    EC_risk_H_4 ==100 ~ "Highest"   
+  ),
+  EC_risk_S = 
+    case_when(
+      EC_risk_S_1 ==100 ~ "Low",   
+      EC_risk_S_2 ==100 ~ "Medium",   
+      EC_risk_S_3 ==100 ~ "High",   
+      EC_risk_S_4 ==100 ~ "Highest"   
+    )
+  ) %>%
+  mutate(EC_risk_H=factor(EC_risk_H, levels = c("Low", "Medium", "High", "Highest")),
+         EC_risk_S=factor(EC_risk_S, levels = c("Low", "Medium", "High", "Highest")))
+
+#Source risk
+tab1 <- table(d$country, d$EC_risk_S)
+knitr::kable(tab1, digits=2)
+
+#Household risk
+tab2 <- table(d$country,d$EC_risk_H)
+knitr::kable(tab2, digits=2)
+
+```
+
+#### Examine diarrhea counts and prevalence by country.
+
+```{r}
+
+#Set missing codes to NA
+d$CA1[d$CA1==8] <- NA
+d$CA1[d$CA1==9] <- NA
+
+tab1 <- table(d$country, d$CA1)
+knitr::kable(tab1, digits=2)
+
+tab2 <- prop.table(table(d$country, d$CA1),1)*100
+knitr::kable(tab2, digits=2)
+```
+
+
+#### Filter data to household where the caregiver reported that the child had diarrhea in the last 14 days. Then tabulate the count of diarrhea cases within each level of drinking water risk.
+
+
+```{r}
+df <- d %>% filter(CA1==1)
+
+#Source risk
+tab1 <- table(df$country, df$EC_risk_S)
+knitr::kable(tab1, digits=2)
+
+#Household risk
+tab2 <- table(df$country, df$EC_risk_H)
+knitr::kable(tab2, digits=2)
+
+```
+
+
+#### There is substantial sparsity in certain levels of drinking water risk. The rule of thumb is to have 10 cases per adjustment covariate included (though this exact number does not have a strong statistical basis), which means that the adjusted estimates can only be lightly adjusted in some surveys. 
+
+
+
+
+## Heatmap of case sparsity across outcome-exposure combinations
+
+```{r}
+
+knitr::include_graphics(here("figures/fig-sparsity-heatmap.png"))
+```

@@ -1,5 +1,5 @@
 
-source("0-config.R")
+source(here::here("0-config.R"))
 
 
 #read child health data
@@ -20,6 +20,12 @@ table(d$country, d$san_imp)
 table(d$country, d$storage)
 table(d$country, d$childfaeces)
 table(d$country, d$treat_any)
+
+#Sought care for respiratory infection
+table(d$country, d$CA20)
+table(d$country, is.na(d$CA20))
+
+
 
 table(d$country, d$EC_result_H)
 table(d$country, d$EC_result_H100)
@@ -88,5 +94,23 @@ table(df$country, df$EC_risk_S)
 table(df$country, df$EC_risk_H)
 
 
+country="Bangladesh"
+path=paste0(country,"/",country,"_cleaned.dta")
+bh_path=paste0(country,"/bh.sav")
+bh <- read_sav(data_path(bh_path))
+
+head(bh)
+lab<-makeVlist(bh)
+write.csv(lab, here::here(paste0("codebooks/bh_vars.csv")))
+
+
+
+path=paste0(country,"/",country,"_cleaned.dta")
+hh_path=paste0(country,"/hh.sav")
+hh <- read_sav(data_path(hh_path))
+
+head(hh)
+lab<-makeVlist(hh)
+write.csv(lab, here::here(paste0("codebooks/hh_vars.csv")))
 
 

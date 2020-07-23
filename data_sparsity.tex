@@ -1,0 +1,400 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Data sparsity exploration},
+  pdfauthor={Andrew Mertens},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Data sparsity exploration}
+\author{Andrew Mertens}
+\date{6/18/2020}
+
+\begin{document}
+\maketitle
+
+\hypertarget{load-compiled-datasets-all-cleaned-datasets-which-surveys-of-children-under-5yrs-merged-in-and-subset-to-households-with-water-quality-testing}{%
+\paragraph{Load compiled datasets (all cleaned datasets, which surveys
+of children under 5yrs merged in), and subset to households with water
+quality
+testing}\label{load-compiled-datasets-all-cleaned-datasets-which-surveys-of-children-under-5yrs-merged-in-and-subset-to-households-with-water-quality-testing}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{d <-}\StringTok{ }\KeywordTok{readRDS}\NormalTok{(}\KeywordTok{here}\NormalTok{(}\StringTok{"data/compiled_raw_MICS_survey.rds"}\NormalTok{))}
+\NormalTok{d <-}\StringTok{ }\NormalTok{d }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(EC_result_H}\OperatorTok{!=}\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{make-single-categorical-variables-for-e-coli-risk-level-in-household-and-source-drinking-water-and-tabulate-by-country.}{%
+\paragraph{Make single categorical variables for E coli risk level in
+household and source drinking water, and tabulate by
+country.}\label{make-single-categorical-variables-for-e-coli-risk-level-in-household-and-source-drinking-water-and-tabulate-by-country.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{d <-}\StringTok{ }\NormalTok{d }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}
+  \DataTypeTok{EC_risk_H =} 
+  \KeywordTok{case_when}\NormalTok{(}
+\NormalTok{    EC_risk_H_}\DecValTok{1} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "Low"}\NormalTok{,   }
+\NormalTok{    EC_risk_H_}\DecValTok{2} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "Medium"}\NormalTok{,   }
+\NormalTok{    EC_risk_H_}\DecValTok{3} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "High"}\NormalTok{,   }
+\NormalTok{    EC_risk_H_}\DecValTok{4} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "Highest"}   
+\NormalTok{  ),}
+  \DataTypeTok{EC_risk_S =} 
+    \KeywordTok{case_when}\NormalTok{(}
+\NormalTok{      EC_risk_S_}\DecValTok{1} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "Low"}\NormalTok{,   }
+\NormalTok{      EC_risk_S_}\DecValTok{2} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "Medium"}\NormalTok{,   }
+\NormalTok{      EC_risk_S_}\DecValTok{3} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "High"}\NormalTok{,   }
+\NormalTok{      EC_risk_S_}\DecValTok{4} \OperatorTok{==}\DecValTok{100} \OperatorTok{~}\StringTok{ "Highest"}   
+\NormalTok{    )}
+\NormalTok{  ) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{EC_risk_H=}\KeywordTok{factor}\NormalTok{(EC_risk_H, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Low"}\NormalTok{, }\StringTok{"Medium"}\NormalTok{, }\StringTok{"High"}\NormalTok{, }\StringTok{"Highest"}\NormalTok{)),}
+         \DataTypeTok{EC_risk_S=}\KeywordTok{factor}\NormalTok{(EC_risk_S, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Low"}\NormalTok{, }\StringTok{"Medium"}\NormalTok{, }\StringTok{"High"}\NormalTok{, }\StringTok{"Highest"}\NormalTok{)))}
+
+\CommentTok{#Source risk}
+\NormalTok{tab1 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(d}\OperatorTok{$}\NormalTok{country, d}\OperatorTok{$}\NormalTok{EC_risk_S)}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(tab1, }\DataTypeTok{digits=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule
+& Low & Medium & High & Highest\tabularnewline
+\midrule
+\endhead
+Bangladesh & 3946 & 1412 & 730 & 332\tabularnewline
+Bangladesh2013 & 1593 & 556 & 274 & 130\tabularnewline
+Congo & 540 & 319 & 341 & 322\tabularnewline
+CoteIvoire & 898 & 296 & 191 & 836\tabularnewline
+Gambia & 1600 & 634 & 480 & 379\tabularnewline
+Georgia & 1680 & 363 & 274 & 239\tabularnewline
+Ghana & 1991 & 659 & 558 & 585\tabularnewline
+Kiribati & 79 & 156 & 212 & 254\tabularnewline
+LaoPDR & 630 & 672 & 1076 & 1379\tabularnewline
+Lesotho & 984 & 281 & 135 & 56\tabularnewline
+Madagascar & 566 & 398 & 744 & 2279\tabularnewline
+Mongolia & 2290 & 201 & 190 & 166\tabularnewline
+Nepal & 120 & 128 & 155 & 99\tabularnewline
+Nigeria & 848 & 497 & 470 & 1634\tabularnewline
+PakistanPunjab & 6062 & 1899 & 806 & 558\tabularnewline
+Paraguay & 1104 & 449 & 243 & 153\tabularnewline
+SierraLeone & 214 & 205 & 630 & 1129\tabularnewline
+Suriname & 1022 & 552 & 198 & 136\tabularnewline
+Togo & 427 & 208 & 174 & 499\tabularnewline
+Tunisia & 2278 & 310 & 147 & 122\tabularnewline
+Zimbabwe & 1015 & 412 & 384 & 447\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Household risk}
+\NormalTok{tab2 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(d}\OperatorTok{$}\NormalTok{country,d}\OperatorTok{$}\NormalTok{EC_risk_H)}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(tab2, }\DataTypeTok{digits=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule
+& Low & Medium & High & Highest\tabularnewline
+\midrule
+\endhead
+Bangladesh & 1171 & 1292 & 2013 & 2018\tabularnewline
+Bangladesh2013 & 989 & 669 & 604 & 321\tabularnewline
+Congo & 330 & 381 & 623 & 464\tabularnewline
+CoteIvoire & 397 & 308 & 451 & 1239\tabularnewline
+Gambia & 722 & 715 & 1108 & 697\tabularnewline
+Georgia & 1616 & 544 & 413 & 269\tabularnewline
+Ghana & 904 & 659 & 1137 & 1167\tabularnewline
+Kiribati & 75 & 162 & 263 & 250\tabularnewline
+LaoPDR & 584 & 665 & 1134 & 1438\tabularnewline
+Lesotho & 691 & 367 & 252 & 184\tabularnewline
+Madagascar & 371 & 282 & 855 & 2687\tabularnewline
+Mongolia & 2369 & 295 & 183 & 153\tabularnewline
+Nepal & 282 & 379 & 514 & 379\tabularnewline
+Nigeria & 374 & 529 & 868 & 2094\tabularnewline
+PakistanPunjab & 4168 & 3084 & 1801 & 1329\tabularnewline
+Paraguay & 917 & 498 & 362 & 207\tabularnewline
+SierraLeone & 64 & 208 & 699 & 1245\tabularnewline
+Suriname & 664 & 670 & 430 & 237\tabularnewline
+Togo & 157 & 167 & 326 & 735\tabularnewline
+Tunisia & 2110 & 472 & 238 & 153\tabularnewline
+Zimbabwe & 478 & 439 & 704 & 723\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{examine-diarrhea-counts-and-prevalence-by-country.}{%
+\paragraph{Examine diarrhea counts and prevalence by
+country.}\label{examine-diarrhea-counts-and-prevalence-by-country.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Set missing codes to NA}
+\NormalTok{d}\OperatorTok{$}\NormalTok{CA1[d}\OperatorTok{$}\NormalTok{CA1}\OperatorTok{==}\DecValTok{8}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
+\NormalTok{d}\OperatorTok{$}\NormalTok{CA1[d}\OperatorTok{$}\NormalTok{CA1}\OperatorTok{==}\DecValTok{9}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
+
+\NormalTok{tab1 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(d}\OperatorTok{$}\NormalTok{country, d}\OperatorTok{$}\NormalTok{CA1)}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(tab1, }\DataTypeTok{digits=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\toprule
+& 1 & 2\tabularnewline
+\midrule
+\endhead
+Bangladesh & 159 & 2142\tabularnewline
+Bangladesh2013 & 37 & 978\tabularnewline
+Congo & 204 & 871\tabularnewline
+CoteIvoire & 237 & 1257\tabularnewline
+Gambia & 657 & 1826\tabularnewline
+Georgia & 76 & 500\tabularnewline
+Ghana & 399 & 1833\tabularnewline
+Kiribati & 51 & 399\tabularnewline
+LaoPDR & 133 & 1669\tabularnewline
+Lesotho & 41 & 464\tabularnewline
+Madagascar & 352 & 2155\tabularnewline
+Mongolia & 99 & 1122\tabularnewline
+Nepal & 93 & 530\tabularnewline
+Nigeria & 321 & 2072\tabularnewline
+PakistanPunjab & 806 & 5266\tabularnewline
+Paraguay & 127 & 996\tabularnewline
+SierraLeone & 105 & 1313\tabularnewline
+Suriname & 78 & 876\tabularnewline
+Togo & 121 & 604\tabularnewline
+Tunisia & 78 & 762\tabularnewline
+Zimbabwe & 164 & 1004\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tab2 <-}\StringTok{ }\KeywordTok{prop.table}\NormalTok{(}\KeywordTok{table}\NormalTok{(d}\OperatorTok{$}\NormalTok{country, d}\OperatorTok{$}\NormalTok{CA1),}\DecValTok{1}\NormalTok{)}\OperatorTok{*}\DecValTok{100}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(tab2, }\DataTypeTok{digits=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrr@{}}
+\toprule
+& 1 & 2\tabularnewline
+\midrule
+\endhead
+Bangladesh & 6.91 & 93.09\tabularnewline
+Bangladesh2013 & 3.65 & 96.35\tabularnewline
+Congo & 18.98 & 81.02\tabularnewline
+CoteIvoire & 15.86 & 84.14\tabularnewline
+Gambia & 26.46 & 73.54\tabularnewline
+Georgia & 13.19 & 86.81\tabularnewline
+Ghana & 17.88 & 82.12\tabularnewline
+Kiribati & 11.33 & 88.67\tabularnewline
+LaoPDR & 7.38 & 92.62\tabularnewline
+Lesotho & 8.12 & 91.88\tabularnewline
+Madagascar & 14.04 & 85.96\tabularnewline
+Mongolia & 8.11 & 91.89\tabularnewline
+Nepal & 14.93 & 85.07\tabularnewline
+Nigeria & 13.41 & 86.59\tabularnewline
+PakistanPunjab & 13.27 & 86.73\tabularnewline
+Paraguay & 11.31 & 88.69\tabularnewline
+SierraLeone & 7.40 & 92.60\tabularnewline
+Suriname & 8.18 & 91.82\tabularnewline
+Togo & 16.69 & 83.31\tabularnewline
+Tunisia & 9.29 & 90.71\tabularnewline
+Zimbabwe & 14.04 & 85.96\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{filter-data-to-household-where-the-caregiver-reported-that-the-child-had-diarrhea-in-the-last-14-days.-then-tabulate-the-count-of-diarrhea-cases-within-each-level-of-drinking-water-risk.}{%
+\paragraph{Filter data to household where the caregiver reported that
+the child had diarrhea in the last 14 days. Then tabulate the count of
+diarrhea cases within each level of drinking water
+risk.}\label{filter-data-to-household-where-the-caregiver-reported-that-the-child-had-diarrhea-in-the-last-14-days.-then-tabulate-the-count-of-diarrhea-cases-within-each-level-of-drinking-water-risk.}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df <-}\StringTok{ }\NormalTok{d }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(CA1}\OperatorTok{==}\DecValTok{1}\NormalTok{)}
+
+\CommentTok{#Source risk}
+\NormalTok{tab1 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{country, df}\OperatorTok{$}\NormalTok{EC_risk_S)}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(tab1, }\DataTypeTok{digits=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule
+& Low & Medium & High & Highest\tabularnewline
+\midrule
+\endhead
+Bangladesh & 93 & 34 & 22 & 10\tabularnewline
+Bangladesh2013 & 26 & 3 & 3 & 3\tabularnewline
+Congo & 54 & 29 & 41 & 49\tabularnewline
+CoteIvoire & 85 & 34 & 21 & 83\tabularnewline
+Gambia & 313 & 114 & 128 & 81\tabularnewline
+Georgia & 47 & 9 & 5 & 6\tabularnewline
+Ghana & 186 & 63 & 59 & 84\tabularnewline
+Kiribati & 1 & 11 & 15 & 19\tabularnewline
+LaoPDR & 19 & 22 & 33 & 57\tabularnewline
+Lesotho & 22 & 10 & 6 & 3\tabularnewline
+Madagascar & 37 & 30 & 63 & 207\tabularnewline
+Mongolia & 80 & 6 & 8 & 1\tabularnewline
+Nepal & 7 & 7 & 9 & 7\tabularnewline
+Nigeria & 52 & 44 & 41 & 153\tabularnewline
+PakistanPunjab & 455 & 164 & 66 & 54\tabularnewline
+Paraguay & 51 & 33 & 26 & 11\tabularnewline
+SierraLeone & 7 & 7 & 37 & 54\tabularnewline
+Suriname & 39 & 21 & 8 & 6\tabularnewline
+Togo & 40 & 10 & 9 & 53\tabularnewline
+Tunisia & 62 & 5 & 4 & 2\tabularnewline
+Zimbabwe & 60 & 29 & 32 & 36\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Household risk}
+\NormalTok{tab2 <-}\StringTok{ }\KeywordTok{table}\NormalTok{(df}\OperatorTok{$}\NormalTok{country, df}\OperatorTok{$}\NormalTok{EC_risk_H)}
+\NormalTok{knitr}\OperatorTok{::}\KeywordTok{kable}\NormalTok{(tab2, }\DataTypeTok{digits=}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrrrr@{}}
+\toprule
+& Low & Medium & High & Highest\tabularnewline
+\midrule
+\endhead
+Bangladesh & 16 & 27 & 47 & 69\tabularnewline
+Bangladesh2013 & 15 & 11 & 6 & 5\tabularnewline
+Congo & 24 & 43 & 68 & 65\tabularnewline
+CoteIvoire & 29 & 24 & 46 & 134\tabularnewline
+Gambia & 106 & 139 & 256 & 156\tabularnewline
+Georgia & 50 & 12 & 8 & 6\tabularnewline
+Ghana & 60 & 51 & 128 & 160\tabularnewline
+Kiribati & 3 & 10 & 19 & 19\tabularnewline
+LaoPDR & 21 & 20 & 33 & 59\tabularnewline
+Lesotho & 12 & 11 & 10 & 8\tabularnewline
+Madagascar & 21 & 16 & 65 & 250\tabularnewline
+Mongolia & 77 & 12 & 4 & 6\tabularnewline
+Nepal & 14 & 19 & 26 & 28\tabularnewline
+Nigeria & 18 & 27 & 72 & 193\tabularnewline
+PakistanPunjab & 305 & 243 & 148 & 110\tabularnewline
+Paraguay & 34 & 36 & 34 & 22\tabularnewline
+SierraLeone & 2 & 7 & 38 & 58\tabularnewline
+Suriname & 22 & 22 & 22 & 12\tabularnewline
+Togo & 14 & 13 & 24 & 70\tabularnewline
+Tunisia & 52 & 17 & 5 & 4\tabularnewline
+Zimbabwe & 20 & 30 & 55 & 59\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{there-is-substantial-sparsity-in-certain-levels-of-drinking-water-risk.-the-rule-of-thumb-is-to-have-10-cases-per-adjustment-covariate-included-though-this-exact-number-does-not-have-a-strong-statistical-basis-which-means-that-the-adjusted-estimates-can-only-be-lightly-adjusted-in-some-surveys.}{%
+\paragraph{There is substantial sparsity in certain levels of drinking
+water risk. The rule of thumb is to have 10 cases per adjustment
+covariate included (though this exact number does not have a strong
+statistical basis), which means that the adjusted estimates can only be
+lightly adjusted in some
+surveys.}\label{there-is-substantial-sparsity-in-certain-levels-of-drinking-water-risk.-the-rule-of-thumb-is-to-have-10-cases-per-adjustment-covariate-included-though-this-exact-number-does-not-have-a-strong-statistical-basis-which-means-that-the-adjusted-estimates-can-only-be-lightly-adjusted-in-some-surveys.}}
+
+\end{document}
