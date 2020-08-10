@@ -1,6 +1,5 @@
 
 
-
 source("0-config.R")
 
 
@@ -21,7 +20,6 @@ sur <- load_MICS_dataset("Suriname")
 tg <- load_MICS_dataset("Togo")
 tun <- load_MICS_dataset("Tunisia")
 ze <- load_MICS_dataset("Zimbabwe")
-#bd13 <- load_MICS_dataset("Bangladesh2013")
 CI <- load_MICS_dataset("CoteIvoire")
 #DRC <- load_MICS_dataset("DRC") missing cleaned dataset
 gb <- load_MICS_dataset("Gambia")
