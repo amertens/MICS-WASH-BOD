@@ -41,9 +41,10 @@ load_MICS_dataset <- function(country){
   
   dim(ch)
   dim(d)
-  d <- full_join(ch, d, by = c("clust_num","HH_num","LN"))
-  try(df <- left_join(d, bh, by = c("clust_num","HH_num","LN")))
-  dim(d)
+  d2 <- full_join(ch, d, by = c("clust_num","HH_num","LN"))
+  dim(d2)
+  try(df <- left_join(d2, bh, by = c("clust_num","HH_num","LN")))
+  dim(df)
   d <- data.frame(d, country= country)
   d <- d %>%
     mutate_all(as.character)
