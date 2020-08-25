@@ -109,13 +109,6 @@ head(d)
 # n.	Cooking stove type: EU1
 
 
-
-
-
-
-
-
-
 d <- d %>% subset(., select = c(country, 
                                 clust_num,
                                 HH_num, 
