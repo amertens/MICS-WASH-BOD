@@ -25,9 +25,12 @@ load_MICS_dataset <- function(country){
   ch <- ch %>% subset(., select = -c(LN)) %>% rename(clust_num=HH1, HH_num=HH2, LN=UF3)
   #subset to relevant CH variables
   if(!is.null(ch$CAGED)){
-    ch <- ch %>% subset(., select = c(clust_num, HH_num, LN, HL4, CAGED, BD2, BD3, HAZ2, WAZ2, WHZ2))
+    ch <- ch %>% subset(., select = c(clust_num, HH_num, LN, HL4, CAGED, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20
+    ))
+
+    
   }else{
-    ch <- ch %>% subset(., select = c(clust_num, HH_num, LN, HL4, CAGE, BD2, BD3, HAZ2, WAZ2, WHZ2)) %>%
+    ch <- ch %>% subset(., select = c(clust_num, HH_num, LN, HL4, CAGE, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20)) %>%
       mutate(CAGED=CAGE*30.4167) %>%
       subset(., select = -c(CAGE))
   }
@@ -43,12 +46,15 @@ load_MICS_dataset <- function(country){
   dim(d)
   d2 <- full_join(ch, d, by = c("clust_num","HH_num","LN"))
   dim(d2)
+  # table(is.na(d$EC_100_H))
+  # table(is.na(d2$EC_100_H))
+  
   try(df <- left_join(d2, bh, by = c("clust_num","HH_num","LN")))
   dim(df)
-  d <- data.frame(d, country= country)
-  d <- d %>%
+  df <- data.frame(df, country= country)
+  df <- df %>%
     mutate_all(as.character)
-  return(d)
+  return(df)
 }
 
 

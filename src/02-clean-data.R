@@ -5,13 +5,21 @@
 
 source("0-config.R")
 
-dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
+d <- dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
+
+
+#------------------------------------------------------
+# clean identifiers
+#------------------------------------------------------
+
+d$HH_num <- as.numeric(d$HH_num)
+d$clust_num <- as.numeric(d$clust_num)
 
 #------------------------------------------------------
 # clean outcomes and exposures
 #------------------------------------------------------
 
-d <- dfull %>% mutate(
+d <- d %>% mutate(
   EC_risk_H = 
     case_when(
       EC_risk_H_1 ==100 ~ 1,   
@@ -27,9 +35,7 @@ d <- dfull %>% mutate(
       EC_risk_S_3 ==100 ~ 3,   
       EC_risk_S_4 ==100 ~ 4,
       TRUE ~ NA_real_   
-    ),
-  stunt = 1*(HAZ2 < -2 ),
-  wast = 1*(WHZ2 < -2 )
+    )
 )
 
 table(d$EC_risk_S)
@@ -75,17 +81,46 @@ table(d$safely_manH20)
 table(d$country, d$safely_manH20)
 
 
-#Rename variables
+#Rename outcome variables
 d <- d %>% rename(
   diarrhea=CA1,
   fever=CA14,
   cough=CA16,
   diff_breath=CA17,
   congestion=CA18,
-  resp_healthcare=CA20
+  resp_healthcare=CA20,
+  haz=HAZ2,
+  waz=WAZ2,
+  whz=WHZ2
 ) 
 
 head(d)
+
+#Clean outcome variables
+
+#anthropometry
+d$haz[d$HAZFLAG==1] <- NA
+d$waz[d$WAZFLAG==1] <- NA
+d$whz[d$WHZFLAG==1] <- NA
+
+d <- d %>% mutate(
+  haz=as.numeric(haz),
+  waz=as.numeric(waz),
+  whz=as.numeric(whz),
+  stunt = 1*(haz < -2 ),
+  wast = 1*(whz < -2 ),
+  uwt = 1*(waz < -2 )
+)
+table(d$HAZFLAG)
+
+
+#ARI symptoms
+table(d$diff_breath)
+table(d$congestion)
+table(d$cough)
+
+table(d$cough, d$congestion)
+
 
 #------------------------------------------------------
 # rename and clean covariates
@@ -128,8 +163,8 @@ d <- d %>% subset(., select = c(country,
                                 resp_healthcare, 
                                 diff_breath, 
                                 congestion, 
-                                stunt, 
-                                wast, 
+                                haz,waz,whz,
+                                stunt, wast, 
                                 ecpopweight_H, 
                                 ecpopweight_S, 
                                 popweight,
@@ -178,25 +213,20 @@ d <- d %>% subset(., select = c(country,
     urban_rural=area_type, #urban/rural
     everbf=BD2, #ever breastfed
     currbf= BD3, #current breastfed
-    HH48, #number of hh members
-    HH51, #number of kids <5
-    HC4, #main material of floor
-    EU1, #type of cookstove used
-    EU2, #cookstove have chimney
-    EU3, #cookstove have a fan
-    EU4, #type of energy source of cookstove
-    animals, 
-    HC5, #roof material
-    HC6, #wall material
-    HC3 #number of rooms used for sleeping
+    nhh=HH48, #number of hh members
+    nchild5=HH51, #number of kids <5
+    floor=HC4, #main material of floor
+    cookstove=EU1, #type of cookstove used
+    chimney=EU2, #cookstove have chimney
+    fan=EU3, #cookstove have a fan
+    fuel=EU4, #type of energy source of cookstove
+    #animals, 
+    roof=HC5, #roof material
+    wall=HC6, #wall material
+    nroom_sleeping=HC3 #number of rooms used for sleeping
   )
 
 
-#ARI symptoms
-table(d$diff_breath)
-table(d$congestion)
-table(d$cough)
 
-table(d$cough, d$congestion)
 
 saveRDS(d, here("data/compiled_clean_MICS_survey.rds"))

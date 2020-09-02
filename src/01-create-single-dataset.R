@@ -23,7 +23,7 @@ ze <- load_MICS_dataset("Zimbabwe")
 #CI <- load_MICS_dataset("CoteIvoire") #missing merging variable
 #DRC <- load_MICS_dataset("DRC") missing cleaned dataset
 gb <- load_MICS_dataset("Gambia")
-ga <- load_MICS_dataset("Georgia") #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
+#ga <- load_MICS_dataset("Georgia") #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
 gh <- load_MICS_dataset("Ghana") 
 
 ls()
@@ -31,7 +31,8 @@ d <- bind_rows(bd,
                #bd13, 
                #cg,
                #CI,
-               ga,gb,
+               #ga,
+               gb,
      gh,ki,laPDR, 
      #DRC, 
      le,md,mo,          
