@@ -14,6 +14,9 @@ d <- dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
 
 d$HH_num <- as.numeric(d$HH_num)
 d$clust_num <- as.numeric(d$clust_num)
+d$ecpopweight_H <- as.numeric(d$ecpopweight_H)
+d$ecpopweight_S <- as.numeric(d$ecpopweight_S)
+d$popweight <- as.numeric(d$popweight)
 
 #------------------------------------------------------
 # clean outcomes and exposures
@@ -147,7 +150,7 @@ table(d$cough, d$congestion)
 d <- d %>% subset(., select = c(country, 
                                 clust_num,
                                 HH_num, 
-                                LN,
+                                HH.LN, childLN,
                                 san_imp, 
                                 wat_imp, 
                                 hyg_imp, 
