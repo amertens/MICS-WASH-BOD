@@ -22,8 +22,8 @@ data_dir <- NULL
 if(dir.exists("C:/Users/andre/Dropbox/MICS-WASH-data/")){ 
   data_dir = "C:/Users/andre/Dropbox/MICS-WASH-data/"
 }
-if(dir.exists("C:/Users/anmol/OneDrive/Documents/GitHub/MICS-WASH-data")){ 
-  data_dir <- "C:/Users/anmol/OneDrive/Documents/GitHub/MICS-WASH-data"
+if(dir.exists("C:/Users/anmol/OneDrive/Documents/GitHub/MICS-WASH-BOD/MICS-WASH-data/")){ 
+  data_dir <- "C:/Users/anmol/OneDrive/Documents/GitHub/MICS-WASH-BOD/MICS-WASH-data/"
 }
 
 sandwichSE <- function(dat, fm, cluster){
