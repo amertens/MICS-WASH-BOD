@@ -1,5 +1,4 @@
 
-rm(list=ls())
 
 library(tidyverse)
 library(haven)
@@ -16,10 +15,16 @@ library(lme4)
 #remotes::install_github("epix-project/mics")
 
 source(here::here("functions/load_data_functions.R"))
+source(here::here("functions/analysis_functions.R"))
 
-data_dir = "C:/Users/andre/Dropbox/MICS-WASH-BOD/Data/"
 
-
+data_dir <- NULL
+if(dir.exists("C:/Users/andre/Dropbox/MICS-WASH-data/")){ 
+  data_dir = "C:/Users/andre/Dropbox/MICS-WASH-data/"
+}
+if(dir.exists("C:/Users/anmol/OneDrive/Documents/GitHub/MICS-WASH-data")){ 
+  data_dir <- "C:/Users/anmol/OneDrive/Documents/GitHub/MICS-WASH-data"
+}
 
 sandwichSE <- function(dat, fm, cluster){
   require(sandwich, quietly = TRUE)

@@ -227,8 +227,39 @@ d <- d %>% subset(., select = c(country,
     roof=HC5, #roof material
     wall=HC6, #wall material
     nroom_sleeping=HC3 #number of rooms used for sleeping
+  ) %>%
+  mutate(
+    mage = as.numeric(mage),
+    aged = as.numeric(aged),
+    sex = factor(sex),
+    educ = ifelse(educ=="99",NA,educ),
+      educ = as.numeric(educ),
+    brthord = factor(brthord),
+    
+    
   )
 
+
+
+X <- d$brthord
+class(X)
+table(X)
+
+birthord=brthord,
+urban_rural=area_type, #urban/rural
+everbf=BD2, #ever breastfed
+currbf= BD3, #current breastfed
+nhh=HH48, #number of hh members
+nchild5=HH51, #number of kids <5
+floor=HC4, #main material of floor
+cookstove=EU1, #type of cookstove used
+chimney=EU2, #cookstove have chimney
+fan=EU3, #cookstove have a fan
+fuel=EU4, #type of energy source of cookstove
+#animals, 
+roof=HC5, #roof material
+wall=HC6, #wall material
+nroom_sleeping=HC3 #number of rooms used for sleeping
 
 
 
