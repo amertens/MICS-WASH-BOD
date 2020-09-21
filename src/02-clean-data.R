@@ -191,7 +191,7 @@ d <- d %>% subset(., select = c(country,
                                 HHAGE, #age of hh head
                                 CAGED,
                                 HL4, #child sex
-                                brthord,
+                                brthord, 
                                 area_type, #urban/rural
                                 BD2, #ever breastfed
                                 BD3, #current breastfed
@@ -202,7 +202,7 @@ d <- d %>% subset(., select = c(country,
                                 EU2, #cookstove have chimney
                                 EU3, #cookstove have a fan
                                 EU4, #type of energy source of cookstove
-                                animals, 
+                                #animals, 
                                 HC5, #roof material
                                 HC6, #wall material
                                 HC3 #number of rooms used for sleeping
@@ -212,7 +212,7 @@ d <- d %>% subset(., select = c(country,
     mage=HHAGE, #age of hh head
     aged=CAGED,
     sex=HL4, #child sex
-    birthord=brthord,
+    birthord=brthord, #Need to add in birthorder
     urban_rural=area_type, #urban/rural
     everbf=BD2, #ever breastfed
     currbf= BD3, #current breastfed
@@ -234,33 +234,33 @@ d <- d %>% subset(., select = c(country,
     sex = factor(sex),
     educ = ifelse(educ=="99",NA,educ),
       educ = as.numeric(educ),
-    brthord = factor(brthord),
-    
-    
+    birthord = factor(birthord),
+    urban_rural = factor(urban_rural),
+    everbf = ifelse(everbf=="9"|everbf=="8",NA,everbf),
+      everbf = factor(everbf),    
+    currbf = ifelse(currbf=="9"|currbf=="8",NA,currbf),
+      currbf = factor(currbf), 
+    nhh = as.numeric(nhh),
+    nchild5 = as.numeric(nchild5),
+    floor = factor(floor),  #Need to clean categories
+    cookstove = factor(cookstove), #Need to clean categories
+    chimney = ifelse(chimney=="9"|chimney=="8",NA,chimney),
+      chimney = factor(chimney),    
+    fan = ifelse(fan=="9"|fan=="8",NA,fan),
+      fan = factor(fan),  
+    fuel = factor(fuel), #Need to clean categories
+    #need to add animals
+    roof = factor(roof), #Need to clean categories
+    wall = factor(wall), #Need to clean categories
+    nroom_sleeping = ifelse(nroom_sleeping=="99",NA,nroom_sleeping),
+    nroom_sleeping = as.numeric(nroom_sleeping)
   )
 
 
 
-X <- d$brthord
-class(X)
-table(X)
-
-birthord=brthord,
-urban_rural=area_type, #urban/rural
-everbf=BD2, #ever breastfed
-currbf= BD3, #current breastfed
-nhh=HH48, #number of hh members
-nchild5=HH51, #number of kids <5
-floor=HC4, #main material of floor
-cookstove=EU1, #type of cookstove used
-chimney=EU2, #cookstove have chimney
-fan=EU3, #cookstove have a fan
-fuel=EU4, #type of energy source of cookstove
-#animals, 
-roof=HC5, #roof material
-wall=HC6, #wall material
-nroom_sleeping=HC3 #number of rooms used for sleeping
-
+# X <- d$nroom_sleeping
+# class(X)
+# table(X)
 
 
 saveRDS(d, here("data/compiled_clean_MICS_survey.rds"))
