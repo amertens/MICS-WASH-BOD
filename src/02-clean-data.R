@@ -263,4 +263,5 @@ d <- d %>% subset(., select = c(country,
 # table(X)
 
 
+
 saveRDS(d, here("data/compiled_clean_MICS_survey.rds"))
