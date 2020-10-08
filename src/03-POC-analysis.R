@@ -23,43 +23,337 @@ source("0-config.R")
 #load clean data
 dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 
-#subset to just BD to code out analysis
-d <- dfull %>% filter(country=="Bangladesh")
-
-
-
-res <- mics_regression(d=d,
-                Y ="stunt",
-                X="EC_risk_H",
-                W=NULL,
-                weight = "ecpopweight_H",
-                clustid= "clust_num",
-                family="modified possion")
-res
-
-
-res <- mics_regression(d=d,
-                       Y ="stunt",
-                       X="EC_risk_H",
-                       W="mage",
-                       weight = "ecpopweight_H",
-                       clustid= "clust_num",
-                       family="modified possion")
-res
-
+#subset to just POC countries
 d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
+d <- droplevels(d)
+
+saveRDS(d, file=here("data/compiled_clean_POC_survey.rds"))
+
+Wvars <- c("educ",
+           "mage",
+           "aged",
+           "sex",
+           "birthord", 
+           "rural",
+           #"everbf", 
+           "currbf",
+           "nhh",
+           "nchild5",
+           "floor",
+           "cookstove",
+           "chimney",
+           "fan",
+           "fuel",
+           "roof",
+           "wall",
+           "nroom_sleeping")
+
+                Y ="haz"
+                X="EC_H"
+                W=Wvars
+                weight = "ecpopweight_H"
+                clustid= "clust_num"
+                family="gaussian"
+
+                
+# d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
+# d$clust_num <- 1:nrow(d)                
+
+# res <- mics_regression(d=d,
+#                 Y ="stunt",
+#                 X="EC_risk_H",
+#                 W=NULL,
+#                 weight = "ecpopweight_H",
+#                 clustid= "clust_num",
+#                 family="modified possion")
+# res
+# 
+# 
+# res <- mics_regression(d=d,
+#                        Y ="stunt",
+#                        X="EC_risk_H",
+#                        W="mage",
+#                        weight = "ecpopweight_H",
+#                        clustid= "clust_num",
+#                        family="modified possion")
+# res
+# 
+# 
 
 
 
+#-------------------------------------------------
+# Unadjusted analysis
+#-------------------------------------------------
 
-res <- d %>% group_by(country) %>%
-              do(mics_regression(d=.,
-                       Y ="stunt",
-                       X="EC_risk_H",
-                       W=c("mage","aged"),
+res_unadj <- res_unadj_bin <- res_unadj_cont <- NULL
+
+#binary_outcomes
+for(i in c("stunt", "wast","diarrhea","ari")){
+  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
+  res1 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_H",
+                       W=NULL,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
                        family="modified possion"))
-res
+  res2 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_S",
+                       W=NULL,
+                       weight = "ecpopweight_S",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res3 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="san_imp",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res4 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="wat_imp",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res5 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="hyg_imp",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res6 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="WASH",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  
+  res_unadj_bin <- bind_rows(res_unadj_bin, res1, res2, res3, res4, res5, res6)
+}
 
+
+
+#continious outcomes
+for(i in c("haz", "whz","waz")){
+  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
+  res1 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_H",
+                       W=NULL,
+                       weight = "ecpopweight_H",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res2 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_S",
+                       W=NULL,
+                       weight = "ecpopweight_S",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res3 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="san_imp",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res4 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="wat_imp",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res5 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="hyg_imp",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res6 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="WASH",
+                       W=NULL,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  
+  res_unadj_cont <- bind_rows(res_unadj_cont, res1, res2, res3, res4, res5, res6)
+}
+
+
+res_unadj <- bind_rows(res_unadj_bin, res_unadj_cont)
+
+saveRDS(res_unadj, here("results/unadjusted_RR.rds"))
+
+
+
+
+#-------------------------------------------------
+# Adjusted analysis
+#-------------------------------------------------
+
+res_adj <- res_adj_bin <- res_adj_cont <- NULL
+
+d <- droplevels(d)
+
+
+
+
+for(i in Wvars){
+  cat(i, "\n")
+  print(table(d[[i]]))
+}
+
+
+
+#binary_outcomes
+d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe"))
+d <- droplevels(d)
+
+
+res_adj_bin<-NULL
+for(i in c("stunt", "wast","diarrhea","ari")){
+  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
+  res1 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_H",
+                       W=Wvars,
+                       weight = "ecpopweight_H",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res2 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_S",
+                       W=Wvars,
+                       weight = "ecpopweight_S",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res3 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="san_imp",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res4 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="wat_imp",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res5 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="hyg_imp",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  res6 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="WASH",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="modified possion"))
+  
+  res_adj_bin <- bind_rows(res_adj_bin, res1, res2, res3, res4, res5, res6)
+}
+
+saveRDS(res_adj_bin, here("results/adjusted_bin.rds"))
+
+
+
+#continious outcomes
+d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
+d <- droplevels(d)
+
+res_adj_cont <- NULL
+for(i in c("haz", "whz","waz")){
+  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
+  res1 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_H",
+                       W=Wvars,
+                       weight = "ecpopweight_H",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res2 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="EC_S",
+                       W=Wvars,
+                       weight = "ecpopweight_S",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res3 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="san_imp",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res4 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="wat_imp",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res5 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="hyg_imp",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  res6 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="WASH",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family="gaussian"))
+  
+  res_adj_cont <- bind_rows(res_adj_cont, res1, res2, res3, res4, res5, res6)
+}
+
+
+
+saveRDS(res_adj_cont, here("results/adjusted_cont.rds"))
+
+res_adj <- bind_rows(res_adj_bin, res_adj_cont)
+
+saveRDS(res_adj, here("results/adjusted_RR.rds"))
 

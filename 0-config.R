@@ -10,7 +10,14 @@ library(washb)
 library(survey)
 library(geepack)
 library(lme4)
-
+library(caret)
+library(janitor)
+library(forcats)
+library(metafor)
+library(R.utils)
+library(tlverse)
+library(sl3)
+library(tmle3)
 
 #remotes::install_github("epix-project/mics")
 

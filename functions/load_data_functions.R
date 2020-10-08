@@ -18,8 +18,15 @@ load_MICS_dataset <- function(country){
   path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
   bh_path=paste0(country,"/bh.sav")
-  d <- read_dta(data_path(path)) %>%
-    rename(HH.LN=HH26B)
+  d <- read_dta(data_path(path))
+  # d <- across(d, as_factor)
+  # d %>% mutate(across(., as_factor))
+  for(i in colnames(d)){
+    if(class(d[[i]])[1]=="haven_labelled"){
+      d[[i]] <- as_factor(d[[i]])
+    }
+  }
+  d <- d %>% rename(HH.LN=HH26B)
   #load and merge child health
   ch <- read_sav(data_path(ch_path))
   ch <- ch %>% rename(clust_num=HH1, HH_num=HH2, HH.LN=LN, childLN=UF3)
@@ -45,7 +52,7 @@ load_MICS_dataset <- function(country){
   dim(ch)
   dim(d)
   d2 <- full_join(ch, d, by = c("clust_num","HH_num"))
-
+  dim(d2)
   
   table(is.na(bh$brthord))
   try(df <- left_join(d2, bh, by = c("clust_num","HH_num","childLN")))
