@@ -875,3 +875,25 @@ poolRR <- function(d, method="REML"){
   return(est)
 }
 
+
+
+
+pool.cont <- function(d, method="REML"){
+  nstudies <- d %>% summarise(N=n())
+  
+  #cat("Var: ", d$intervention_variable[1], " level: ",d$intervention_level[1] ," age: ", d$agecat[1] , "nstudies: ", nstudies$N, "\n")
+    
+    fit<-NULL
+    try(fit<-rma(yi=coef, sei=se, data=d, method=method, measure="GEN"))
+    if(method=="REML"){
+      if(is.null(fit)){try(fit<-rma(yi=coef, sei=se, data=d, method="ML", measure="GEN"))}
+      if(is.null(fit)){try(fit<-rma(yi=coef, sei=se, data=d, method="DL", measure="GEN"))}
+      if(is.null(fit)){try(fit<-rma(yi=coef, sei=se, data=d, method="HE", measure="GEN"))}
+    }
+    est<-data.frame(fit$b, fit$ci.lb, fit$ci.ub)
+    colnames(est)<-c("ATE","CI1","CI2")
+    est$Nstudies <- nstudies$N
+
+  rownames(est) <- NULL
+  return(est)
+}

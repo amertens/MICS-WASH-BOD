@@ -48,3 +48,7 @@ sandwichSE <- function(dat, fm, cluster){
   vcovCL <- dfc * sandwich(fm, meat = crossprod(uj)/N)
   return(vcovCL)
 }
+
+
+scaleFUN <- function(x) sprintf("%.2f", x)
+
