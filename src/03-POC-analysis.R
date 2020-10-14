@@ -56,7 +56,7 @@ Wvars <- c("educ",
                 family="gaussian"
 
                 
-# d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
+#d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 # d$clust_num <- 1:nrow(d)                
 
 # res <- mics_regression(d=d,
