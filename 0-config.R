@@ -23,6 +23,7 @@ library(tmle3)
 
 source(here::here("functions/load_data_functions.R"))
 source(here::here("functions/analysis_functions.R"))
+source(here::here("functions/plot_functions.R"))
 
 
 data_dir <- NULL
@@ -48,3 +49,7 @@ sandwichSE <- function(dat, fm, cluster){
   vcovCL <- dfc * sandwich(fm, meat = crossprod(uj)/N)
   return(vcovCL)
 }
+
+
+scaleFUN <- function(x) sprintf("%.2f", x)
+
