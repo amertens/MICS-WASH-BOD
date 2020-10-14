@@ -23,6 +23,7 @@ library(tmle3)
 
 source(here::here("functions/load_data_functions.R"))
 source(here::here("functions/analysis_functions.R"))
+source(here::here("functions/plot_functions.R"))
 
 
 data_dir <- NULL

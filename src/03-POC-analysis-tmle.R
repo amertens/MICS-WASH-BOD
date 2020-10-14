@@ -48,23 +48,33 @@ Wvars <- c("educ",
            "wall",
            "nroom_sleeping")
 
-                Y ="haz"
-                X="EC_H"
-                W=Wvars
-                weight = "ecpopweight_H"
-                clustid= "clust_num"
-                family="gaussian"
 
+Y ="stunt"
+X="EC_H"
+W=Wvars
+weight = "ecpopweight_H"
+clustid= "clust_num"
+family="binomial"
+ 
 
-res <- mics_tmle(d=d,
-                Y ="stunt",
-                X="EC_H",
-                W=NULL,
-                weight = "ecpopweight_H",
-                clustid= "clust_num",
-                family="binomial")
-res
-
+# res <- mics_tmle(d=d,
+#                 Y ="stunt",
+#                 X="EC_H",
+#                 W=NULL,
+#                 weight = "ecpopweight_H",
+#                 clustid= "clust_num",
+#                 family="binomial")
+# res
+# 
+# 
+# res1 <- d %>% group_by(country) %>%
+#   do(mics_tmle(d=.,
+#                Y ="haz",
+#                X="EC_H",
+#                W=Wvars,
+#                weight = "ecpopweight_H",
+#                clustid= "clust_num",
+#                family="gaussian"))
 
 
 #-------------------------------------------------
@@ -73,20 +83,6 @@ res
 
 res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
-d <- droplevels(d)
-
-
-
-
-for(i in Wvars){
-  cat(i, "\n")
-  print(table(d[[i]]))
-}
-
-
-
-#binary_outcomes
-d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe"))
 d <- droplevels(d)
 
 
@@ -100,7 +96,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="binomial"))
   res2 <- d %>% group_by(country) %>%
     do(mics_tmle(d=.,
                        Y =i,
@@ -108,7 +104,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "ecpopweight_S",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="binomial"))
   res3 <- d %>% group_by(country) %>%
     do(mics_tmle(d=.,
                        Y =i,
@@ -116,7 +112,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="binomial"))
   res4 <- d %>% group_by(country) %>%
     do(mics_tmle(d=.,
                        Y =i,
@@ -124,7 +120,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="binomial"))
   res5 <- d %>% group_by(country) %>%
     do(mics_tmle(d=.,
                        Y =i,
@@ -132,7 +128,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="binomial"))
   res6 <- d %>% group_by(country) %>%
     do(mics_tmle(d=.,
                        Y =i,
@@ -140,16 +136,11 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="binomial"))
   
   res_adj_bin <- bind_rows(res_adj_bin, res1, res2, res3, res4, res5, res6)
 }
 
-
-
-#continious outcomes
-d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
-d <- droplevels(d)
 
 
 for(i in c("haz", "whz","waz")){
@@ -209,5 +200,5 @@ for(i in c("haz", "whz","waz")){
 
 res_adj <- bind_rows(res_adj_bin, res_adj_cont)
 
-saveRDS(res_adj, here("results/adjusted_tmle_RR.rds"))
+saveRDS(res_adj, here("results/adjusted_tmle_ests.rds"))
 
