@@ -48,38 +48,38 @@ Wvars <- c("educ",
            "wall",
            "nroom_sleeping")
 
-                Y ="stunt"
-                X="EC_H"
-                W=Wvars
-                weight = "ecpopweight_H"
+                Y ="ari"
+                X="WASH"
+                W=NULL
+                weight = "popweight"
                 clustid = "clust_num"
                 family = "modified poisson"
 
                 
-#d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
+d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 # d$clust_num <- 1:nrow(d)                
 
 # res <- mics_regression(d=d,
 #                 Y ="stunt",
-#                 X="EC_risk_H",
+#                 X="EC_H",
 #                 W=NULL,
 #                 weight = "ecpopweight_H",
 #                 clustid= "clust_num",
-#                 family="modified possion")
+#                 family="modified possion", calc_PAF=T, low_risk_level=1)
 # res
 # 
-# 
-# res <- mics_regression(d=d,
-#                        Y ="stunt",
-#                        X="EC_risk_H",
-#                        W="mage",
-#                        weight = "ecpopweight_H",
-#                        clustid= "clust_num",
-#                        family="modified possion")
-# res
-# 
-# 
-
+# # 
+# # 
+# # d <- d %>% filter(country %in% c("Bangladesh"))
+# # 
+# res1 <- d %>% group_by(country) %>%
+#   do(mics_regression(d=.,
+#                      Y ="stunt",
+#                      X="EC_H",
+#                      W=NULL,
+#                      weight = "ecpopweight_H",
+#                      clustid= "clust_num",
+#                      family="modified possion", calc_PAF=T, low_risk_level=1))
 
 
 #-------------------------------------------------
@@ -98,7 +98,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=NULL,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=0))
   res2 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -106,7 +106,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=NULL,
                        weight = "ecpopweight_S",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=0))
   res3 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -114,7 +114,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=NULL,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   res4 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -122,7 +122,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=NULL,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   res5 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -130,7 +130,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=NULL,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   res6 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -138,7 +138,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=NULL,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   
   res_unadj_bin <- bind_rows(res_unadj_bin, res1, res2, res3, res4, res5, res6)
 }
@@ -227,13 +227,14 @@ for(i in Wvars){
 
 
 #binary_outcomes
-d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe"))
-d <- droplevels(d)
+# d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe"))
+# d <- droplevels(d)
 
 
 res_adj_bin<-NULL
 for(i in c("stunt", "wast","diarrhea","ari")){
   res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
+  print(i)
   res1 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -241,7 +242,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=0))
   res2 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -249,7 +250,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "ecpopweight_S",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=0))
   res3 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -257,7 +258,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   res4 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -265,7 +266,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   res5 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -273,7 +274,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   res6 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -281,7 +282,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family="modified possion"))
+                       family="modified possion", calc_PAF=T, low_risk_level=1))
   
   res_adj_bin <- bind_rows(res_adj_bin, res1, res2, res3, res4, res5, res6)
 }

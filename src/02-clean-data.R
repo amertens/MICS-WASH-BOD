@@ -750,6 +750,10 @@ d$nroom_sleeping <- as.numeric(d$nroom_sleeping)
 d$birthord <- as.numeric(d$birthord)
 
 
+#save dataset with missingness for complete-case analysis
+saveRDS(d, here("data/compiled_complete_case_MICS_survey.rds"))
+
+
 d <- d %>% group_by(country) %>%
   mutate(
     birthord=ifelse(is.na(birthord), median(birthord, na.rm=T), birthord),

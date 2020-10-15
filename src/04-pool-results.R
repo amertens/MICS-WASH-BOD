@@ -21,16 +21,18 @@ dbin <- d %>% filter(binary==1)
 
 RMAest_bin <- d %>% group_by(Y, X, adjusted) %>%
   do(poolRR(.)) %>% as.data.frame()
+RMAest_bin_FE <- d %>% group_by(Y, X, adjusted) %>%
+  do(poolRR(., method="FE")) %>% as.data.frame()
 
-RMAest_bin
 
 
 dcont <- d %>% filter(binary==0)
 
 RMAest_cont <- d %>% group_by(Y, X, adjusted) %>%
   do(pool.cont(.)) %>% as.data.frame()
+RMAest_cont_FE <- d %>% group_by(Y, X, adjusted) %>%
+  do(pool.cont(., method="FE")) %>% as.data.frame()
 
-RMAest_cont
 
 
 
@@ -54,8 +56,11 @@ df <- bind_rows(ind_df, RMAest_cont, RMAest_bin)
 head(df)
 
 
-
 saveRDS(df, here("results/pooled_POC_results.rds"))
+
+
+df <- bind_rows(ind_df, RMAest_cont_FE, RMAest_bin_FE)
+saveRDS(df, here("results/pooled_POC_results_FE.rds"))
 
 
 
