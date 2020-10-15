@@ -1,6 +1,6 @@
 
 
-mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num", family="modified possion", calc_PAF=FALSE, return_model=FALSE){
+mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num", family="modified possion", calc_PAF=FALSE, low_risk_level=0, return_model=FALSE){
   
   cat(Y,", ",X,"\n")
   
@@ -55,7 +55,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     Wdf <- df %>% subset(., select =c(Wscreen))
     Wdf <- as.data.frame(model.matrix(~., Wdf)[,-1]) 
     
-    #scale anddrop covariates with near zero variance
+    #scale and drop covariates with near zero variance
     pp_no_nzv <- preProcess(Wdf,
                             method = c("center", "scale", "YeoJohnson", "nzv"))
     pp_no_nzv
@@ -65,6 +65,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #   Wdf<-Wdf[,-nearZeroVar(Wdf)]
     # }
     df <- bind_cols(df %>% subset(., select =c("Y","X","id", "weight")), Wdf)
+    df <- df[complete.cases(df),]
   }
   
   #order by id for geeglm function
@@ -96,58 +97,99 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
   }
   if(family=="modified possion"){
+    
+    #check sparsity
+    sparseN<-min(table(df$X, df$Y))
+    if(sparseN>=5){
+    
+    
     #model formula
     f <- ifelse(is.null(Wscreen),
                 "Y ~ X",
                 paste0("Y ~ X + ", paste(colnames(Wdf), collapse = " + ")))
-    id <- df$id
-    weight <- df$weight
+    # id <- df$id
+    # weight <- df$weight
     fit=NULL
     
       
-      #fit model
-    tryCatch( { fit <- withTimeout( { 
-       geeglm(formula = as.formula(f),
-                    data    = df,
-                    weights = weight,
-                    family  = poisson(link = "log"),
-                    id      = id,
-                    corstr  = "exchangeable") 
-      },
-      timeout = 120) },
-      TimeoutException = function(ex) cat("Timed out\n"))
+    #   #fit model
+    # tryCatch( { fit <- withTimeout( { 
+    #    geeglm(formula = as.formula(f),
+    #                 data    = df,
+    #                 weights = weight,
+    #                 family  = poisson(link = "log"),
+    #                 id      = id,
+    #                 corstr  = "exchangeable") 
+    #   },
+    #   timeout = 120) },
+    #   TimeoutException = function(ex) cat("Timed out\n"))
+    # 
+    #   coef <- as.data.frame(summary(fit)$coefficients[2,])
+    #   res <- data.frame(Y=varnames[1],
+    #                     X=varnames[2],
+    #                     coef=coef$Estimate,
+    #                     RR=exp(coef$Estimate),
+    #                     se=coef$Std.err,
+    #                     wald=coef$Wald,
+    #                     pval=coef$`Pr(>|W|)`)
+    #   
+    #   #Calc 95%CI
+    #   res$ci.lb <- exp(res$coef - 1.96*res$se)
+    #   res$ci.ub <- exp(res$coef + 1.96*res$se)
+    #   
+    #   #calculate pvalue by normal approximation
+    #   #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
 
-      coef <- as.data.frame(summary(fit)$coefficients[2,])
-      res <- data.frame(Y=varnames[1],
-                        X=varnames[2],
-                        coef=coef$Estimate,
-                        RR=exp(coef$Estimate),
-                        se=coef$Std.err,
-                        wald=coef$Wald,
-                        pval=coef$`Pr(>|W|)`)
-      
+    
+    fit <- mpreg(formula = as.formula(f), df = df, vcv=FALSE)
+    coef <- as.data.frame(t(fit[2,]))
+    res <- data.frame(Y=varnames[1],
+                      X=varnames[2],
+                      coef=coef$Estimate,
+                      RR=exp(coef$Estimate),
+                      se=coef$`Std. Error`,
+                      Zval=coef$`z value`,
+                      pval=coef$`Pr(>|z|)`)
+
       #Calc 95%CI
       res$ci.lb <- exp(res$coef - 1.96*res$se)
       res$ci.ub <- exp(res$coef + 1.96*res$se)
       
-      #calculate pvalue by normal approximation
-      #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
-      res$n<-sum(df$Y, na.rm=T)
-      res$N<-nrow(df)
-      res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
-      
     
       if(calc_PAF){
-        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=100,dots=TRUE)
+        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=100,dots=TRUE, low_risk_level=low_risk_level)
         res$PAF <- paflist$bootest[2]
         res$PAF.lb <- paflist$boot95lb[2]
         res$PAF.ub <- paflist$boot95ub[2]
       }
+      
+      res$n<-sum(df$Y, na.rm=T)
+      res$N<-nrow(df)
+      res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
  
+    }else{
+      res <- data.frame(Y=varnames[1],
+                        X=varnames[2],
+                        coef=NA,
+                        RR=NA,
+                        se=NA,
+                        Zval=NA,
+                        pval=NA)
+      if(calc_PAF){
+        res$PAF <-NA
+        res$PAF.lb <- NA
+        res$PAF.ub <- NA
+      }
+      
+      res$n<-sum(df$Y, na.rm=T)
+      res$N<-nrow(df)
+      res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+      
+    }
     
   }  
   
-  
+
   
   if(return_model){
     if(calc_PAF){
@@ -249,11 +291,17 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   
 
   # choose base learners
+  #We will include simple means, generalized linear models, generalized additive models, penalized regressions, and gradient boosting machines  in the machine-learning ensemble. 
+  
   lrnr_mean <- make_learner(Lrnr_mean)
   lrnr_glm <- make_learner(Lrnr_glm)
-  lrnr_xgboost <- make_learner(Lrnr_xgboost)
+  gbm_lrnr <- Lrnr_gbm$new()
+  #lrnr_xgboost <- make_learner(Lrnr_xgboost)
+  lrnr_glmnet <- Lrnr_glmnet$new()
+  gam_lrnr <- Lrnr_gam$new()
   
-  SL_list=list(lrnr_glm)
+  
+  SL_list=list(lrnr_mean, lrnr_glm, gam_lrnr, lrnr_glmnet, gbm_lrnr)
   
   # define metalearners appropriate to data types
   ls_metalearner <- make_learner(Lrnr_solnp)
@@ -702,140 +750,6 @@ fit.escalc <- function(data, ni, xi = NULL, yi = NULL, vi = NULL, measure, metho
 # fit.escalc.cont = fit.escalc(data, yi, vi, measure = "GEN", method = "REML")
 
 
-##############################################
-# run_rma
-##############################################
-
-
-# run fit.rma wrapper across a list of ages
-# Input:
-# data: 
-# n_name:
-# label:
-# method:
-
-# Returns:
-# est:
-# lb:
-# ub:
-# agecat:
-# ptest.f:
-# label:
-
-run_rma <- function(data, n_name, x_name, label, method) {
-  
-  # create age list
-  agelist <- as.list(levels(data$agecat))
-  
-  # apply fit.rma across age list
-  res.list <- lapply(agelist, function(x)
-    fit.rma(
-      data = data, ni = n_name, xi = x_name, age = x, measure = "PLO", nlab = "children",
-      method = method
-    ))
-  
-  # unlist output
-  res <- as.data.frame(do.call(rbind, res.list))
-  
-  # tidy up output
-  res$est <- as.numeric(res$est)
-  res$lb <- as.numeric(res$lb)
-  res$ub <- as.numeric(res$ub)
-  res <- res %>% mutate(est = est * 100, lb = lb * 100, ub = ub * 100)
-  res$agecat <- factor(res$agecat, levels = levels(data$agecat))
-  res$ptest.f <- sprintf("%0.0f", res$est)
-  res$label <- label
-  
-  return(res)
-}
-
-##############################################
-# run_rma_agem
-##############################################
-
-
-# run fit.rma wrapper across a list of ages for age in months
-# Input:
-# data: 
-# n_name:
-# label:
-# method:
-
-# Returns:
-# est:
-# lb:
-# ub:
-# agecat:
-# ptest.f:
-# label:
-
-run_rma_agem <- function(data, n_name, x_name, label, method) {
-  
-  # create age list
-  agelist <- as.list(levels(data$agem))
-  
-  # apply fit.rma across age list
-  res.list <- lapply(agelist, function(x)
-    fit.rma(
-      data = data %>% filter(agem == x),
-      ni = n_name, xi = x_name, measure = "PLO", nlab = "children",
-      method = method
-    ))
-  
-  # unlist output
-  res <- as.data.frame(do.call(rbind, res.list))
-  
-  # tidy up output
-  res[, 3] <- as.numeric(res[, 3])
-  res[, 5] <- as.numeric(res[, 5])
-  res[, 6] <- as.numeric(res[, 6])
-  res <- res %>% mutate(est = est * 100, lb = lb * 100, ub = ub * 100)
-  res$agem <- factor(levels(data$agem), levels = levels(data$agem))
-  res$ptest.f <- sprintf("%0.0f", res$est)
-  res$label <- label
-  
-  res <- res %>% select(label, agem, nstudies, nmeas, everything())
-  
-  return(res)
-}
-
-
-##############################################
-# run_rma_agem
-##############################################
-
-# runs a ttest across agecats
-# Input
-# data: 
-# y:
-# levels:
-# ref:
-# comp:
-
-# Returns
-# pval < 0.05:
-# pval < 0.01:
-# pval < 0.001:
-
-ki.ttest <- function(data, y, levels, ref, comp) {
-  pval <- NULL
-  for (i in 1:length(comp)) {
-    colnames(data)[colnames(data) == y] <- "y"
-    colnames(data)[colnames(data) == levels] <- "levels"
-    datasub <- data[data$levels %in% c(ref, comp[i]), ]
-    pval <- rbind(pval, t.test(y ~ levels, data = datasub)$p.value)
-  }
-  pval <- data.frame(comp = comp, pval)
-  colnames(pval)[2] <- "pval"
-  pval$pvalcat <- ""
-  pval$pvalcat[pval$pval < 0.05] <- "*"
-  pval$pvalcat[pval$pval < 0.01] <- "**"
-  pval$pvalcat[pval$pval < 0.001] <- "***"
-  return(pval)
-}
-
-
-
 
 
 poolRR <- function(d, method="REML"){
@@ -904,7 +818,7 @@ pool.cont <- function(d, method="REML"){
 
 
 
-ARfun <- function(fmla,data) {
+ARfun <- function(fmla,data,low_risk_level) {
   # a function to estimate a marginally adjusted attributable risk for two different parameters
   # a population attributable risk (PAR) comparing the empirical distribution vs. none exposed: P(Y|A,W) - P(Y|A=0,W)
   # and a population attributable fraction (PAF), which is the PAR / P(Y|A,W)
@@ -930,14 +844,14 @@ ARfun <- function(fmla,data) {
   # --------------------------------------
   id <- data$id
   weight <- data$weight
-  #regfit <- glm(fmla,family=poisson(link="log"),data=data)
-  regfit <- geeglm(formula = as.formula(fmla),
-                   data    = data,
-                   weights = weight,
-                   family  = poisson(link = "log"),
-                   id      = id,
-                   corstr  = "exchangeable") 
-  
+  regfit <- glm(as.formula(fmla), family=poisson(link="log"), data=data, weights = weight)
+  # regfit <- geeglm(formula = as.formula(fmla),
+  #                  data    = data,
+  #                  weights = weight,
+  #                  family  = poisson(link = "log"),
+  #                  id      = id,
+  #                  corstr  = "exchangeable") 
+  # 
   # --------------------------------------
   # create counterfactual datasets
   # and predicted P(Y|A,W)
@@ -970,8 +884,14 @@ ARfun <- function(fmla,data) {
   # PAR: P(Y|A,  W) - P(Y|A=1,W)
   # PAF: 100% * [P(Y|A,  W) - P(Y|A=1,W)] / P(Y|A,  W)
   # --------------------------------------
-  thetaPAR <- mean(pY-pY1)
-  thetaPAF <- 100*( thetaPAR/mean(pY) )
+  if(low_risk_level==1){
+    thetaPAR <- mean(pY-pY1)
+    thetaPAF <- 100*( thetaPAR/mean(pY) )    
+  }else{
+    thetaPAR <- mean(pY-pY0)
+    thetaPAF <- 100*( thetaPAR/mean(pY) )
+  }
+
   
   # --------------------------------------
   # return marginal means and 
@@ -1009,7 +929,7 @@ ARfun <- function(fmla,data) {
 #-------------------------------------------
 
 
-bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,dots=TRUE) {
+bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,low_risk_level,dots=TRUE) {
   # fn    : an Attributable risk function to call, defined above (ARswimex, AR35cfu)
   # fmla  : a model formula for glm, which is passed to fn
   # data  : data.frame that includes all of the variables in the formula, and the population used for estimation
@@ -1050,7 +970,7 @@ bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,dots=TRUE) {
   # call the appropriate AR function (specified in the fn argument), depending on the exposure of interest
   for (bb in 1:iter) {
     bd <- merge(data.frame(ID=bs[,bb]),data,by="ID",all.x=TRUE)
-    stats[bb,] <- unlist( tryCatch( do.call(fn,args=list(fmla=fmla,data=bd)), error=function(e) rep(NA,5) )  )
+    stats[bb,] <- unlist( tryCatch( do.call(fn,args=list(fmla=fmla,data=bd, low_risk_level=low_risk_level)), error=function(e) rep(NA,5) )  )
     if(dots) cat(".",sep="")
     if(dots && bb %% 50 == 0) cat(bb,"\n")
   }
@@ -1064,7 +984,7 @@ bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,dots=TRUE) {
   Nna <- sum(ifelse(is.na(stats[,1])==TRUE,1,0))
   if(Nna>0) {
     cat("\n   Warning: ",Nna," bootstrap replicates failed to converge to sensible estimates \n")
-    cat("\n   Bootstrap estimates are based on the remaining ",Nboot-Nna," replicates\n\n")
+    cat("\n   Bootstrap estimates are based on the remaining ",iter-Nna," replicates\n\n")
   }
   
   # calculate the mean and percentile 95% confidence intervals for the statistics
@@ -1077,4 +997,60 @@ bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,dots=TRUE) {
   cat("\n Bootstrap Estimates:\n\n Means    :", paste(sprintf("%1.4f",bootest)),"\n Lower 95%:", paste(sprintf("%1.4f",boot95lb)),"\n Upper 95%:",paste(sprintf("%1.4f",boot95ub)),"\n")
   
   list(bootest=bootest,boot95lb=boot95lb,boot95ub=boot95ub,stats=stats)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --------------------------------------
+# Convenience wrapper function to run 
+# modified Poisson models and obtain 
+# robust SEs (clusterd on hhid)
+# this is the work horse of all the 
+# regressions run in this analysis
+# --------------------------------------
+
+mpreg <- function(formula, df, vcv=FALSE) {
+  # modified Poisson regression formula
+  # dataaset used to fit the model	
+  fit <- glm(as.formula(formula),family=poisson(link="log"), weights = df$weight, data=df)
+  vcovCL <- cl(df=df,fm=fit,cluster=df$id)
+  rfit <- coeftest(fit, vcovCL)
+  print(summary(fit))
+  cat("\n\nRobust, Sandwich Standard Errors Account for Clustering:\n")
+  print(rfit) 
+  if(vcv==FALSE) {
+    return(rfit)
+  } else {
+    list(fit=rfit,vcovCL=vcovCL)
+  }
+}
+
+
+
+cl   <- function(df,fm, cluster){
+  # df: data used to fit the model
+  # fm : model fit (object)
+  # cluster : vector of cluster IDs
+  require(sandwich, quietly = TRUE)
+  require(lmtest, quietly = TRUE)
+  M <- length(unique(cluster))
+  N <- length(cluster)
+  K <- fm$rank
+  dfc <- (M/(M-1))*((N-1)/(N-K))
+  uj  <- apply(estfun(fm),2, function(x) tapply(x, cluster, sum));
+  vcovCL <- dfc*sandwich(fm, meat=crossprod(uj)/N)
+  return(vcovCL)
 }
