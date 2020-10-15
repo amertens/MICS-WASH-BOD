@@ -4,8 +4,10 @@
 source("0-config.R")
 
 d_unadj <- readRDS(here("results/unadjusted_RR.rds"))
+d_unadj$W <- "unadjusted"
 d_RR_adj <- readRDS(here("results/adjusted_bin.rds"))
 d_cont_adj <- readRDS(here("results/adjusted_cont.rds"))
+d_cont_adj$W <- "adjusted"
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds"))
 
 
@@ -13,24 +15,29 @@ d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds"))
 d <- bind_rows(d_unadj, d_RR_adj, d_cont_adj)
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
 
+#TEMP! Drop sparse levels
+d <- d %>% filter(n >50)
+
+
+
 head(d)
 
 d$binary <- ifelse(d$Y %in% c("ari", "diarrhea", "stunt", "wast"), 1, 0)
 
 dbin <- d %>% filter(binary==1)
 
-RMAest_bin <- d %>% group_by(Y, X, adjusted) %>%
+RMAest_bin <- dbin %>% group_by(Y, X, adjusted) %>%
   do(poolRR(.)) %>% as.data.frame()
-RMAest_bin_FE <- d %>% group_by(Y, X, adjusted) %>%
+RMAest_bin_FE <- dbin %>% group_by(Y, X, adjusted) %>%
   do(poolRR(., method="FE")) %>% as.data.frame()
 
 
 
 dcont <- d %>% filter(binary==0)
 
-RMAest_cont <- d %>% group_by(Y, X, adjusted) %>%
+RMAest_cont <- dcont %>% group_by(Y, X, adjusted) %>%
   do(pool.cont(.)) %>% as.data.frame()
-RMAest_cont_FE <- d %>% group_by(Y, X, adjusted) %>%
+RMAest_cont_FE <- dcont %>% group_by(Y, X, adjusted) %>%
   do(pool.cont(., method="FE")) %>% as.data.frame()
 
 

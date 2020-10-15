@@ -93,6 +93,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
     res$pval <- 2 * (1 - pnorm(abs(res$tval)))
     res$N<-nrow(df)
+    res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
     
     
   }
@@ -100,7 +101,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
     #check sparsity
     sparseN<-min(table(df$X, df$Y))
-    if(sparseN>=5){
+    if(sparseN>10){
     
     
     #model formula

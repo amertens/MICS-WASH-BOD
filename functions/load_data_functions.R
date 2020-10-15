@@ -23,7 +23,9 @@ load_MICS_dataset <- function(country){
   # d %>% mutate(across(., as_factor))
   for(i in colnames(d)){
     if(class(d[[i]])[1]=="haven_labelled"){
-      d[[i]] <- as_factor(d[[i]])
+      #d[[i]] <- as_factor(d[[i]])
+      d <- bind_cols(d, temporary=as_factor(d[[i]]))
+      colnames(d)[ncol(d)] <- paste0(i,"_lab")
     }
   }
   d <- d %>% rename(HH.LN=HH26B)
