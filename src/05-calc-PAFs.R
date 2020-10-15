@@ -45,10 +45,7 @@ Wvars <- c("educ",
            "nroom_sleeping")
 
 
-#just run for BD, and without clustering
-d <- d %>% filter(country %in% c("Bangladesh"))
-d <- droplevels(d)
-d$clust_num <- 1:nrow(d)
+
 
 res1 <- d %>% group_by(country) %>%
   do(mics_regression(d=.,
@@ -90,7 +87,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        W=Wvars,
                        weight = "ecpopweight_S",
                        clustid= "clust_num",
-                       family="modified possion", calc_PAF=T, low_risk_level=0))
+                       family="modified possion", calc_PAF=T))
   res3 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
                        Y =i,
@@ -123,7 +120,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
                        weight = "popweight",
                        clustid= "clust_num",
                        family="modified possion", calc_PAF=T, low_risk_level=1))
-  
+
   res_adj_bin <- bind_rows(res_adj_bin, res1, res2, res3, res4, res5, res6)
 }
 
