@@ -28,20 +28,18 @@ d <- d %>% mutate(
       EC_risk_H_1 ==100 ~ 1,   
       EC_risk_H_2 ==100 ~ 2,   
       EC_risk_H_3 ==100 ~ 3,   
-      EC_risk_H_4 ==100 ~ 4,
-      TRUE ~ NA_real_
+      EC_risk_H_4 ==100 ~ 4
     ),
   EC_risk_S = 
     case_when(
       EC_risk_S_1 ==100 ~ 1,   
       EC_risk_S_2 ==100 ~ 2,   
       EC_risk_S_3 ==100 ~ 3,   
-      EC_risk_S_4 ==100 ~ 4,
-      TRUE ~ NA_real_   
+      EC_risk_S_4 ==100 ~ 4
     ),
-  EC_risk_H = factor(EC_risk_H),
-  EC_risk_S = factor(EC_risk_S)
-)
+    EC_risk_H = factor(EC_risk_H, levels=c("4","3","2","1")),
+    EC_risk_S = factor(EC_risk_S, levels=c("4","3","2","1"))
+  )
 
 table(d$EC_risk_S)
 table(d$EC_risk_H)
@@ -59,36 +57,88 @@ prop.table(table(is.na(d$EC_risk_H)))
 
 #Denominators are obtained by weighting the number of households by the total number of 
 #household members (HH48).
-table(d$HW1)
-table(d$HW2)
+table(d$HW1_lab)
+table(d$HW2_lab)
 table(d$HW7A)
 table(d$HW7B)
 table(d$HW7C)
 
-d$hyg_imp <- ifelse(d$HW2 %in% c("Eau est disponible", "EAU EST DISPONIBLE", "WATER IS AVAILABLE") & (d$HW7A=="A"|d$HW7B=="B"), 1, 0)
-d$hyg_imp[(d$HW2 %in% c("NO RESPONSE", "NON REPONSE") | !grepl("^O(B|b)", d$HW1))] <- NA
+d$hyg_imp <- ifelse(d$HW2==1 & (d$HW7A=="A"|d$HW7B=="B"), 1, 0)
+d$hyg_imp[(d$HW2==9 | d$HW1>4)] <- NA
 table(d$hyg_imp)
 prop.table(table(d$hyg_imp))
 
+# 1.	None (no facility)
+# 2.	Limited - availability of a handwashing facility on premises without soap or water
+# 3.	Basic - availability of a handwashing facility on premises with soap and water (highest measured level of service measured)
+d <- d %>% mutate(
+  hyg_imp_cat = case_when(
+    HW2 == 2 ~"None",
+    HW2 == 1 & hyg_imp != 1 ~"Limited",
+    hyg_imp == 1 ~"Basic"
+  ),
+  hyg_imp_cat = factor(hyg_imp_cat, levels=c("None", "Limited", "Basic"))
+)
+table(d$hyg_imp_cat)
+
+
 #Recode improved sanitation and water
 table(d$san_imp)
-d$san_imp<-as.numeric(factor(d$san_imp, levels=c("Unimproved","Improved")))-1
+d$san_imp<-as.numeric(factor(d$san_imp_lab, levels=c("Unimproved","Improved")))-1
 table(d$san_imp)
 
 table(d$wat_imp)
-d$wat_imp<-as.numeric(factor(d$wat_imp, levels=c("Unimproved","Improved")))-1
+d$wat_imp<-as.numeric(factor(d$wat_imp_lab, levels=c("Unimproved","Improved")))-1
 table(d$wat_imp)
 
-#Code most-improved WASH
-d$WASH <- ifelse(d$san_imp==1 & d$wat_imp==1 & d$hyg_imp==1 & d$EC_risk_H==4, 1, 0)
-d$WASH[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)|is.na(d$EC_risk_H)] <- NA
 
-#Code most-improved WASH (no contamination measures)
-d$WASH_noEC <- ifelse(d$san_imp==1 & d$wat_imp==1, 1, 0)
-d$WASH_noEC[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)] <- NA
+#Recode categorical sanitation and water
+# 1.	Open defecation (no service)
+# 2.	Unimproved - use of pit latrines without a slab or platform, hanging latrines or bucket latrines
+# 3.	Limited - use of improved facilities (flush/pour flush to piped sewer system, septic tanks or pit latrines; ventilated improved pit latrines, composting toilets or pit latrines with slabs) shared between two or more households
+# 4.	Basic - use of improved facilities which are not shared with other households
+# 5.	Basic with high community coverage (>75% of the population in the community use basic sanitation services, highest measured level of service)
 
-table(d$WASH)
-table(d$WASH_noEC)
+table(d$WS11_lab, d$WS11)
+table(d$san_cat_lab)
+
+d <- d %>% mutate(
+  san_imp_cat = case_when(san_cat_lab=="No facility"~"No facility",
+                           san_cat_lab=="Unimproved"~"Unimproved",
+                           san_cat_lab=="Improved" & (WS15!="2")~"Limited",
+                           san_cat_lab=="Improved" & (WS15=="2")~"Basic"
+                           ),
+  san_imp_cat = factor(san_imp_cat, levels=c("No facility", "Unimproved", "Limited", "Basic"))
+)
+table(d$san_imp_cat)
+
+
+
+
+# 1.	Surface water (no service)
+# 2.	Unimproved - drinking water from an unprotected dug well or unprotected spring
+# 3.	Limited - drinking water from an improved source for which collection time exceeds 30 minutes for a roundtrip including queuing.
+# 4.	Basic - drinking water from an improved source (piped water, boreholes or tubewells, protected dug wells, protected springs, rainwater, and packaged or delivered water), provided collection time is not more than 30 minutes for a roundtrip including queuing,
+# 5.	Continuous drinking water on premises from an improved water source (highest measured level of service).
+table(d$WS1_lab, d$WS1)
+table(d$wat_class_lab, d$wat_imp)
+table(d$WS3_lab, d$WS3)
+
+d$WS3 <- as.numeric(d$WS3)
+d$WS4 <- as.numeric(d$WS4)
+d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
+
+
+d <- d %>% mutate(
+  wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
+                          wat_class_lab=="Unprotected wells and springs"~"Unimproved",
+                          wat_imp==1 & d$WS4>30~"Limited",
+                          wat_imp==1 & d$WS4<=30 & (WS3>2 | WS7!="2")~"Basic",
+                          wat_imp==1 & WS3<=2 & WS7=="2"~"Continuous",
+  ),
+  wat_imp_cat = factor(wat_imp_cat, levels=c("Surface water", "Unimproved", "Limited", "Basic","Continuous"))
+)
+table(d$wat_imp_cat)
 
 
 
@@ -103,6 +153,19 @@ d$safely_manH20 <- ifelse(d$EC_H==1 & d$wat_imp==1, 1, 0)
 d$safely_manH20[is.na(d$EC_H)|is.na(d$wat_imp)] <- NA
 table(d$safely_manH20)
 table(d$country, d$safely_manH20)
+
+
+#Code most-improved WASH
+d$WASH <- ifelse(d$san_imp==1 & d$wat_imp==1 & d$hyg_imp==1 & d$EC_H==1, 1, 0)
+d$WASH[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)|is.na(d$EC_risk_H)] <- NA
+
+#Code most-improved WASH (no contamination measures)
+d$WASH_noEC <- ifelse(d$san_imp==1 & d$wat_imp==1, 1, 0)
+d$WASH_noEC[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)] <- NA
+
+table(d$WASH)
+table(d$WASH_noEC)
+
 
 
 #Rename outcome variables
@@ -140,6 +203,7 @@ table(d$HAZFLAG)
 #diarrhea
 d$diarrhea <- ifelse(d$CA1=="1",1,0)
 d$diarrhea[d$CA1=="8"|d$CA1=="9"] <- NA
+table(d$diarrhea)
 
 #ARI symptoms
 table(d$diff_breath)
@@ -183,7 +247,9 @@ d <- d %>% subset(., select = c(country,
                                 san_imp, 
                                 wat_imp, 
                                 hyg_imp, 
-                                san_cat, 
+                                san_imp_cat,
+                                wat_imp_cat,
+                                hyg_imp_cat,
                                 safely_manH20, 
                                 EC_S, EC_H, 
                                 EC_risk_S, 
@@ -218,45 +284,45 @@ d <- d %>% subset(., select = c(country,
                                 wqsaweight,
                                 stratum,
                                 PSU,
-                                helevel, #education level
+                                helevel_lab, #education level
                                 HHAGE, #age of hh head
                                 CAGED,
                                 HL4, #child sex
                                 brthord, 
-                                area_type, #urban/rural
+                                area_type_lab, #urban/rural
                                 BD2, #ever breastfed
                                 BD3, #current breastfed
                                 HH48, #number og hh members
                                 HH51, #number of kids <5
-                                HC4, #main material of floor
-                                EU1, #type of cookstove used
-                                EU2, #cookstove have chimney
-                                EU3, #cookstove have a fan
-                                EU4, #type of energy source of cookstove
+                                HC4_lab, #main material of floor
+                                EU1_lab, #type of cookstove used
+                                EU2_lab, #cookstove have chimney
+                                EU3_lab, #cookstove have a fan
+                                EU4_lab, #type of energy source of cookstove
                                 #animals, 
-                                HC5, #roof material
-                                HC6, #wall material
+                                HC5_lab, #roof material
+                                HC6_lab, #wall material
                                 HC3 #number of rooms used for sleeping
     )) %>% 
   rename(
-    educ=helevel, #education level
+    educ=helevel_lab, #education level
     mage=HHAGE, #age of hh head
     aged=CAGED,
     sex=HL4, #child sex
     birthord=brthord, #Need to add in birthorder
-    urban_rural=area_type, #urban/rural
+    urban_rural=area_type_lab, #urban/rural
     everbf=BD2, #ever breastfed
     currbf= BD3, #current breastfed
     nhh=HH48, #number of hh members
     nchild5=HH51, #number of kids <5
-    floor=HC4, #main material of floor
-    cookstove=EU1, #type of cookstove used
-    chimney=EU2, #cookstove have chimney
-    fan=EU3, #cookstove have a fan
-    fuel=EU4, #type of energy source of cookstove
+    floor=HC4_lab, #main material of floor
+    cookstove=EU1_lab, #type of cookstove used
+    chimney=EU2_lab, #cookstove have chimney
+    fan=EU3_lab, #cookstove have a fan
+    fuel=EU4_lab, #type of energy source of cookstove
     #animals, 
-    roof=HC5, #roof material
-    wall=HC6, #wall material
+    roof=HC5_lab, #roof material
+    wall=HC6_lab, #wall material
     nroom_sleeping=HC3 #number of rooms used for sleeping
   ) %>%
   mutate(

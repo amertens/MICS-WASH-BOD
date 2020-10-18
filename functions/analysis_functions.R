@@ -72,27 +72,52 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   df <- df %>% arrange(id)
   
   if(family=="gaussian"){
+    # #model formula
+    # f <- ifelse(is.null(Wscreen),
+    #             "Y ~ X + (1|id)",
+    #             paste0("Y ~ X + (1|id) + ", paste(colnames(Wdf), collapse = " + ")))
+    # #fit model
+    # fit <- lmer(as.formula(f),  data=df, weights = weight)
+    # 
+    # coef <- as.data.frame(t(summary(fit)$coefficients[2,]))
+    # res <- data.frame(Y=varnames[1],
+    #                   X=varnames[2],
+    #                   coef=coef$Estimate,
+    #                   se=coef$`Std. Error`,
+    #                   tval=coef$`t value`)
+    # 
+    # #Calc 95%CI
+    # res$ci.lb <- res$coef - 1.96*res$se
+    # res$ci.ub <- res$coef + 1.96*res$se
+    # 
+    # #calculate pvalue by normal approximation
+    # #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
+    # res$pval <- 2 * (1 - pnorm(abs(res$tval)))
+    # res$N<-nrow(df)
+    # res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+    
+    
+    
     #model formula
     f <- ifelse(is.null(Wscreen),
-                "Y ~ X + (1|id)",
-                paste0("Y ~ X + (1|id) + ", paste(colnames(Wdf), collapse = " + ")))
-    #fit model
-    fit <- lmer(as.formula(f),  data=df, weights = weight)
-    coef <- as.data.frame(t(summary(fit)$coefficients[2,]))
+                "Y ~ X",
+                paste0("Y ~ X  + ", paste(colnames(Wdf), collapse = " + ")))
+    fit <- mpreg(formula = as.formula(f), df = df, family="gaussian", vcv=FALSE)
+    
+    coef <- as.data.frame(t(fit[2,]))
     res <- data.frame(Y=varnames[1],
                       X=varnames[2],
                       coef=coef$Estimate,
                       se=coef$`Std. Error`,
-                      tval=coef$`t value`)
+                      Zval=coef$`z value`,
+                      pval=coef$`Pr(>|z|)`)
     
     #Calc 95%CI
     res$ci.lb <- res$coef - 1.96*res$se
     res$ci.ub <- res$coef + 1.96*res$se
     
-    #calculate pvalue by normal approximation
-    #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
-    res$pval <- 2 * (1 - pnorm(abs(res$tval)))
     res$N<-nrow(df)
+    res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
     
     
   }
@@ -100,7 +125,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
     #check sparsity
     sparseN<-min(table(df$X, df$Y))
-    if(sparseN>=5){
+    if(sparseN>10){
     
     
     #model formula
@@ -141,7 +166,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #   #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
 
     
-    fit <- mpreg(formula = as.formula(f), df = df, vcv=FALSE)
+    fit <- mpreg(formula = as.formula(f), df = df, family="modified possion", vcv=FALSE)
     coef <- as.data.frame(t(fit[2,]))
     res <- data.frame(Y=varnames[1],
                       X=varnames[2],
@@ -1022,10 +1047,14 @@ bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,low_risk_level,dots=TRUE) {
 # regressions run in this analysis
 # --------------------------------------
 
-mpreg <- function(formula, df, vcv=FALSE) {
+mpreg <- function(formula, df, family, vcv=FALSE) {
   # modified Poisson regression formula
   # dataaset used to fit the model	
-  fit <- glm(as.formula(formula),family=poisson(link="log"), weights = df$weight, data=df)
+  if(family=="gaussian"){
+    fit <- glm(as.formula(formula),family="gaussian", weights = df$weight, data=df)
+  }else{
+    fit <- glm(as.formula(formula),family=poisson(link="log"), weights = df$weight, data=df)
+  }
   vcovCL <- cl(df=df,fm=fit,cluster=df$id)
   rfit <- coeftest(fit, vcovCL)
   print(summary(fit))
