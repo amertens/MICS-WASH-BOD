@@ -1,10 +1,11 @@
 
 
+
 #NOTES
 # What is the proper weighting of the regression functions?
 # What is the proper WASH-less asset index to use?
 # Is roof/floor/wall material and number of rooms already in the wealth index?
-  
+
 #Need to move BH to main folders
 #need to check all cleaned surveys are mics6 and there are no MICS5
 #Need to see if bh.sav is available online for downloaded surveys missing it
@@ -27,6 +28,7 @@ dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
 d <- droplevels(d)
 
+saveRDS(d, file=here("data/compiled_clean_POC_survey.rds"))
 
 Wvars <- c("educ",
            "mage",
@@ -34,7 +36,7 @@ Wvars <- c("educ",
            "sex",
            "birthord", 
            "rural",
-           "everbf", 
+           #"everbf", 
            "currbf",
            "nhh",
            "nchild5",
@@ -48,32 +50,21 @@ Wvars <- c("educ",
            "nroom_sleeping")
 
 
-# Y ="stunt"
-# X="EC_H"
-# W=Wvars
-# weight = "ecpopweight_H"
-# clustid= "clust_num"
-# family="binomial"
-#  
-# 
-# res <- mics_tmle(d=d,
-#                 Y ="stunt",
-#                 X="EC_H",
-#                 W=Wvars,
-#                 weight = "ecpopweight_H",
-#                 clustid= "clust_num",
-#                 family="binomial")
-# res
-# 
-# 
-# res1 <- d %>% group_by(country) %>%
-#   do(mics_tmle(d=.,
-#                Y ="haz",
-#                X="EC_H",
-#                W=Wvars,
-#                weight = "ecpopweight_H",
-#                clustid= "clust_num",
-#                family="gaussian"))
+d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
+
+
+#-------------------------------------------------
+# Unadjusted analysis
+#-------------------------------------------------
+
+
+res_unadj_bin <- run_MICS_tmle(outcomes = c("stunt", "wast","diarrhea","ari"), family="binomial",  Wvars=NULL)
+res_unadj_cont <- run_MICS_tmle(outcomes = c("haz", "whz"), family="gaussian", Wvars=NULL)
+
+res_unadj <- bind_rows(res_unadj_bin, res_unadj_cont)
+
+saveRDS(res_unadj, here("results/unadjusted_tmle_ests.rds"))
+
 
 
 #-------------------------------------------------
@@ -83,118 +74,9 @@ Wvars <- c("educ",
 res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
 d <- droplevels(d)
+res_adj_bin <- run_MICS_tmle(outcomes = c("stunt", "wast","diarrhea","ari"), family="binomial",  Wvars=Wvars)
+res_adj_cont <- run_MICS_tmle(outcomes = c("haz", "whz"), family="gaussian", Wvars=Wvars)
 
-
-
-for(i in c("stunt", "wast","diarrhea","ari")){
-  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
-  res1 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="EC_H",
-                       W=Wvars,
-                       weight = "ecpopweight_H",
-                       clustid= "clust_num",
-                       family="binomial"))
-  res2 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="EC_S",
-                       W=Wvars,
-                       weight = "ecpopweight_S",
-                       clustid= "clust_num",
-                       family="binomial"))
-  res3 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="san_imp",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="binomial"))
-  res4 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="wat_imp",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="binomial"))
-  res5 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="hyg_imp",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="binomial"))
-  res6 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="WASH",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="binomial"))
-  
-  res_adj_bin <- bind_rows(res_adj_bin, res1, res2, res3, res4, res5, res6)
-}
-
-
-
-for(i in c("haz", "whz")){
-  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
-  res1 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="EC_H",
-                       W=Wvars,
-                       weight = "ecpopweight_H",
-                       clustid= "clust_num",
-                       family="gaussian"))
-  res2 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="EC_S",
-                       W=Wvars,
-                       weight = "ecpopweight_S",
-                       clustid= "clust_num",
-                       family="gaussian"))
-  res3 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="san_imp",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="gaussian"))
-  res4 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="wat_imp",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="gaussian"))
-  res5 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="hyg_imp",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="gaussian"))
-  res6 <- d %>% group_by(country) %>%
-    do(mics_tmle(d=.,
-                       Y =i,
-                       X="WASH",
-                       W=Wvars,
-                       weight = "popweight",
-                       clustid= "clust_num",
-                       family="gaussian"))
-  
-  res_adj_cont <- bind_rows(res_adj_cont, res1, res2, res3, res4, res5, res6)
-}
 
 
 res_adj <- bind_rows(res_adj_bin, res_adj_cont)

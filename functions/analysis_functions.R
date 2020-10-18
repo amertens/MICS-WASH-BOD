@@ -326,7 +326,9 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   gam_lrnr <- Lrnr_gam$new()
   
   
-  SL_list=list(lrnr_mean, lrnr_glm, gam_lrnr, lrnr_glmnet, gbm_lrnr)
+  #SL_list=list(lrnr_mean, lrnr_glm, gam_lrnr, lrnr_glmnet, gbm_lrnr)
+  #Smaller list for speed
+  SL_list=list(lrnr_glm)
   
   # define metalearners appropriate to data types
   ls_metalearner <- make_learner(Lrnr_solnp)

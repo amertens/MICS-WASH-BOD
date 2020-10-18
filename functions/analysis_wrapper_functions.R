@@ -222,3 +222,109 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
   
   return(fullres) 
 }
+
+
+
+
+
+run_mics_tmle <- function(outcomes, family, PAF, Wvars){
+  
+  adj <- ifelse(is.null(Wvars),"unadj","adj")
+  
+  fullres <- NULL 
+  
+  
+  for(i in outcomes){
+    res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- res7 <- res8 <- NULL
+    print(i)
+    res1 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="EC_H",
+                   W=Wvars,
+                   weight = "ecpopweight_H",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
+    
+    res2 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="EC_S",
+                   W=Wvars,
+                   weight = "ecpopweight_S",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
+    
+    res3 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="san_imp",
+                   W=Wvars,
+                   weight = "popweight",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
+    
+    res4 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="wat_imp",
+                   W=Wvars,
+                   weight = "popweight",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
+    
+    res5 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="hyg_imp",
+                   W=Wvars,
+                   weight = "popweight",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
+    
+    res6 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="safely_manH20",
+                   W=Wvars,
+                   weight = "ecpopweight_H",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res6, file=here(paste0("results/individual_estimates/",i,"_safely_manH20_",adj,".rds")))
+    
+    res7 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="WASH",
+                   W=Wvars,
+                   weight = "ecpopweight_H",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+    
+    res8 <- d %>% group_by(country) %>%
+      do(mics_tmle(d=.,
+                   Y =i,
+                   X="WASH_noEC",
+                   W=Wvars,
+                   weight = "popweight",
+                   clustid= "clust_num",
+                   family=family))
+    saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+    
+    
+    
+    
+    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6, res7, res8)
+  }
+  
+  return(fullres) 
+}
+
+
+
