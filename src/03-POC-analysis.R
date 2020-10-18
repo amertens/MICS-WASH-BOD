@@ -48,12 +48,12 @@ Wvars <- c("educ",
            "wall",
            "nroom_sleeping")
 
-                Y ="ari"
+                Y ="haz"
                 X="WASH"
                 W=NULL
                 weight = "popweight"
                 clustid = "clust_num"
-                family = "modified poisson"
+                family = "gaussian"
 
                 
 d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
@@ -65,7 +65,7 @@ d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 #                 W=NULL,
 #                 weight = "ecpopweight_H",
 #                 clustid= "clust_num",
-#                 family="modified possion", calc_PAF=T, low_risk_level=1)
+#                 family="gaussian", calc_PAF=T, low_risk_level=1)
 # res
 # 
 # # 
