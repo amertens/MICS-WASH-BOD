@@ -48,22 +48,22 @@ Wvars <- c("educ",
            "nroom_sleeping")
 
 
-Y ="stunt"
-X="EC_H"
-W=Wvars
-weight = "ecpopweight_H"
-clustid= "clust_num"
-family="binomial"
- 
-
-res <- mics_tmle(d=d,
-                Y ="stunt",
-                X="EC_H",
-                W=Wvars,
-                weight = "ecpopweight_H",
-                clustid= "clust_num",
-                family="binomial")
-res
+# Y ="stunt"
+# X="EC_H"
+# W=Wvars
+# weight = "ecpopweight_H"
+# clustid= "clust_num"
+# family="binomial"
+#  
+# 
+# res <- mics_tmle(d=d,
+#                 Y ="stunt",
+#                 X="EC_H",
+#                 W=Wvars,
+#                 weight = "ecpopweight_H",
+#                 clustid= "clust_num",
+#                 family="binomial")
+# res
 # 
 # 
 # res1 <- d %>% group_by(country) %>%
@@ -142,7 +142,7 @@ for(i in c("stunt", "wast","diarrhea","ari")){
 
 
 
-for(i in c("haz", "whz","waz")){
+for(i in c("haz", "whz")){
   res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- NULL
   res1 <- d %>% group_by(country) %>%
     do(mics_tmle(d=.,
