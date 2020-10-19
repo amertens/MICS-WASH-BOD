@@ -58,8 +58,8 @@ d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 #-------------------------------------------------
 
 
-res_unadj_bin <- run_MICS_tmle(outcomes = c("stunt", "wast","diarrhea","ari"), family="binomial",  Wvars=NULL)
-res_unadj_cont <- run_MICS_tmle(outcomes = c("haz", "whz"), family="gaussian", Wvars=NULL)
+res_unadj_bin <- run_mics_tmle(outcomes = c("stunt", "wast","diarrhea","ari"), family="binomial",  Wvars=NULL)
+res_unadj_cont <- run_mics_tmle(outcomes = c("haz", "whz"), family="gaussian", Wvars=NULL)
 
 res_unadj <- bind_rows(res_unadj_bin, res_unadj_cont)
 
@@ -74,8 +74,8 @@ saveRDS(res_unadj, here("results/unadjusted_tmle_ests.rds"))
 res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
 d <- droplevels(d)
-res_adj_bin <- run_MICS_tmle(outcomes = c("stunt", "wast","diarrhea","ari"), family="binomial",  Wvars=Wvars)
-res_adj_cont <- run_MICS_tmle(outcomes = c("haz", "whz"), family="gaussian", Wvars=Wvars)
+res_adj_bin <- run_mics_tmle(outcomes = c("stunt", "wast","diarrhea","ari"), family="binomial",  Wvars=Wvars)
+res_adj_cont <- run_mics_tmle(outcomes = c("haz", "whz"), family="gaussian", Wvars=Wvars)
 
 
 
