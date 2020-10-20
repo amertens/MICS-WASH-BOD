@@ -160,12 +160,14 @@ d$WASH <- ifelse(d$san_imp==1 & d$wat_imp==1 & d$hyg_imp==1 & d$EC_H==1, 1, 0)
 d$WASH[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)|is.na(d$EC_risk_H)] <- NA
 
 #Code most-improved WASH (no contamination measures)
-d$WASH_noEC <- ifelse(d$san_imp==1 & d$wat_imp==1, 1, 0)
+d$WASH_noEC <- ifelse(d$san_imp==1 & d$wat_imp==1 & d$hyg_imp==1, 1, 0)
 d$WASH_noEC[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)] <- NA
 
 table(d$WASH)
 table(d$WASH_noEC)
 
+d %>% group_by(country) %>%
+  summarise(N_households=n(), N_imp_wat=sum(wat_imp, na.rm=T), N_imp_san=sum(san_imp, na.rm=T),  N_imp_hygeine=sum(hyg_imp, na.rm=T), N_imp_WASH=sum(WASH_noEC, na.rm=T))
 
 
 #Rename outcome variables

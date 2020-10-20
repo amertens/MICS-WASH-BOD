@@ -15,7 +15,7 @@ laPDR <- load_MICS_dataset("LaoPDR")
 le <- load_MICS_dataset("Lesotho")
 md <- load_MICS_dataset("Madagascar")
 mo <- load_MICS_dataset("Mongolia")
-#np <- load_MICS_dataset("Nepal")#missing merging variable
+#np <- load_MICS_dataset("Nepal") #missing merging variable
 #ni <- load_MICS_dataset("Nigeria") #missing merging variable
 #par <- load_MICS_dataset("Paraguay") #missing merging variable
 SL <- load_MICS_dataset("SierraLeone")
