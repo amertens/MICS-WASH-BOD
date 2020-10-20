@@ -5,7 +5,7 @@ d <- readRDS(here("results/pooled_POC_results.rds"))
 dtmle <- readRDS(here("results/pooled_POC_tmle_results.rds"))
 
 #drop sparse levels
-d <- d %>% filter(n >50 | country=="pooled") %>% filter(Y=="waz")
+d <- d %>% filter(n >50 | country=="pooled") %>% filter(Y!="waz")
 
 #Clean data for primary figure
 d <- d %>% 
@@ -43,9 +43,15 @@ d <- d %>%
 
 
 
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# Primary figures
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-#Primary figure
-d %>% filter(adjusted==1, binary==1) %>% 
+
+#-------------------------------------------------------------
+# RR's single increase
+#-------------------------------------------------------------
+d %>% filter(adjusted==1, binary==1, analysis=="primary") %>% 
   droplevels(.) %>%
   ggplot(., aes(y=est, x=Y, color=Y)) +
   facet_grid(X~country) +
@@ -57,7 +63,65 @@ d %>% filter(adjusted==1, binary==1) %>%
   coord_flip() +
   xlab("Outcome") + ylab("Relative Risk")
 
+#-------------------------------------------------------------
+# RR's multinomial
+#-------------------------------------------------------------
 
+#-------------------------------------------------------------
+# Z-score differences
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+# PAF ranking
+#-------------------------------------------------------------
+
+
+
+
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+#Secondary figures
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+
+#-------------------------------------------------------------
+# subgroup figure
+#-------------------------------------------------------------
+
+
+#-------------------------------------------------------------
+#-compare unadjusted to adjusted estimates
+#-------------------------------------------------------------
+
+#RR
+
+#continuous
+
+#-------------------------------------------------------------
+#-compare TMLE to primary estimates
+#-------------------------------------------------------------
+
+#RR
+
+#-------------------------------------------------------------
+#-compare 1-step to primary pooled estimates
+#-------------------------------------------------------------
+
+#RR
+
+#-------------------------------------------------------------
+#-compare CC to primary pooled estimates
+#-------------------------------------------------------------
+
+
+#-------------------------------------------------------------
+#-FE versus RE
+#-------------------------------------------------------------
+
+
+#-------------------------------------------------------------
+# sparsity heatmap - updated
+#-------------------------------------------------------------
 
 
 

@@ -821,6 +821,7 @@ pool.cont <- function(d, method="REML"){
       if(is.null(fit)){try(fit<-rma(yi=coef, sei=se, data=d, method="DL", measure="GEN"))}
       if(is.null(fit)){try(fit<-rma(yi=coef, sei=se, data=d, method="HE", measure="GEN"))}
     }
+    if(is.null(fit)){fit <- data.frame(b=NA, ci.lb=NA, ci.ub=NA)}
     est<-data.frame(fit$b, fit$ci.lb, fit$ci.ub)
     colnames(est)<-c("ATE","CI1","CI2")
     est$Nstudies <- nstudies$N
