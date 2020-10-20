@@ -274,7 +274,7 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
                                       family = prescreen_family, 
                                       pval = 0.2, print = T))
     #select n/10 covariates if binary outcome
-    if(family!="gaussian"){
+    if(family!="gaussian" & !is.null(Wscreen)){
       nY<-floor(min(table(df$Y, df$X))/10)
       if(length(Wscreen)>nY){
         Wscreen<-Wscreen[1:nY]
@@ -444,7 +444,12 @@ MICS_prescreen<-function (Y, Ws, family = "gaussian", pval = 0.2, print = TRUE){
                 pval))
     }
   }
-  return(rownames(LRps))
+  if (sum(p20) > 0) {
+    return(rownames(LRps))
+  }else{
+    return(NULL)
+    
+  }
 }
 
 
