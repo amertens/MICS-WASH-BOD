@@ -14,6 +14,8 @@ d_1step_adj <- readRDS(here("results/adjusted_1step_sens.rds")) %>% mutate(analy
 d_CC_adj <- readRDS(here("results/adjusted_CC_sens.rds")) %>% mutate(analysis="CC")
 
 
+
+
 d <- bind_rows(d_unadj, d_RR_multi_unadj,d_RR_adj, d_RR_multi_adj, d_cont_adj, d_tmle_adj, d_rural_adj, d_1step_adj, d_CC_adj)
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
 d$ref[is.na(d$ref)] <- "0"
@@ -50,17 +52,17 @@ RMAest_cont_FE <- dcont %>% group_by(analysis, Y, X, ref, contrast, adjusted) %>
 
 #Combine pooled and country-level results
 ind_df <- d %>%  mutate(est=ifelse(is.na(RR),coef,RR)) %>%
-  subset(., select =c(country, Y, X, est,ci.lb, ci.ub, n,N, binary, adjusted))
+  subset(., select =c(analysis, country, Y, X, ref, contrast, est,ci.lb, ci.ub, n,N, binary, adjusted))
  
 
 RMAest_cont<-RMAest_cont %>%
   rename(est=ATE, ci.lb=CI1, ci.ub=CI2) %>%
-  subset(., select =c(Y, X, est,  ci.lb, ci.ub, adjusted)) %>%
+  subset(., select =c(analysis, Y, X,  ref, contrast, est,  ci.lb, ci.ub, adjusted)) %>%
   mutate(country="pooled", binary=0)
 
 RMAest_bin<-RMAest_bin %>%
   rename(est=RR, ci.lb=RR.CI1, ci.ub=RR.CI2)  %>%
-  subset(., select =c(Y, X, est,  ci.lb, ci.ub, adjusted)) %>%
+  subset(., select =c(analysis, Y, X, ref, contrast, est,  ci.lb, ci.ub, adjusted)) %>%
   mutate(country="pooled", binary=1)
 
 df <- bind_rows(ind_df, RMAest_cont, RMAest_bin)
