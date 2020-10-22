@@ -38,13 +38,13 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
      }
     
     #prescreen
-    suppressWarnings(Wscreen <- 
+    suppressWarnings(try(Wscreen <- 
                        MICS_prescreen(Y = df$Y, 
                                        Ws = Wdf, 
                                        family = prescreen_family, 
-                                       pval = 0.2, print = T))
+                                       pval = 0.2, print = T)))
     #select n/10 covariates if binary outcome
-    if(family!="gaussian"){
+    if(family!="gaussian" & !is.null(Wscreen)){
       nY<-floor(min(table(df$Y, df$X))/10)
       if(length(Wscreen)>nY){
         Wscreen<-Wscreen[1:nY]
@@ -52,18 +52,19 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     }
    
     #Drop sparse factor levels
-    Wdf <- df %>% subset(., select =c(Wscreen))
-    Wdf <- as.data.frame(model.matrix(~., Wdf)[,-1]) 
+    if(!is.null(Wscreen)){
+      Wdf <- df %>% subset(., select =c(Wscreen))
+      Wdf <- as.data.frame(model.matrix(~., Wdf)[,-1]) 
+      
+      #scale and drop covariates with near zero variance
+      pp_no_nzv <- preProcess(Wdf,
+                              method = c("center", "scale", "YeoJohnson", "nzv"))
+      pp_no_nzv
+      Wdf<- predict(pp_no_nzv, newdata = Wdf)
+    }else{
+      Wdf=NULL
+    }
     
-    #scale and drop covariates with near zero variance
-    pp_no_nzv <- preProcess(Wdf,
-                            method = c("center", "scale", "YeoJohnson", "nzv"))
-    pp_no_nzv
-    Wdf<- predict(pp_no_nzv, newdata = Wdf)
-    
-    # if(length(nearZeroVar(Wdf))>0){
-    #   Wdf<-Wdf[,-nearZeroVar(Wdf)]
-    # }
     df <- bind_cols(df %>% subset(., select =c("Y","X","id", "weight")), Wdf)
     df <- df[complete.cases(df),]
   }
@@ -856,9 +857,6 @@ ARfun <- function(fmla,data,low_risk_level) {
   # a population attributable risk (PAR) comparing the empirical distribution vs. none exposed: P(Y|A,W) - P(Y|A=0,W)
   # and a population attributable fraction (PAF), which is the PAR / P(Y|A,W)
   #
-  # in this function, the exposure (A) is the variable "bodycontact" an indicator of body immersion swimming
-  # note, that we control for any water contact (because there are some people who may have swallowed water, but not
-  # actually gone swimming.
   #
   # See Muller, C. J. & MacLehose, R. F. Estimating predicted probabilities from logistic regression: 
   #     different methods correspond to different target populations. Int J Epidemiol, 2014, 43, 962-970
@@ -963,12 +961,12 @@ ARfun <- function(fmla,data,low_risk_level) {
 
 
 bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,low_risk_level,dots=TRUE) {
-  # fn    : an Attributable risk function to call, defined above (ARswimex, AR35cfu)
+  # fn    : an Attributable risk function to call
   # fmla  : a model formula for glm, which is passed to fn
   # data  : data.frame that includes all of the variables in the formula, and the population used for estimation
   #         which is passed to fn.
   # ID    : ID for resampling (e.g., household ID required b/c of repeated, potentially correlated obs w/in HH)
-  # strata: stratifying variable (e.g., beach ID)
+  # strata: stratifying variable 
   # iter  : number of bootstrap iterations	
   # dots  : logical. print dots for iterations
   if(length(ID)!=nrow(data) | length(strata)!=nrow(data)) {
