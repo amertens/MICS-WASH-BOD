@@ -17,7 +17,7 @@ table(d$Y)
 #Clean data for primary figure
 d <- d %>% 
   mutate(
-    multinomial = ifelse(Y %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat"),1,0),
+    multinomial = ifelse(X %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat"),1,0),
     Y=case_when(
     Y=="stunt" ~ "Stunting",
     Y=="wast" ~ "Wasting",
@@ -75,7 +75,7 @@ table(d$Y)
 #-------------------------------------------------------------
 # RR's single increase
 #-------------------------------------------------------------
-d %>% filter(adjusted==1, binary==1, analysis=="primary", country=="Pooled") %>% 
+p_prim_pooled <- d %>% filter(adjusted==1, binary==1, analysis=="primary", country=="Pooled") %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X)))) %>%
   ggplot(., aes(y=est, x=X),color="black") +
@@ -89,7 +89,7 @@ d %>% filter(adjusted==1, binary==1, analysis=="primary", country=="Pooled") %>%
   xlab("Outcome") + ylab("Relative Risk")
 
 
-d %>% filter(adjusted==1, binary==1, analysis=="primary") %>% 
+p_prim_forest <- d %>% filter(adjusted==1, binary==1, analysis=="primary") %>% 
   droplevels(.) %>%
   ggplot(., aes(y=est, x=country, color=country)) +
   facet_grid(Y~X) +
@@ -99,7 +99,7 @@ d %>% filter(adjusted==1, binary==1, analysis=="primary") %>%
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk")
+  xlab("Country") + ylab("Relative Risk")
 
 #-------------------------------------------------------------
 # RR's multinomial
@@ -135,11 +135,48 @@ d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", multinomial==1) 
 #-------------------------------------------------------------
 # Z-score differences
 #-------------------------------------------------------------
+p_prim_Zscore_pooled <- d %>% filter(adjusted==1, binary==0, analysis=="primary", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X)))) %>%
+  ggplot(., aes(y=est, x=X),color="black") +
+  facet_grid(~Y) +
+  geom_point() + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Z-score difference")
+
+p_prim_Zscore_pooled
+
+
+p_prim_Zscore_forest <- d %>% filter(adjusted==1, binary==0, analysis=="primary") %>% 
+  droplevels(.) %>%
+  ggplot(., aes(y=est, x=country, color=country)) +
+  facet_grid(Y~X) +
+  geom_point() + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
+  scale_color_manual(values=tableau11[1:4]) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  xlab("Country") + ylab("Z-score difference")
+
+p_prim_Zscore_forest
 
 #-------------------------------------------------------------
 # PAF ranking
 #-------------------------------------------------------------
 
+#Note: why are so many missing?
+
+dPAF %>% filter(W!="unadjusted") %>%
+  ggplot(., aes(y=PAF, x=country, color=country)) +
+  facet_grid(Y~X) +
+  geom_point() + 
+  geom_linerange(aes(ymin=PAF.lb, ymax=PAF.ub )) +
+  scale_color_manual(values=tableau10[1:3]) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Population Attributable Fraction")
 
 
 
@@ -152,21 +189,73 @@ d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", multinomial==1) 
 #-------------------------------------------------------------
 # subgroup figure
 #-------------------------------------------------------------
+#Note: fix so the binary outcomes run
 
+# p_prim_pooled <- d %>% filter(adjusted==1, binary==1, analysis=="rural", country=="Pooled") %>% 
+#   droplevels(.) %>%
+#   mutate(X=factor(X, levels = rev(levels(X)))) %>%
+#   ggplot(., aes(y=est, x=X),color="black") +
+#   facet_grid(~Y) +
+#   geom_point() + 
+#   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
+#   #scale_color_manual(values=tableau10) +
+#   geom_hline(yintercept = 1) +
+#   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+#   coord_flip() +
+#   xlab("Outcome") + ylab("Relative Risk")
 
 #-------------------------------------------------------------
 #-compare unadjusted to adjusted estimates
 #-------------------------------------------------------------
 
 #RR
+p_unadj_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         adjusted=factor(adjusted, levels=c("0","1"), labels = c("Unadjusted","Adjusted"))) %>%
+  ggplot(., aes(y=est, x=X, group=adjusted, color=adjusted)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 #continuous
+p_unadj_comp_diff <- d %>% filter(binary==0, analysis=="primary", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         adjusted=factor(adjusted, levels=c("0","1"), labels = c("Unadjusted","Adjusted"))) %>%
+  ggplot(., aes(y=est, x=X, group=adjusted, color=adjusted)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Z-score difference") + theme(legend.title = element_blank(), legend.position = "right")
 
 #-------------------------------------------------------------
 #-compare TMLE to primary estimates
 #-------------------------------------------------------------
 
 #RR
+p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         adjusted=factor(adjusted, levels=c("0","1"), labels = c("Unadjusted","Adjusted"))) %>%
+  ggplot(., aes(y=est, x=X, group=adjusted, color=adjusted)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+
 
 #-------------------------------------------------------------
 #-compare 1-step to primary pooled estimates
