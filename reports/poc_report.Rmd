@@ -1,20 +1,155 @@
 ---
-title: "R Notebook"
-output: html_notebook
-editor_options: 
-  chunk_output_type: inline
+title: "POC"
+author: "Andrew Mertens"
+date: "Sept 28, 2020"
+output: 
+  word_document:
+    reference_docx: MICS_WASH_BOD_analysis_plan.docx
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+<!-- output: html_notebook -->
+<!-- editor_options:  -->
+<!--   chunk_output_type: inline -->
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
 
-```{r}
-plot(cars)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn = -1) 
+library(janitor)
+library(knitr)
+library(here)
+op = function(x, d=2) sprintf(paste0("%1.",d,"f"), x) 
+ library(pander)
+panderOptions('digits', 2)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('graph.fontsize', 8)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+```{r, echo=F, warning=F, message=F}
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+#Make sure to subset HH measurements to the unique household level... right now they are duplicated based on merges with child ID
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+source(here("0-config.R"))
+
+dfull <- readRDS(here("data/compiled_clean_POC_survey.rds"))
+
+#child health data
+ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea))
+
+res <- ch %>% group_by(country) %>%
+  summarise(N_haz=sum(!is.na(haz)), Mean_HAZ=mean(haz, na.rm=T), Prev_Stunting=mean(haz < (-2), na.rm=T)*100, Prev_Sev_Stunting=mean(haz < (-3), na.rm=T)*100,
+            N_whz=sum(!is.na(whz)), Mean_WHZ=mean(whz, na.rm=T), Prev_Wasting=mean(whz < (-2), na.rm=T)*100, Prev_Sev_Wasting=mean(whz < (-3), na.rm=T)*100)
+            
+  
+pander(res, digits=2)
+
+res <-ch %>% group_by(country) %>%
+  summarise(N_diarrhea_meas=sum(!is.na(diarrhea)), N_diarrhea=sum(diarrhea, na.rm=T),  Prev_diarrhea=mean(diarrhea, na.rm=T)*100,
+            N_ARI_meas=sum(!is.na(ari)), N_ARI=sum(ari, na.rm=T),  Prev_ARI=mean(ari, na.rm=T)*100)
+
+pander(res, digits=2)
+
+
+#Make a N children and child age/ num kids per HH table
+res <-ch %>% group_by(country) %>%
+  summarise(N=n(), child_age=mean(aged, na.rm=T)/365, min_child_age=min(aged, na.rm=T)/365, max_child_age=max(aged, na.rm=T)/365)
+            
+pander(res, digits=2)
+
+
+#HH data
+res <-d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
+  distinct(country, clust_num, HH_num, .keep_all = T)
+
+pander(res, digits=2)
+
+
+res <-d %>% group_by(country) %>%
+  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp)-1, na.rm=T), N_imp_WASH=sum(as.numeric(WASH_noEC)-1, na.rm=T))
+    
+pander(res, digits=2)
+
+
+res <-d %>% group_by(country) %>%
+  summarise(N_households=n(), N_EC_H=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_S=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_noEC=sum(as.numeric(WASH)-1, na.rm=T))
+
+pander(res, digits=2)
+
+res <-d %>% tabyl(country, wat_imp_cat)
+pander(res, digits=2)
+
+res <-d %>% tabyl(country, san_imp_cat)
+pander(res, digits=2)
+
+res <-d %>% tabyl(country, hyg_imp_cat)
+pander(res, digits=2)
+
+res <-d %>% tabyl(country, EC_risk_H)
+pander(res, digits=2)
+
+res <-d %>% tabyl(country, EC_risk_S)
+pander(res, digits=2)
+
+res <-d %>% group_by(country) %>%
+  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp_cat)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp_cat)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp_cat)-1, na.rm=T))
+
+pander(res, digits=2)
+
+         
+            
+```
+
+
+
+
+
+
+
+
+
+
+## plots
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 4}
+load(here("figures/figure_objects.Rdata"))
+
+p_prim_pooled
+
+```
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 8}
+p_prim_forest
+
+```
+
+
+
+
+<!-- p_multi_pooled  -->
+<!-- p_multi_forest -->
+<!-- p_prim_Zscore_pooled -->
+<!-- p_prim_Zscore_forest -->
+<!--      pPAF -->
+<!--      p_unadj_comp_RR -->
+<!--      p_unadj_comp_diff -->
+<!--      p_tmle_comp_RR -->
+<!--      p_rural_pooled -->
+<!--      p_1step_comp_RR -->
+<!--      p_CC_comp_RR  -->
+<!--      p_FE_comp_RR -->
+
+
+
+
+

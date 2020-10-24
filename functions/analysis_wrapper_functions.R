@@ -227,7 +227,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
 
 
 
-run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
+run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
   
   adj <- ifelse(is.null(Wvars),"unadj","adj")
   
@@ -242,6 +242,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="EC_H",
                    W=Wvars,
+                   glm=glm,
                    weight = "ecpopweight_H",
                    clustid= "clust_num",
                    family=family))
@@ -252,6 +253,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="EC_S",
                    W=Wvars,
+                   glm=glm,
                    weight = "ecpopweight_S",
                    clustid= "clust_num",
                    family=family))
@@ -262,6 +264,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="san_imp",
                    W=Wvars,
+                   glm=glm,
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
@@ -272,6 +275,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="wat_imp",
                    W=Wvars,
+                   glm=glm,
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
@@ -282,6 +286,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="hyg_imp",
                    W=Wvars,
+                   glm=glm,
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
@@ -292,6 +297,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="safely_manH20",
                    W=Wvars,
+                   glm=glm,
                    weight = "ecpopweight_H",
                    clustid= "clust_num",
                    family=family))
@@ -302,6 +308,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="WASH",
                    W=Wvars,
+                   glm=glm,
                    weight = "ecpopweight_H",
                    clustid= "clust_num",
                    family=family))
@@ -312,6 +319,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
                    Y =i,
                    X="WASH_noEC",
                    W=Wvars,
+                   glm=glm,
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))

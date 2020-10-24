@@ -187,6 +187,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
         res$PAF <- paflist$bootest[2]
         res$PAF.lb <- paflist$boot95lb[2]
         res$PAF.ub <- paflist$boot95ub[2]
+        res$low_risk_level=low_risk_level
       }
       
       res$n<-sum(df$Y, na.rm=T)
@@ -233,7 +234,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
 
 
 
-mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num", family="binomial", return_model=FALSE){
+mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num", family="binomial", glm=F, return_model=FALSE){
   
   df <- data.frame(
     Y=subset(d, select=get(Y)),
@@ -332,9 +333,11 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   gam_lrnr <- Lrnr_gam$new()
   
   
-  #SL_list=list(lrnr_mean, lrnr_glm, gam_lrnr, lrnr_glmnet, gbm_lrnr)
-  #Smaller list for speed
-  SL_list=list(lrnr_glm)
+  if(glm){
+    SL_list=list(lrnr_glm)
+  }else{
+    SL_list=list(lrnr_mean, lrnr_glm, gam_lrnr, lrnr_glmnet, gbm_lrnr)
+  }
   
   # define metalearners appropriate to data types
   ls_metalearner <- make_learner(Lrnr_solnp)
@@ -364,6 +367,11 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
     
   }
   if(family=="binomial"){
+    
+    #check sparsity
+    sparseN<-min(table(df$X, df$Y))
+    if(sparseN>10){
+      
     tmle_fit <- tmle3(RR_spec, df_processed, node_list, learner_list)$summary
     
   
@@ -376,6 +384,19 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
                       ci.ub = tmle_fit$upper_transformed[3])
     res$n<-sum(df_processed$Y, na.rm=T)
     res$N<-nrow(df_processed)   
+    
+    }else{
+      res <- data.frame(Y=varnames[1],
+                        X=varnames[2],
+                        RR=NA,
+                        est=NA,
+                        se=NA,
+                        ci.lb=NA,
+                        ci.ub=NA)
+
+      res$n<-sum(df_processed$Y, na.rm=T)
+      res$N<-nrow(df_processed)
+    }
     
   }  
   

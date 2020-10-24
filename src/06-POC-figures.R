@@ -2,7 +2,7 @@
 source("0-config.R")
 
 d <- readRDS(here("results/pooled_POC_results.rds"))
-dPAF <- readRDS(here("results/paf_results.rds"))
+dPAF <- readRDS(here("results/paf_sig_results.rds"))
 
 
 
@@ -114,6 +114,8 @@ p_prim_forest <- d %>% filter(adjusted==1, binary==1, analysis=="primary") %>%
   coord_flip() +
   xlab("Country") + ylab("Relative Risk")
 
+
+
 #-------------------------------------------------------------
 # RR's multinomial
 #-------------------------------------------------------------
@@ -121,7 +123,7 @@ p_prim_forest <- d %>% filter(adjusted==1, binary==1, analysis=="primary") %>%
 #Note: make the facet labels on the left sife and add the reference to the facet labels
 #Make sure changes to put low-risk level as reference
 
-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled", multinomial==1) %>% 
+p_multi_pooled <-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled", multinomial==1) %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X)))) %>%
   arrange(X) %>%
@@ -146,7 +148,7 @@ d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled
         title = element_text(margin=margin(0,0,-10,0)))
 
 
-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi",  multinomial==1) %>% 
+p_multi_forest <-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi",  multinomial==1) %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X)))) %>%
   arrange(X) %>%
@@ -187,7 +189,7 @@ p_prim_Zscore_pooled <- d %>% filter(adjusted==1, binary==0, analysis=="primary"
   coord_flip() +
   xlab("Outcome") + ylab("Z-score difference")
 
-p_prim_Zscore_pooled
+
 
 
 p_prim_Zscore_forest <- d %>% filter(adjusted==1, binary==0, analysis=="primary") %>% 
@@ -201,7 +203,7 @@ p_prim_Zscore_forest <- d %>% filter(adjusted==1, binary==0, analysis=="primary"
   coord_flip() +
   xlab("Country") + ylab("Z-score difference")
 
-p_prim_Zscore_forest
+
 
 #-------------------------------------------------------------
 # PAF ranking
@@ -209,7 +211,7 @@ p_prim_Zscore_forest
 
 #Note: why are so many missing?
 
-dPAF %>% filter(W!="unadjusted") %>%
+pPAF <- dPAF %>% filter(W!="unadjusted") %>%
   ggplot(., aes(y=PAF, x=country, color=country)) +
   facet_grid(Y~X) +
   geom_point() + 
@@ -232,18 +234,21 @@ dPAF %>% filter(W!="unadjusted") %>%
 #-------------------------------------------------------------
 #Note: fix so the binary outcomes run
 
-# p_prim_pooled <- d %>% filter(adjusted==1, binary==1, analysis=="rural", country=="Pooled") %>% 
-#   droplevels(.) %>%
-#   mutate(X=factor(X, levels = rev(levels(X)))) %>%
-#   ggplot(., aes(y=est, x=X),color="black") +
-#   facet_grid(~Y) +
-#   geom_point() + 
-#   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-#   #scale_color_manual(values=tableau10) +
-#   geom_hline(yintercept = 1) +
-#   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-#   coord_flip() +
-#   xlab("Outcome") + ylab("Relative Risk")
+p_rural_pooled <- d %>% filter(adjusted==1, binary==1, analysis=="rural", country=="Pooled") %>%
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         subgroup =factor(subgroup , levels=c("Rural","Urban"))) %>% 
+  ggplot(., aes(y=est, x=X, group=subgroup , color=subgroup )) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  #scale_color_manual(values=tableau10) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk")  +
+  theme(legend.title = element_blank(), legend.position = "right")
 
 #-------------------------------------------------------------
 #-compare unadjusted to adjusted estimates
@@ -262,7 +267,7 @@ p_unadj_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 #continuous
 p_unadj_comp_diff <- d %>% filter(binary==0, analysis=="primary", country=="Pooled") %>% 
@@ -276,14 +281,14 @@ p_unadj_comp_diff <- d %>% filter(binary==0, analysis=="primary", country=="Pool
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 0) +
   coord_flip() +
-  xlab("Outcome") + ylab("Z-score difference") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Z-score difference") + theme(legend.title = element_blank(), legend.position = "right")
 
 #-------------------------------------------------------------
 #-compare TMLE to primary estimates
 #-------------------------------------------------------------
 
 #RR
-p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="tmle", country=="Pooled") %>% 
+p_tmle_comp_RR <- d %>% filter(binary==1, adjusted==1, analysis=="primary"|analysis=="tmle", country=="Pooled") %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X))), 
          analysis=factor(analysis, levels=c("primary","tmle"), labels = c("GLM","TMLE"))) %>%
@@ -295,7 +300,24 @@ p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="tmle", 
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+
+
+#-------------------------------------------------------------
+#-compare TMLE forest plots
+#-------------------------------------------------------------
+
+p_tmle_forest <- d %>% filter(adjusted==1, binary==1, analysis=="tmle") %>% 
+  droplevels(.) %>%
+  ggplot(., aes(y=est, x=country, color=country)) +
+  facet_grid(Y~X) +
+  geom_point() + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
+  scale_color_manual(values=tableau11[1:4]) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("Country") + ylab("Relative Risk")
 
 
 #-------------------------------------------------------------
@@ -315,7 +337,7 @@ p_1step_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="1step"
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 
@@ -334,13 +356,13 @@ p_CC_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="CC", coun
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 #-------------------------------------------------------------
 #-FE versus RE
 #-------------------------------------------------------------
-p_FE_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="FE", country=="Pooled") %>% 
+p_FE_comp_RR <- d %>% filter(binary==1, adjusted==1, multinomial==0, analysis=="primary"|analysis=="FE", country=="Pooled") %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X))), 
          analysis=factor(analysis, levels=c("primary","FE"), labels = c("Random-effects","Fixed-effects"))) %>%
@@ -352,7 +374,7 @@ p_FE_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="FE", coun
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 #-------------------------------------------------------------
@@ -369,9 +391,19 @@ p_FE_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="FE", coun
 
 
 
-save(p_1step_comp_RR, p_CC_comp_RR, p_FE_comp_RR, 
+save(p_prim_pooled, p_prim_forest,
+     p_multi_pooled, p_multi_forest,
+     p_prim_Zscore_pooled, p_prim_Zscore_forest,
+     pPAF,
+     p_unadj_comp_RR, p_unadj_comp_diff,
+     p_tmle_comp_RR, p_rural_pooled,
+     p_1step_comp_RR, p_CC_comp_RR, p_FE_comp_RR, 
      file=here("figures/figure_objects.Rdata"))
 
 
+
+
+
+ 
 
 
