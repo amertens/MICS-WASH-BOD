@@ -290,19 +290,24 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   #Set up TMLE
   set.seed(12345)
   #fit model
-  node_list <- list(
-    W=Wscreen,
-    id="id",
-    weight="weight",
-    A="X",
-    Y="Y"
-  )
+    node_list <- list(
+      W=Wscreen,
+      id="id",
+      weight="weight",
+      A="X",
+      Y="Y"
+    )
+  
+  
   processed <- process_missing(data=df, node_list,  max_p_missing = 0.5)
   df_processed <- processed$data
   df_processed <- droplevels(df_processed)
   node_list <- processed$node_list
   
-  df_processed$X <- factor(df_processed$X, levels=c("0","1"))
+  if(identical(node_list$W,character(0))){
+    node_list$W <- NULL
+  }
+  
   ate_spec <- tmle_ATE(
     treatment_level = levels(df_processed$X)[2],
     control_level = levels(df_processed$X)[1]
@@ -869,6 +874,8 @@ ARfun <- function(fmla,data,low_risk_level) {
   # data : data.frame that includes all of the variables in the formula, and the population used for estimation
   #         note: data must include "bodycontact" and all variables specified in the formula (fmla)
   
+  data$X <- ifelse(data$X==low_risk_level, 1, 0)
+  
   # --------------------------------------
   # Fit log-linear model used to estimate
   # counterfactuals.
@@ -915,13 +922,13 @@ ARfun <- function(fmla,data,low_risk_level) {
   # PAR: P(Y|A,  W) - P(Y|A=1,W)
   # PAF: 100% * [P(Y|A,  W) - P(Y|A=1,W)] / P(Y|A,  W)
   # --------------------------------------
-  if(low_risk_level==1){
+  #if(low_risk_level==1){
     thetaPAR <- mean(pY-pY1)
     thetaPAF <- 100*( thetaPAR/mean(pY) )    
-  }else{
-    thetaPAR <- mean(pY-pY0)
-    thetaPAF <- 100*( thetaPAR/mean(pY) )
-  }
+  # }else{
+  #   thetaPAR <- mean(pY-pY0)
+  #   thetaPAF <- 100*( thetaPAR/mean(pY) )
+  # }
 
   
   # --------------------------------------

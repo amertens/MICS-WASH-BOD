@@ -63,7 +63,7 @@ table(d$HW7A)
 table(d$HW7B)
 table(d$HW7C)
 
-d$hyg_imp <- ifelse(d$HW2==1 & (d$HW7A=="A"|d$HW7B=="B"), 1, 0)
+d$hyg_imp <- factor(ifelse(d$HW2==1 & (d$HW7A=="A"|d$HW7B=="B"), "Improved","Unimproved"), levels=c("Improved","Unimproved"))
 d$hyg_imp[(d$HW2==9 | d$HW1>4)] <- NA
 table(d$hyg_imp)
 prop.table(table(d$hyg_imp))
@@ -84,11 +84,11 @@ table(d$hyg_imp_cat)
 
 #Recode improved sanitation and water
 table(d$san_imp)
-d$san_imp<-as.numeric(factor(d$san_imp_lab, levels=c("Unimproved","Improved")))-1
+d$san_imp<-factor(d$san_imp_lab, levels=c("Improved","Unimproved"))
 table(d$san_imp)
 
 table(d$wat_imp)
-d$wat_imp<-as.numeric(factor(d$wat_imp_lab, levels=c("Unimproved","Improved")))-1
+d$wat_imp<-factor(d$wat_imp_lab, levels=c("Improved","Unimproved"))
 table(d$wat_imp)
 
 
@@ -143,31 +143,31 @@ table(d$wat_imp_cat)
 
 
 #code any contamination
-d$EC_S <- ifelse(d$EC_risk_S==1, 1, 0)
+d$EC_S <- factor(ifelse(d$EC_risk_S==1, "Uncontaminated", "Contaminated"), levels=c("Uncontaminated", "Contaminated"))
 d$EC_S[is.na(d$EC_risk_S)] <- NA
-d$EC_H <- ifelse(d$EC_risk_H==1, 1, 0)
+d$EC_H <- factor(ifelse(d$EC_risk_H==1, "Uncontaminated", "Contaminated"), levels=c("Uncontaminated", "Contaminated"))
 d$EC_H[is.na(d$EC_risk_H)] <- NA
 
 #Code safely managed
-d$safely_manH20 <- ifelse(d$EC_H==1 & d$wat_imp==1, 1, 0)
+d$safely_manH20 <- factor(ifelse(d$EC_H== "Uncontaminated" & d$wat_imp== "Improved", "Safe", "Unsafe"), levels=c("Safe", "Unsafe"))
 d$safely_manH20[is.na(d$EC_H)|is.na(d$wat_imp)] <- NA
 table(d$safely_manH20)
 table(d$country, d$safely_manH20)
 
 
 #Code most-improved WASH
-d$WASH <- ifelse(d$san_imp==1 & d$wat_imp==1 & d$hyg_imp==1 & d$EC_H==1, 1, 0)
+d$WASH <- factor(ifelse(d$san_imp=="Improved" & d$wat_imp=="Improved" & d$hyg_imp=="Improved" & d$EC_H=="Uncontaminated","Improved", "Unmproved"), levels=c("Improved", "Unmproved"))
 d$WASH[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)|is.na(d$EC_risk_H)] <- NA
 
 #Code most-improved WASH (no contamination measures)
-d$WASH_noEC <- ifelse(d$san_imp==1 & d$wat_imp==1 & d$hyg_imp==1, 1, 0)
+d$WASH_noEC <-  factor(ifelse(d$san_imp=="Improved" & d$wat_imp=="Improved" & d$hyg_imp=="Improved", "Improved", "Unmproved"), levels=c("Improved", "Unmproved"))
 d$WASH_noEC[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)] <- NA
 
 table(d$WASH)
 table(d$WASH_noEC)
 
-d %>% group_by(country) %>%
-  summarise(N_households=n(), N_imp_wat=sum(wat_imp, na.rm=T), N_imp_san=sum(san_imp, na.rm=T),  N_imp_hygeine=sum(hyg_imp, na.rm=T), N_imp_WASH=sum(WASH_noEC, na.rm=T))
+# d %>% group_by(country) %>%
+#   summarise(N_households=n(), N_imp_wat=sum(wat_imp, na.rm=T), N_imp_san=sum(san_imp, na.rm=T),  N_imp_hygeine=sum(hyg_imp, na.rm=T), N_imp_WASH=sum(WASH_noEC, na.rm=T))
 
 
 #Rename outcome variables

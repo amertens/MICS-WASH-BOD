@@ -8,7 +8,7 @@ d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(a
 d_RR_adj <- readRDS(here("results/adjusted_bin.rds")) %>% mutate(analysis="primary")
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi")
 d_cont_adj <- readRDS(here("results/adjusted_cont.rds")) %>% mutate(analysis="primary")
-d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle")
+d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle") %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural")
 d_1step_adj <- readRDS(here("results/adjusted_1step_sens.rds")) %>% mutate(analysis="1step")
 d_CC_adj <- readRDS(here("results/adjusted_CC_sens.rds")) %>% mutate(analysis="CC")
@@ -19,7 +19,7 @@ d_CC_adj <- readRDS(here("results/adjusted_CC_sens.rds")) %>% mutate(analysis="C
 d <- bind_rows(d_unadj, d_RR_multi_unadj,d_RR_adj, d_RR_multi_adj, d_cont_adj, d_tmle_adj, d_rural_adj, d_1step_adj, d_CC_adj)
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
 d$ref[is.na(d$ref)] <- "0"
-d$contrast [is.na(d$contrast )] <- "1"
+d$contrast[is.na(d$contrast )] <- "1"
 
 
 #TEMP! Drop sparse levels
@@ -65,16 +65,13 @@ RMAest_bin<-RMAest_bin %>%
   subset(., select =c(analysis, Y, X, ref, contrast, est,  ci.lb, ci.ub, adjusted)) %>%
   mutate(country="pooled", binary=1)
 
-df <- bind_rows(ind_df, RMAest_cont, RMAest_bin)
+df_FE <- bind_rows(RMAest_cont_FE, RMAest_bin_FE) %>% mutate(analysis="FE")
+df <- bind_rows(ind_df, RMAest_cont, RMAest_bin, df_FE)
 
 head(df)
 
 
 saveRDS(df, here("results/pooled_POC_results.rds"))
-
-
-df <- bind_rows(ind_df, RMAest_cont_FE, RMAest_bin_FE)
-saveRDS(df, here("results/pooled_POC_results_FE.rds"))
 
 
 #calc pooled PAF - to add if needed... just report individual PAF?

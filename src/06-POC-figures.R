@@ -2,8 +2,6 @@
 source("0-config.R")
 
 d <- readRDS(here("results/pooled_POC_results.rds"))
-dtmle <- readRDS(here("results/pooled_POC_tmle_results.rds"))
-dFE <- readRDS(here("results/pooled_POC_results_FE.rds"))
 dPAF <- readRDS(here("results/paf_results.rds"))
 
 
@@ -11,8 +9,10 @@ dPAF <- readRDS(here("results/paf_results.rds"))
 #drop sparse levels
 #d <- d %>% filter(n >50 | country=="pooled") %>% filter(Y!="waz")
 
+table(d$analysis)
 table(d$X)
 table(d$Y)
+table(d$ref, d$contrast)
 
 #Clean data for primary figure
 d <- d %>% 
@@ -59,7 +59,20 @@ d <- d %>%
                           "Source water\ncontamination level", 
                           "Sanitation\ncategory", 
                           "Water supply\ncategory", 
-                          "Hygiene\ncategory")))
+                          "Hygiene\ncategory")),
+   contrast = case_when(
+     contrast=="1" ~ "Unimproved",
+     contrast=="2" ~ "Moderate risk",
+     contrast=="3" ~ "High risk", 
+     contrast=="4" ~ "Very high risk", 
+     contrast==contrast ~ contrast 
+   ),
+   contrast=factor(contrast, levels=c( "Very high risk", "High risk", "Moderate risk",  "Basic", "Limited",  "No facility", "None",  "Unimproved", "Surface water")),
+   ref = case_when(
+     ref=="0" ~ "Improved",
+     ref=="1" ~ "Low risk",
+     ref==ref ~ ref 
+   ))
 
 table(d$X)
 table(d$Y)
@@ -104,32 +117,60 @@ p_prim_forest <- d %>% filter(adjusted==1, binary==1, analysis=="primary") %>%
 #-------------------------------------------------------------
 # RR's multinomial
 #-------------------------------------------------------------
+
+#Note: make the facet labels on the left sife and add the reference to the facet labels
+#Make sure changes to put low-risk level as reference
+
 d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled", multinomial==1) %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X)))) %>%
-  ggplot(., aes(y=est, x=X),color="black") +
-  facet_grid(~Y) +
+  arrange(X) %>%
+  mutate(Xref=paste0(X,"\n(Ref.: ",ref,")"),
+         Xref=factor(Xref, levels = unique(Xref))) %>%
+  ggplot(., aes(y=est, x=contrast),color="black") +
+  facet_grid(Xref~Y, scale="free_y", switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   #scale_color_manual(values=tableau10) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk")
+  xlab("") + ylab("Relative Risk")+
+  theme(strip.background = element_blank(),
+        axis.text.y = element_text(size=8, hjust = 1),
+        strip.text.x = element_text(size=8, face = "bold"),
+        strip.text.y = element_text(size=8, angle = 180, face = "bold"),
+        strip.placement = "outside",
+        axis.text.x = element_text(size=10, vjust = 0.5),
+        legend.box.background = element_rect(colour = "black"), 
+        title = element_text(margin=margin(0,0,-10,0)))
 
 
-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", multinomial==1) %>% 
+d %>% filter(adjusted==1, binary==1, analysis=="primary-multi",  multinomial==1) %>% 
   droplevels(.) %>%
-  ggplot(., aes(y=est, x=country, color=country)) +
-  facet_grid(Y~X) +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  scale_color_manual(values=tableau11[1:4]) +
+  mutate(X=factor(X, levels = rev(levels(X)))) %>%
+  arrange(X) %>%
+  mutate(Xref=paste0(X,"\n(Ref.: ",ref,")"),
+         Xref=factor(Xref, levels = unique(Xref))) %>%
+  ggplot(., aes(y=est, x=contrast, group=country, color=country)) +
+  facet_grid(Xref~Y, scale="free_y", switch = "y") +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub ), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau11) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk")
-
+  xlab("") + ylab("Relative Risk") +
+  theme(strip.background = element_blank(),
+        legend.position="right",
+        axis.text.y = element_text(size=8, hjust = 1),
+        strip.text.x = element_text(size=8, face = "bold"),
+        strip.text.y = element_text(size=8, angle = 180, face = "bold"),
+        strip.placement = "outside",
+        axis.text.x = element_text(size=10, vjust = 0.5),
+        panel.spacing = unit(0, "lines"),
+        legend.box.background = element_rect(colour = "black"), 
+        title = element_text(margin=margin(0,0,-10,0)))
 
 
 #-------------------------------------------------------------
@@ -242,11 +283,11 @@ p_unadj_comp_diff <- d %>% filter(binary==0, analysis=="primary", country=="Pool
 #-------------------------------------------------------------
 
 #RR
-p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled") %>% 
+p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="tmle", country=="Pooled") %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X))), 
-         adjusted=factor(adjusted, levels=c("0","1"), labels = c("Unadjusted","Adjusted"))) %>%
-  ggplot(., aes(y=est, x=X, group=adjusted, color=adjusted)) +
+         analysis=factor(analysis, levels=c("primary","tmle"), labels = c("GLM","TMLE"))) %>%
+  ggplot(., aes(y=est, x=X, group=analysis, color=analysis)) +
   facet_grid(~Y) +
   geom_point(position = position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
@@ -262,15 +303,56 @@ p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled"
 #-------------------------------------------------------------
 
 #RR
+p_1step_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="1step", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         analysis=factor(analysis, levels=c("primary","1step"), labels = c("2-step","1-step"))) %>%
+  ggplot(., aes(y=est, x=X, group=analysis, color=analysis)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+
+
 
 #-------------------------------------------------------------
 #-compare CC to primary pooled estimates
 #-------------------------------------------------------------
+p_CC_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="CC", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         analysis=factor(analysis, levels=c("primary","CC"), labels = c("Imputation","Complete Case"))) %>%
+  ggplot(., aes(y=est, x=X, group=analysis, color=analysis)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 #-------------------------------------------------------------
 #-FE versus RE
 #-------------------------------------------------------------
+p_FE_comp_RR <- d %>% filter(binary==1, analysis=="primary"|analysis=="FE", country=="Pooled") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         analysis=factor(analysis, levels=c("primary","FE"), labels = c("Random-effects","Fixed-effects"))) %>%
+  ggplot(., aes(y=est, x=X, group=analysis, color=analysis)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.5)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.5)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("Outcome") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 #-------------------------------------------------------------
@@ -281,63 +363,14 @@ p_tmle_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled"
 
 
 
+#-------------------------------------------------------------
+# save figures
+#-------------------------------------------------------------
 
 
 
-
-head(d)
-
-d %>% filter(country=="Bangladesh", adjusted==0, binary==1) %>% 
-  ggplot(., aes(y=est, x=X)) +
-    facet_wrap(~Y) +
-    geom_point() + 
-    geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-    geom_hline(yintercept = 1) +
-    scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-    coord_flip() 
-
-
-
-d %>% filter(country=="Bangladesh", adjusted==1, binary==1) %>% 
-  ggplot(., aes(y=est, x=X)) +
-  facet_wrap(~Y) +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk")
-
-
-
-
-dtmle %>% filter(country=="Bangladesh", adjusted==1, binary==1) %>% 
-  ggplot(., aes(y=est, x=X)) +
-  facet_wrap(~Y) +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk")
-
-
-
-dtmle %>% filter(country=="pooled", adjusted==1, binary==1) %>% 
-  filter(!(Y=="ari" & X=="WASH")) %>%
-  droplevels(.) %>%
-  ggplot(., aes(y=est, x=X)) +
-  facet_wrap(~Y) +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("Outcome") + ylab("Relative Risk")
-
-
-
-
+save(p_1step_comp_RR, p_CC_comp_RR, p_FE_comp_RR, 
+     file=here("figures/figure_objects.Rdata"))
 
 
 

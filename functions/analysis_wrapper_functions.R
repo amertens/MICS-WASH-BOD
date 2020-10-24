@@ -25,7 +25,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=0))
+                       family=family, calc_PAF=PAF, low_risk_level="Uncontaminated"))
   saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
   
   res2 <- d %>% group_by(country) %>%
@@ -35,7 +35,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "ecpopweight_S",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=0))
+                       family=family, calc_PAF=PAF, low_risk_level="Uncontaminated"))
   saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
   
   res3 <- d %>% group_by(country) %>%
@@ -45,7 +45,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=1))
+                       family=family, calc_PAF=PAF, low_risk_level="Improved"))
   saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
   
   res4 <- d %>% group_by(country) %>%
@@ -55,7 +55,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=1))
+                       family=family, calc_PAF=PAF, low_risk_level="Improved"))
   saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
   
   res5 <- d %>% group_by(country) %>%
@@ -65,7 +65,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=1))
+                       family=family, calc_PAF=PAF, low_risk_level="Improved"))
   saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
   
   res6 <- d %>% group_by(country) %>%
@@ -75,7 +75,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=1))
+                       family=family, calc_PAF=PAF, low_risk_level="Safe"))
   saveRDS(res6, file=here(paste0("results/individual_estimates/",i,"_safely_manH20_",adj,".rds")))
   
   res7 <- d %>% group_by(country) %>%
@@ -85,7 +85,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=1))
+                       family=family, calc_PAF=PAF, low_risk_level="Improved"))
   saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
   
   res8 <- d %>% group_by(country) %>%
@@ -95,7 +95,7 @@ for(i in outcomes){
                        W=Wvars,
                        weight = "popweight",
                        clustid= "clust_num",
-                       family=family, calc_PAF=PAF, low_risk_level=1))
+                       family=family, calc_PAF=PAF, low_risk_level="Improved"))
   saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
   
 
@@ -124,10 +124,10 @@ mics_multinomial_regression <- function(d, Y, X, W, weight = "ecpopweight_H", cl
   nlevels=length(X_levels)
   
   for(i in 1:(nlevels-1)){
-    df <- d %>% filter(Xvar %in% X_levels[c(i, i+1)])
-    df$Xvar <- ifelse(df$Xvar==X_levels[i],0,1) 
-    ref=X_levels[i]
-    contrast=X_levels[i+1]
+    df <- d %>% filter(Xvar %in% X_levels[c(i, nlevels)])
+    df$Xvar <- ifelse(df$Xvar==X_levels[i],1,0) 
+    ref=X_levels[nlevels]
+    contrast=X_levels[i]
 
     
     res <- df %>% group_by(country) %>%
@@ -227,7 +227,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
 
 
 
-run_mics_tmle <- function(outcomes, family, PAF, Wvars){
+run_mics_tmle <- function(outcomes, family, PAF=NULL, Wvars){
   
   adj <- ifelse(is.null(Wvars),"unadj","adj")
   

@@ -31,10 +31,10 @@ d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(
   distinct(country, clust_num, HH_num, .keep_all = T)
 
 d %>% group_by(country) %>%
-  summarise(N_households=n(), N_imp_wat=sum(wat_imp, na.rm=T), N_imp_san=sum(san_imp, na.rm=T),  N_imp_hygeine=sum(hyg_imp, na.rm=T), N_imp_WASH=sum(WASH_noEC, na.rm=T))
+  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp)-1, na.rm=T), N_imp_WASH=sum(as.numeric(WASH_noEC)-1, na.rm=T))
     
 d %>% group_by(country) %>%
-  summarise(N_households=n(), N_EC_H=sum(EC_H, na.rm=T), N_EC_S=sum(EC_S, na.rm=T), N_safely_manH20=sum(safely_manH20, na.rm=T),  N_imp_WASH_noEC=sum(WASH, na.rm=T))
+  summarise(N_households=n(), N_EC_H=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_S=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_noEC=sum(as.numeric(WASH)-1, na.rm=T))
 
 
 d %>% tabyl(country, wat_imp_cat)
@@ -44,7 +44,7 @@ d %>% tabyl(country, EC_risk_H)
 d %>% tabyl(country, EC_risk_S)
 
 d %>% group_by(country) %>%
-  summarise(N_households=n(), N_imp_wat=sum(wat_imp_cat, na.rm=T), N_imp_san=sum(san_imp_cat, na.rm=T),  N_imp_hygeine=sum(hyg_imp_cat, na.rm=T), N_imp_WASH=sum(WASH_noEC_cat, na.rm=T))
+  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp_cat)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp_cat)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp_cat)-1, na.rm=T))
 
 
             
