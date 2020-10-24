@@ -1,7 +1,7 @@
 
 
 
-# saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
+# #saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
 # 
 # 
 # outcomes=c("stunt", "wast","diarrhea","ari")
@@ -26,7 +26,7 @@ for(i in outcomes){
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Uncontaminated"))
-  saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
+  #saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
   
   res2 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -36,7 +36,7 @@ for(i in outcomes){
                        weight = "ecpopweight_S",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Uncontaminated"))
-  saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
+  #saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
   
   res3 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -46,7 +46,7 @@ for(i in outcomes){
                        weight = "popweight",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Improved"))
-  saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
+  #saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
   
   res4 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -56,7 +56,7 @@ for(i in outcomes){
                        weight = "popweight",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Improved"))
-  saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
+  #saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
   
   res5 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -66,7 +66,7 @@ for(i in outcomes){
                        weight = "popweight",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Improved"))
-  saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
+  #saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
   
   res6 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -76,7 +76,7 @@ for(i in outcomes){
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Safe"))
-  saveRDS(res6, file=here(paste0("results/individual_estimates/",i,"_safely_manH20_",adj,".rds")))
+  #saveRDS(res6, file=here(paste0("results/individual_estimates/",i,"_safely_manH20_",adj,".rds")))
   
   res7 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -86,7 +86,7 @@ for(i in outcomes){
                        weight = "ecpopweight_H",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Improved"))
-  saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+  #saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
   
   res8 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -96,7 +96,7 @@ for(i in outcomes){
                        weight = "popweight",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Improved"))
-  saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+  #saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
   
 
   
@@ -174,7 +174,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
                               weight = "ecpopweight_H",
                               clustid= "clust_num",
                               family=family, calc_PAF=PAF, low_risk_level=0))
-    saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
+    #saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
     
     res2 <- d %>% group_by(country) %>%
       do(mics_multinomial_regression(d=.,
@@ -184,7 +184,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
                               weight = "ecpopweight_S",
                               clustid= "clust_num",
                               family=family, calc_PAF=PAF, low_risk_level=0))
-    saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
+    #saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
     
     res3 <- d %>% group_by(country) %>%
       do(mics_multinomial_regression(d=.,
@@ -194,7 +194,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
                               weight = "popweight",
                               clustid= "clust_num",
                               family=family, calc_PAF=PAF, low_risk_level=1))
-    saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
+    #saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
     
     res4 <- d %>% group_by(country) %>%
       do(mics_multinomial_regression(d=.,
@@ -204,7 +204,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
                               weight = "popweight",
                               clustid= "clust_num",
                               family=family, calc_PAF=PAF, low_risk_level=1))
-    saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
+    #saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
     
     res5 <- d %>% group_by(country) %>%
       do(mics_multinomial_regression(d=.,
@@ -214,7 +214,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
                               weight = "popweight",
                               clustid= "clust_num",
                               family=family, calc_PAF=PAF, low_risk_level=1))
-    saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
+    #saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
     
     
     fullres <- bind_rows(fullres, res1, res2, res3, res4, res5)
@@ -246,7 +246,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "ecpopweight_H",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
+    #saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
     
     res2 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -257,7 +257,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "ecpopweight_S",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
+    #saveRDS(res2, file=here(paste0("results/individual_estimates/",i,"_EC_S_",adj,".rds")))
     
     res3 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -268,7 +268,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
+    #saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
     
     res4 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -279,7 +279,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
+    #saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
     
     res5 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -290,7 +290,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
+    #saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
     
     res6 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -301,7 +301,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "ecpopweight_H",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res6, file=here(paste0("results/individual_estimates/",i,"_safely_manH20_",adj,".rds")))
+    #saveRDS(res6, file=here(paste0("results/individual_estimates/",i,"_safely_manH20_",adj,".rds")))
     
     res7 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -312,7 +312,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "ecpopweight_H",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+    #saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
     
     res8 <- d %>% group_by(country) %>%
       do(mics_tmle(d=.,
@@ -323,7 +323,7 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
                    weight = "popweight",
                    clustid= "clust_num",
                    family=family))
-    saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+    #saveRDS(res7, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
     
     
     
