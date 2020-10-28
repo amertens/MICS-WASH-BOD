@@ -5,18 +5,22 @@ source("0-config.R")
 
 d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="primary", W = "unadjusted")
 d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted")
-d_RR_adj <- readRDS(here("results/adjusted_bin.rds")) %>% mutate(analysis="primary")
+d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary")
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi")
-d_cont_adj <- readRDS(here("results/adjusted_cont.rds")) %>% mutate(analysis="primary")
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle") %>% rename(coef=est)
+d_tmle_glm_adj <- readRDS(here("results/adjusted_tmle_glm_ests.rds")) %>% mutate(analysis="tmle-glm") %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
 d_1step_adj <- readRDS(here("results/adjusted_1step_sens.rds")) %>% mutate(analysis="1step")
 d_CC_adj <- readRDS(here("results/adjusted_CC_sens.rds")) %>% mutate(analysis="CC")
+d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="mortality") %>% 
+  #temp
+  filter(adjusted==0)
 
 
 
 
-d <- bind_rows(d_unadj, d_RR_multi_unadj,d_RR_adj, d_RR_multi_adj, d_cont_adj, d_tmle_adj, d_rural_adj, d_1step_adj, d_CC_adj)
+
+d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_tmle_glm_adj, d_rural_adj, d_1step_adj, d_CC_adj, d_mort)
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
 d$ref[is.na(d$ref)] <- "0"
 d$contrast[is.na(d$contrast )] <- "1"
@@ -30,7 +34,7 @@ d$subgroup[is.na(d$subgroup )] <- "unstratified"
 
 head(d)
 
-d$binary <- ifelse(d$Y %in% c("ari", "diarrhea", "stunt", "wast"), 1, 0)
+d$binary <- ifelse(d$Y %in% c("ari", "diarrhea", "stunt", "wast", "mort"), 1, 0)
 
 dbin <- d %>% filter(binary==1)
 
@@ -84,6 +88,10 @@ head(df)
 
 saveRDS(df, here("results/pooled_POC_results.rds"))
 
+#Get average number of covariates selected
+dfW <- d %>% filter(W!="unadjusted")
+summary(str_count(dfW$W, pattern = ", ") + 1)
+table(str_count(dfW$W, pattern = ", ") + 1)
 
 #calc pooled PAF - to add if needed... just report individual PAF?
 head(d)
@@ -95,5 +103,11 @@ saveRDS(paf, here("results/paf_results.rds"))
 
 #Save just PAF's from significant RR's
 
-paf <- d %>% filter(!is.na(PAF), W!="unadjusted") #, ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
+paf <- d %>% filter(!is.na(PAF), W!="unadjusted", ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
 saveRDS(paf, here("results/paf_sig_results.rds"))
+
+
+#Save just PAF's from RR's > 1
+
+paf <- d %>% filter(!is.na(PAF), W!="unadjusted", RR>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
+saveRDS(paf, here("results/paf_pos_results.rds"))

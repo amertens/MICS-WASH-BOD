@@ -91,7 +91,6 @@ res_adj_cont <- run_MICS_regressions(outcomes = c("haz", "whz"), family="gaussia
 
 
 
-saveRDS(res_adj_cont, here("results/adjusted_cont.rds"))
 
 res_adj <- bind_rows(res_adj_bin, res_adj_cont)
 

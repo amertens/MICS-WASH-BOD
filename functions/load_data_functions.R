@@ -14,13 +14,15 @@ makeVlist <- function(dta) {
 }
 
 
+
+
 load_MICS_dataset <- function(country){
   path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
   bh_path=paste0(country,"/bh.sav")
+  hh_path=paste0(country,"/hh.sav")
   d <- read_dta(data_path(path))
-  # d <- across(d, as_factor)
-  # d %>% mutate(across(., as_factor))
+
   for(i in colnames(d)){
     if(class(d[[i]])[1]=="haven_labelled"){
       #d[[i]] <- as_factor(d[[i]])
@@ -28,7 +30,19 @@ load_MICS_dataset <- function(country){
       colnames(d)[ncol(d)] <- paste0(i,"_lab")
     }
   }
-  #d <- d %>% rename(HH.LN=HH26B)
+
+  hh <- read_sav(data_path(hh_path))
+  summary(hh$WQ26)
+
+  dim(hh)
+  hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
+    filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
+    subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S))
+  dim(hh)
+  head(hh)
+  
+  
+  
   #load and merge child health
   ch <- read_sav(data_path(ch_path))
   ch <- ch %>% rename(clust_num=HH1, HH_num=HH2, 
@@ -50,13 +64,18 @@ load_MICS_dataset <- function(country){
       subset(., select = -c(CAGE))
   }
   try(bh <- read_sav(data_path(bh_path)))
+  
+  bh$mort <- ifelse(bh$BH5==2,1,0)
+  # summary(d$BH9C)
+  # table(d$BH9U, d$BH9N)
+  
   try(bh <- bh  %>% rename(clust_num=HH1, HH_num=HH2, 
                            #HH.LN=LN, 
                            childLN=BH8))
   #subset to relevant BH variables
   try(bh <- bh %>% subset(., select = c(clust_num, HH_num, 
                                         #HH.LN, 
-                                        childLN, brthord))) 
+                                        childLN, brthord, mort))) 
   
   #lab<-makeVlist(d)
   #write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
@@ -73,8 +92,12 @@ load_MICS_dataset <- function(country){
   d2 <- full_join(ch, d, by = c("clust_num","HH_num"))
   dim(d2)
   
+  dim(hh)
+  d3 <- full_join(d2, hh, by = c("clust_num","HH_num"))
+  dim(d3)
+  
   table(is.na(bh$brthord))
-  try(df <- left_join(d2, bh, by = c("clust_num","HH_num","childLN")))
+  try(df <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
   dim(df)
   table(is.na(df$brthord))
   

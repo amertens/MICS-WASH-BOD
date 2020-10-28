@@ -8,6 +8,8 @@ source("0-config.R")
 dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
 d <- dfull 
 
+
+
 #------------------------------------------------------
 # clean identifiers
 #------------------------------------------------------
@@ -17,6 +19,10 @@ d$clust_num <- as.numeric(d$clust_num)
 d$ecpopweight_H <- as.numeric(d$ecpopweight_H)
 d$ecpopweight_S <- as.numeric(d$ecpopweight_S)
 d$popweight <- as.numeric(d$popweight)
+
+d$EC_cfu_H <- as.numeric(d$EC_cfu_H)
+d$EC_cfu_S <- as.numeric(d$EC_cfu_S)
+
 
 #------------------------------------------------------
 # clean outcomes and exposures
@@ -245,7 +251,8 @@ table(d$ari)
 d <- d %>% subset(., select = c(country, 
                                 clust_num,
                                 HH_num, 
-                                HH.LN, childLN,
+                                #HH.LN, 
+                                childLN,
                                 san_imp, 
                                 wat_imp, 
                                 hyg_imp, 
@@ -256,10 +263,12 @@ d <- d %>% subset(., select = c(country,
                                 EC_S, EC_H, 
                                 EC_risk_S, 
                                 EC_risk_H, 
+                                EC_cfu_H, EC_cfu_S,
                                 WASH, 
                                 WASH_noEC,
                                 diarrhea, 
                                 ari,
+                                mort,
                                 fever, 
                                 cough, 
                                 resp_healthcare, 

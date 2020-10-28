@@ -3,8 +3,37 @@
 
 
 source("0-config.R")
+library(table1)
 
 dfull <- readRDS(here("data/compiled_clean_POC_survey.rds"))
+
+
+Wvars <- c("educ",
+           "mage",
+           "aged",
+           "sex",
+           "birthord", 
+           "rural",
+           #"everbf", 
+           "currbf",
+           "nhh",
+           "nchild5",
+           "floor",
+           "cookstove",
+           "chimney",
+           "fan",
+           "fuel",
+           "roof",
+           "wall",
+           "nroom_sleeping")
+
+
+#table1
+df <- dfull %>% subset(., select = c("country", Wvars))
+tab1 <- table1(~. |country, data=df)
+
+library(rvest)
+my_df <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
 
 #child health data
 ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea))
