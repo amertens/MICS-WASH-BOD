@@ -53,3 +53,29 @@ sandwichSE <- function(dat, fm, cluster){
 
 scaleFUN <- function(x) sprintf("%.2f", x)
 
+
+
+#Adjustment covariates
+
+
+Wvars <- c("educ",
+           "mage",
+           "aged",
+           "sex",
+           "birthord", 
+           "rural",
+           "everbf", 
+           "currbf",
+           "nhh",
+           "nchild5",
+           "floor",
+           "cookstove",
+           "chimney",
+           "fuel",
+           "roof",
+           "wall",
+           "own_animals",
+           "HHwealth_quart",
+           "nroom_sleeping")
+
+

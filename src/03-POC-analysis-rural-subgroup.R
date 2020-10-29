@@ -13,18 +13,22 @@ Wvars <- c("educ",
            "aged",
            "sex",
            "birthord", 
-           #"everbf", 
+           #"rural", - drop rural as covariate
+           "everbf", 
            "currbf",
            "nhh",
            "nchild5",
            "floor",
            "cookstove",
            "chimney",
-           "fan",
            "fuel",
            "roof",
            "wall",
+           "own_animals",
+           "HHwealth_quart",
            "nroom_sleeping")
+
+
 
     
 

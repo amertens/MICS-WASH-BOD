@@ -12,31 +12,7 @@ d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
 d <- droplevels(d)
 
 
-Wvars <- c("educ",
-           "mage",
-           "aged",
-           "sex",
-           "birthord", 
-           "rural",
-           #"everbf", 
-           "currbf",
-           "nhh",
-           "nchild5",
-           "floor",
-           "cookstove",
-           "chimney",
-           "fan",
-           "fuel",
-           "roof",
-           "wall",
-           "nroom_sleeping")
 
-                Y ="ari"
-                X="WASH"
-                W=NULL
-                weight = "popweight"
-                clustid = "clust_num"
-                family = "modified poisson"
 
                 
 d$clust_num <- paste0(d$clust_num, "-",d$HH_num)

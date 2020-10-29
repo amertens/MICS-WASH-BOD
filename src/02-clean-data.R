@@ -3,10 +3,15 @@
 # load packages and data
 #------------------------------------------------------
 
+rm(list=ls())
 source("0-config.R")
+library(washb)
+
 
 dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
-d <- dfull 
+
+#TEMP
+d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
 
 
 
@@ -248,6 +253,57 @@ table(d$ari)
 # n.	Cooking stove type: EU1
 
 
+#Calculate household wealth (dropping WASH assets)
+df <- d %>% subset(., select = c(country, clust_num, HH_num, HC7A:HC15)) %>%
+  distinct(country, clust_num, HH_num, .keep_all = TRUE)
+# head(df)
+# 
+# for(i in 4:ncol(df)){
+#   df[which(df[,i]=="9"),i] <- NA
+#   print(table(df[,i]))
+#   if(length(unique(df[,i]==2))){
+#     miss <- which(is.na(df[,i]))
+#     df[,i] <- ifelse(df[,i]==2,0,1)
+#     df[miss,i] <- NA
+#   }
+# }
+# 
+# table(is.na(df$HC15))
+# df$missing <- rowSums(is.na(df))
+# table(df$missing )
+# 
+# df <- df %>% filter(missing < 29) %>% subset(., select = -c(missing))
+# for(i in 4:ncol(df)){
+#   df[,i] <- as.numeric(df[,i])
+#   df[is.na(df[,i]),i] <- median(df[,i], na.rm=T)
+# }
+
+#table(is.na(df))
+
+# res <- df %>% group_by(country) %>%
+#   do(assetPCA(.))
+# ret <-df %>% filter(country=="Bangladesh")
+res1 <- assetPCA(df %>% filter(country=="Bangladesh"))
+res2 <- assetPCA(df %>% filter(country=="Zimbabwe"))
+res3 <- assetPCA(df %>% filter(country=="PakistanPunjab"))
+
+res <- bind_rows(res1, res2, res3)
+
+dim(d)
+dim(res)
+
+d <- left_join(d, res, by = c("country","clust_num","HH_num"))
+dim(d)
+table(is.na(d$HHwealth_quart))
+
+d$HHwealth_quart <-as.character(d$HHwealth_quart)
+d$HHwealth_quart[is.na(d$HHwealth_quart)] <- "missing"
+table(d$HHwealth_quart)
+d$HHwealth_quart <-factor(d$HHwealth_quart, levels=c("WealthQ1", "WealthQ2", "WealthQ3", "WealthQ4", "missing"))
+
+
+
+#Clean other covariates
 d <- d %>% subset(., select = c(country, 
                                 clust_num,
                                 HH_num, 
@@ -308,12 +364,14 @@ d <- d %>% subset(., select = c(country,
                                 HC4_lab, #main material of floor
                                 EU1_lab, #type of cookstove used
                                 EU2_lab, #cookstove have chimney
-                                EU3_lab, #cookstove have a fan
+                                # EU3_lab, #cookstove have a fan - too sparse
                                 EU4_lab, #type of energy source of cookstove
-                                #animals, 
+                                HC17, #any animals, 
                                 HC5_lab, #roof material
                                 HC6_lab, #wall material
-                                HC3 #number of rooms used for sleeping
+                                HC3, #number of rooms used for sleeping
+                                HHwealth,
+                                HHwealth_quart
     )) %>% 
   rename(
     educ=helevel_lab, #education level
@@ -329,9 +387,9 @@ d <- d %>% subset(., select = c(country,
     floor=HC4_lab, #main material of floor
     cookstove=EU1_lab, #type of cookstove used
     chimney=EU2_lab, #cookstove have chimney
-    fan=EU3_lab, #cookstove have a fan
+    # fan=EU3_lab, #cookstove have a fan
     fuel=EU4_lab, #type of energy source of cookstove
-    #animals, 
+    own_animals=HC17, #animals, 
     roof=HC5_lab, #roof material
     wall=HC6_lab, #wall material
     nroom_sleeping=HC3 #number of rooms used for sleeping
@@ -341,13 +399,16 @@ d <- d %>% subset(., select = c(country,
     mage = as.numeric(mage),
     aged = as.numeric(aged),
     sex = factor(sex),
-    educ = ifelse(educ%in% c("Manquant/NSP","Missing/DK","DK/Missing","DK / Missing"),NA,educ), #is "9" also missing?
+    educ = ifelse(educ%in% c("Manquant/NSP","Missing/DK","DK/Missing","DK / Missing"),NA,educ), 
       #educ = as.numeric(educ),
     birthord = factor(birthord),
     rural = ifelse(urban_rural %in% c("Rural","RURAL"),"Rural","Urban"),
     rural = ifelse(is.na(urban_rural),"Missing",rural),
+    own_animals = ifelse(own_animals=="9",NA,own_animals),
+    own_animals = ifelse(own_animals=="2",0,own_animals),
+      own_animals = factor(own_animals),
     everbf = ifelse(everbf=="9"|everbf== "8",NA,everbf),
-      everbf = factor(everbf),    
+      everbf = factor(everbf), 
     currbf = ifelse(currbf=="9"|currbf=="8",NA,currbf),
       currbf = factor(currbf), 
     nhh = as.numeric(nhh),
@@ -356,8 +417,8 @@ d <- d %>% subset(., select = c(country,
     cookstove = factor(cookstove), #Need to clean categories
     chimney = ifelse(chimney=="9"|chimney=="8",NA,chimney),
       chimney = factor(chimney),    
-    fan = ifelse(fan=="9"|fan=="8",NA,fan),
-      fan = factor(fan),  
+    # fan = ifelse(fan=="9"|fan=="8",NA,fan),
+    #   fan = factor(fan),  
     fuel = factor(fuel), #Need to clean categories
     #need to add animals
     roof = factor(roof), #Need to clean categories
@@ -365,6 +426,8 @@ d <- d %>% subset(., select = c(country,
     nroom_sleeping = ifelse(nroom_sleeping=="99",NA,nroom_sleeping)#,
     #nroom_sleeping = as.numeric(nroom_sleeping)
   )
+
+
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # Clean covariate missingness and collapse factor levels:
@@ -611,7 +674,7 @@ table(d$roof)
 table(d$chimney)
 
 d$chimney <- fct_explicit_na(d$chimney, "missing")
-d$fan <- fct_explicit_na(d$fan, "missing")
+#d$fan <- fct_explicit_na(d$fan, "missing")
 
 
 d <- d %>% mutate(
@@ -627,24 +690,24 @@ d <- d %>% mutate(
     chimney=="NSP" ~ "missing",  
     chimney=="NON" ~ "no",  
     chimney=="NO RESPONSE" ~ "missing"
-  ),
-  fan = case_when(
-    fan=="missing" ~ "missing",  
-    fan=="NO" ~ "no",  
-    fan=="YES" ~ "yes",  
-    fan=="NO RESPONSE" ~ "missing",  
-    fan=="NON REPONSE" ~ "missing",  
-    fan=="DON?T KNOW" ~ "missing",  
-    fan=="DK" ~ "missing",  
-    fan=="OUI" ~ "yes",  
-    fan=="NSP" ~ "missing",  
-    fan=="NON" ~ "no",  
-    fan=="NO RESPONSE" ~ "missing"
-  )
+  )#,
+  # fan = case_when(
+  #   fan=="missing" ~ "missing",  
+  #   fan=="NO" ~ "no",  
+  #   fan=="YES" ~ "yes",  
+  #   fan=="NO RESPONSE" ~ "missing",  
+  #   fan=="NON REPONSE" ~ "missing",  
+  #   fan=="DON?T KNOW" ~ "missing",  
+  #   fan=="DK" ~ "missing",  
+  #   fan=="OUI" ~ "yes",  
+  #   fan=="NSP" ~ "missing",  
+  #   fan=="NON" ~ "no",  
+  #   fan=="NO RESPONSE" ~ "missing"
+  # )
 )
 
 table(d$chimney)
-table(d$fan)
+#table(d$fan)
 
 #----------------------------------------------------------------------
 # wall
@@ -794,7 +857,7 @@ class(d$birthord)
 
 table(d$rural)
 d$rural <- as.factor(d$rural)
-d$fan <- as.factor(d$fan)
+#d$fan <- as.factor(d$fan)
 d$chimney <- as.factor(d$chimney)
 
 table(d$everbf)
@@ -805,6 +868,15 @@ d$everbf <- fct_explicit_na(d$everbf, "missing")
 d$currbf <- fct_explicit_na(d$currbf, "missing")
 
 
+table(d$own_animals)
+table(is.na(d$own_animals))
+d$own_animals <- fct_explicit_na(d$own_animals, "missing")
+
+table(d$everbf)
+table(d$currbf)
+table(d$everbf, d$currbf)
+cor(as.numeric(d$everbf), as.numeric(d$currbf))
+
 
 #----------------------------------------------------------------------
 # Reorder levels
@@ -813,7 +885,7 @@ d$currbf <- fct_explicit_na(d$currbf, "missing")
 d$floor <- fct_relevel(d$floor, c("unimproved", "improved", "missing"))
 d$cookstove <- fct_relevel(d$cookstove, c("unimproved", "improved", "missing"))
 d$chimney <- fct_relevel(d$chimney, c("no", "yes", "missing"))
-d$fan <- fct_relevel(d$fan, c("no", "yes", "missing"))
+#d$fan <- fct_relevel(d$fan, c("no", "yes", "missing"))
 d$roof <- fct_relevel(d$roof, c("unimproved", "improved", "missing"))
 d$wall <- fct_relevel(d$wall, c("natural", "rudimentary", "finished", "missing"))
 

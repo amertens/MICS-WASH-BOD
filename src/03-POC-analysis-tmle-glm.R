@@ -11,26 +11,7 @@ dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
 d <- droplevels(d)
 
-saveRDS(d, file=here("data/compiled_clean_POC_survey.rds"))
 
-Wvars <- c("educ",
-           "mage",
-           "aged",
-           "sex",
-           "birthord", 
-           "rural",
-           #"everbf", 
-           "currbf",
-           "nhh",
-           "nchild5",
-           "floor",
-           "cookstove",
-           "chimney",
-           "fan",
-           "fuel",
-           "roof",
-           "wall",
-           "nroom_sleeping")
 
 
 d$clust_num <- paste0(d$clust_num, "-",d$HH_num)

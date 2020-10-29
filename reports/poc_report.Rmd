@@ -128,24 +128,7 @@ pander(res, digits=2, caption = "Source water E.coli contamination by country")
 
 
 ```{r, echo=F}
-Wvars <- c("educ",
-           "mage",
-           "aged",
-           "sex",
-           "birthord",
-           "rural",
-           #"everbf",
-           "currbf",
-           "nhh",
-           "nchild5",
-           "floor",
-           "cookstove",
-           "chimney",
-          #"fan",
-           "fuel",
-           "roof",
-           "wall",
-           "nroom_sleeping")
+
 
 
 #table1
@@ -159,7 +142,7 @@ df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
           `Birth order`=birthord,
           `Urban/rural`=rural,
           `Currently breastfeeding`=currbf,
-          `Household size`=nhh,
+          `Ever breastfed`=everbf,
           `Number of children under 5`=nchild5,
           `Household floor`=floor,
           `Cookstove`=cookstove,
@@ -167,8 +150,18 @@ df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
           `Cooking fuel`=fuel,
           `Roof construction`=roof,
           `Wall material`=wall,
-          `House size (rooms)`=nroom_sleeping
+          `Household size (people)`=nhh,
+          `House size (rooms)`=nroom_sleeping,
+          `Owns animals`=own_animals,
+          `Quartile of asset-based wealth`=HHwealth_quart,
+          
+          
   )
+
+
+
+
+
 tab1 <- table1(~. |country, data=df)
 
 tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))

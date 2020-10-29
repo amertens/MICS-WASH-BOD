@@ -1117,3 +1117,120 @@ cl   <- function(df,fm, cluster){
   vcovCL <- dfc*sandwich(fm, meat=crossprod(uj)/N)
   return(vcovCL)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+assetPCA<-function(ret,  reorder=F ){
+  
+  print(ret$country[1])
+  
+  #create level for for missingness
+  ret$missing <- rowSums(is.na(ret))
+  ret <- ret %>% filter(missing < 29) %>% subset(., select = -c(missing))
+  
+  #Select assets
+  ret<-ret %>% ungroup() %>% as.data.frame(.) 
+  id<-subset(ret, select=c("country","clust_num","HH_num")) #drop id's
+  ret<-ret[,which(!(colnames(ret) %in% c("country","clust_num","HH_num")))]
+
+
+  # for(i in 4:ncol(df)){
+  #   df[,i] <- as.numeric(df[,i])
+  #   df[is.na(df[,i]),i] <- median(df[,i], na.rm=T)
+  # }
+  
+  for(i in 1:ncol(ret)){
+    ret[which(ret[,i]=="9"),i] <- NA
+    #print(table(ret[,i]))
+    if(length(unique(ret[,i]==2))){
+      miss <- which(is.na(ret[,i]))
+      ret[,i] <- ifelse(ret[,i]==2,0,1)
+      ret[miss,i] <- NA
+    }
+  }
+  
+  for(i in 1:ncol(ret)){
+    ret[,i]<-as.character(ret[,i])
+    ret[is.na(ret[,i]),i] <- "miss"
+    ret[,i]<-as.factor(ret[,i])
+  }
+  
+  #Remove columns with almost no variance
+  if(length(nearZeroVar(ret))>0){
+    ret<-ret[,-nearZeroVar(ret)]
+  }
+  
+
+  #Convert factors into indicators
+  ret<-droplevels(ret)
+  gc()
+  ret<-design_matrix(ret)
+  gc()
+
+  #Remove columns with almost no variance
+  if(length(nearZeroVar(ret))>0){
+    ret<-ret[,-nearZeroVar(ret)]
+  }
+  
+  
+
+  ## Convert the data into matrix ##
+  ret <- as.matrix(ret)
+  
+  
+  ##Computing the principal component using eigenvalue decomposition ##
+  princ.return <- princomp(ret) 
+  
+  
+  ## To get the first principal component in a variable ##
+  load <- loadings(princ.return)[,1]   
+  
+  pr.cp <- ret %*% load  ## Matrix multiplication of the input data with the loading for the 1st PC gives us the 1st PC in matrix form. 
+  
+  ret <- as.data.frame(ret)
+  ret$HHwealth <- as.numeric(pr.cp[,1]) ## Gives us the 1st PC in numeric form in pr.
+  
+  #Create 4-level household weath index
+  quartiles<-quantile(ret$HHwealth, probs=seq(0, 1, 0.25))
+  print(quartiles)
+  ret<-as.data.frame(ret)
+  ret$HHwealth_quart<-rep(1, nrow(ret))
+  ret$HHwealth_quart[ret$HHwealth>=quartiles[2]]<-2
+  ret$HHwealth_quart[ret$HHwealth>=quartiles[3]]<-3
+  ret$HHwealth_quart[ret$HHwealth>=quartiles[4]]<-4
+  table(ret$HHwealth_quart)
+  ret$HHwealth_quart<-factor(ret$HHwealth_quart)
+  
+  if(reorder==T){
+    levels(ret$HHwealth_quart)<-c("WealthQ4","WealthQ3","WealthQ2","WealthQ1")
+    ret$HHwealth_quart<-factor(ret$HHwealth_quart, levels=c("WealthQ1", "WealthQ2","WealthQ3","WealthQ4"))
+  }else{
+    levels(ret$HHwealth_quart)<-c("WealthQ1", "WealthQ2","WealthQ3","WealthQ4")
+  }
+  
+  #Table assets by pca quartile to identify wealth/poverty levels
+  d<-data.frame(id, ret)
+  wealth.tab <- d %>% subset(., select=-c(country,clust_num,HH_num)) %>%
+    group_by(HHwealth_quart) %>%
+    summarise_all(funs(mean)) %>% as.data.frame()
+  print(wealth.tab)
+  
+  #Save just the wealth data
+  d <- d %>% subset(select=c(country, clust_num, HH_num, HHwealth, HHwealth_quart))
+
+  return(d)
+}

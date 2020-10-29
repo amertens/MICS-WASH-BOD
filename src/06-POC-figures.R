@@ -6,6 +6,20 @@ dPAF <- readRDS(here("results/paf_results.rds"))
 dPAF_sig <- readRDS(here("results/paf_sig_results.rds"))
 dPAF_pos <- readRDS(here("results/paf_pos_results.rds"))
 
+#Compare boostrapped PAF's to hand-calculated PAF's
+df <- readRDS(here("data/compiled_clean_POC_survey.rds")) %>% filter(country=="Bangladesh")
+table(df$san_imp, df$stunt)
+
+#proportion of cases that are exposed
+pc <- mean(as.numeric(df$san_imp[df$stunt==1])-1, na.rm=T)
+
+dPAF_sig[1,]
+d %>% filter(analysis=="primary", Y=="stunt", X=="san_imp", adjusted==1, country=="Bangladesh")  
+
+RR <- 1.13
+
+(pc *(RR-1))/RR * 100
+dPAF_sig[1,] #PAF's are very close
 
 
 #drop sparse levels
@@ -644,8 +658,21 @@ p_FE_comp_RR <- d %>% filter(binary==1, adjusted==1, multinomial==0, analysis=="
 
 
 #-------------------------------------------------------------
-# sparsity heatmap - updated
+# ckustid sense
 #-------------------------------------------------------------
+p_clustid_comp_RR <- d %>% filter(binary==1, adjusted==1, multinomial==0, analysis=="primary"|analysis=="clustid", country=="Pakistan") %>% 
+  droplevels(.) %>%
+  mutate(X=factor(X, levels = rev(levels(X))), 
+         analysis=factor(analysis, levels=c("primary","clustid"), labels = c("HH-ID","Cluster-ID"))) %>%
+  ggplot(., aes(y=est, x=X, group=analysis, color=analysis)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.6)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 
@@ -664,7 +691,7 @@ save(p_prim_pooled, p_prim_forest_diar, p_prim_forest_secondary_outcomes,
      pPAF_pos, p_prim_forest_mort,
      p_unadj_comp_RR, p_unadj_comp_diff,
      p_tmle_comp_RR, p_tmle_glm_comp_RR, p_rural_pooled,
-     p_1step_comp_RR, p_CC_comp_RR, p_FE_comp_RR, 
+     p_1step_comp_RR, p_CC_comp_RR, p_FE_comp_RR, p_clustid_comp_RR,
      file=here("figures/figure_objects.Rdata"))
 
 

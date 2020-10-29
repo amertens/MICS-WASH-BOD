@@ -29,34 +29,15 @@ d <- droplevels(d)
 
 saveRDS(d, file=here("data/compiled_clean_POC_survey.rds"))
 
-Wvars <- c("educ",
-           "mage",
-           "aged",
-           "sex",
-           "birthord", 
-           "rural",
-           #"everbf", 
-           "currbf",
-           "nhh",
-           "nchild5",
-           "floor",
-           "cookstove",
-           "chimney",
-           "fan",
-           "fuel",
-           "roof",
-           "wall",
-           "nroom_sleeping")
-
-                Y ="stunt"
-                X="WASH"
-                W=NULL
-                weight = "popweight"
-                clustid = "clust_num"
-                family = "gaussian"
-                calc_PAF=T
-                low_risk_level="Improved"
-                return_model=FALSE
+                # Y ="stunt"
+                # X="WASH"
+                # W=NULL
+                # weight = "popweight"
+                # clustid = "clust_num"
+                # family = "gaussian"
+                # calc_PAF=T
+                # low_risk_level="Improved"
+                # return_model=FALSE
 
                 
 d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
