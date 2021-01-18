@@ -14,7 +14,6 @@ d <- droplevels(d)
 
 
 
-d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 
 
 

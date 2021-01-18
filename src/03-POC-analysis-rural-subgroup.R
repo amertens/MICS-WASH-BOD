@@ -33,7 +33,6 @@ Wvars <- c("educ",
     
 
                 
-d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 d$country <- paste0(d$country, "-",d$rural)
 
 

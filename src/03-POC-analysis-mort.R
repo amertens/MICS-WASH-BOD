@@ -14,7 +14,6 @@ table(d$country, d$mort)
 
 
 
-d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 
 
 res_unadj_bin <- run_MICS_regressions(outcomes = c("mort"), family="modified possion", PAF=F, Wvars=NULL)

@@ -16,7 +16,7 @@
 #NOTE: need to look up line number and double check that I am merging datasets correctly
 
 
-
+rm(list=ls())
 source("0-config.R")
 
 
@@ -40,7 +40,7 @@ saveRDS(d, file=here("data/compiled_clean_POC_survey.rds"))
                 # return_model=FALSE
 
                 
-d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
+#d$clust_num <- paste0(d$clust_num, "-",d$HH_num)
 
 #-------------------------------------------------
 # Unadjusted analysis

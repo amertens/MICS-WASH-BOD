@@ -11,7 +11,6 @@ d <- readRDS(here("data/compiled_clean_POC_survey.rds"))
 
 
                 
-d$clust_num <- paste0(d$country,d$clust_num, "-",d$HH_num)
 
 d$country <- "one-step pooled"
 

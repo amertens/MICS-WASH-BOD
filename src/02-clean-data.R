@@ -167,11 +167,11 @@ table(d$country, d$safely_manH20)
 
 
 #Code most-improved WASH
-d$WASH <- factor(ifelse(d$san_imp=="Improved" & d$wat_imp=="Improved" & d$hyg_imp=="Improved" & d$EC_H=="Uncontaminated","Improved", "Unmproved"), levels=c("Improved", "Unmproved"))
-d$WASH[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)|is.na(d$EC_risk_H)] <- NA
+d$WASH <- factor(ifelse(d$san_imp=="Improved" & d$wat_imp=="Improved" & d$hyg_imp=="Improved" & d$EC_H=="Uncontaminated","Improved", "Unimproved"), levels=c("Improved", "Unimproved"))
+d$WASH[(d$san_imp=="Improved" | d$wat_imp=="Improved" | d$hyg_imp=="Improved" | d$EC_H=="Uncontaminated") & d$WASH=="Unimproved"] <- NA
 
 #Code most-improved WASH (no contamination measures)
-d$WASH_noEC <-  factor(ifelse(d$san_imp=="Improved" & d$wat_imp=="Improved" & d$hyg_imp=="Improved", "Improved", "Unmproved"), levels=c("Improved", "Unmproved"))
+d$WASH_noEC <-  factor(ifelse(d$san_imp=="Improved" & d$wat_imp=="Improved" & d$hyg_imp=="Improved", "Improved", "Unimproved"), levels=c("Improved", "Unimproved"))
 d$WASH_noEC[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)] <- NA
 
 table(d$WASH)
@@ -902,16 +902,16 @@ d$birthord <- as.numeric(d$birthord)
 #save dataset with missingness for complete-case analysis
 saveRDS(d, here("data/compiled_complete_case_MICS_survey.rds"))
 
-
-d <- d %>% group_by(country) %>%
-  mutate(
-    birthord=ifelse(is.na(birthord), median(birthord, na.rm=T), birthord),
-    mage=ifelse(is.na(mage), median(mage, na.rm=T), mage),
-    aged=ifelse(is.na(aged), median(aged, na.rm=T), aged),
-    nhh=ifelse(is.na(nhh), median(nhh, na.rm=T), nhh),
-    nroom_sleeping=ifelse(is.na(nroom_sleeping), median(nroom_sleeping, na.rm=T), nroom_sleeping),
-    nchild5=ifelse(is.na(nchild5), median(nchild5, na.rm=T), nchild5)
-    )
+#Comment out for MICE package implementation
+# d <- d %>% group_by(country) %>%
+#   mutate(
+#     birthord=ifelse(is.na(birthord), median(birthord, na.rm=T), birthord),
+#     mage=ifelse(is.na(mage), median(mage, na.rm=T), mage),
+#     aged=ifelse(is.na(aged), median(aged, na.rm=T), aged),
+#     nhh=ifelse(is.na(nhh), median(nhh, na.rm=T), nhh),
+#     nroom_sleeping=ifelse(is.na(nroom_sleeping), median(nroom_sleeping, na.rm=T), nroom_sleeping),
+#     nchild5=ifelse(is.na(nchild5), median(nchild5, na.rm=T), nchild5)
+#     )
 
 
 

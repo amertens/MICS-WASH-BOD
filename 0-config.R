@@ -19,6 +19,10 @@ library(tlverse)
 library(sl3)
 library(tmle3)
 
+library(mice) # Data imputation
+library(miceadds)
+library(purrr) # Flexible functional programming
+
 #remotes::install_github("epix-project/mics")
 
 source(here::here("functions/load_data_functions.R"))

@@ -2,7 +2,7 @@
 
 mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num", family="modified possion", calc_PAF=FALSE, low_risk_level=0, return_model=FALSE){
   
-  cat(Y,", ",X,"\n")
+  cat("\n",Y,", ",X,"\n")
   
   df <- data.frame(
     Y=subset(d, select=get(Y)),
@@ -21,14 +21,14 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   df <- df %>% filter(!is.na(X))
   Xrows <- nrow(df)
   cat("Rows dropped due to missing exposure: ",Yrows -Xrows,"\n")
-  df <- df[complete.cases(df),]
-  cat("Rows dropped due to missing covariates: ",Xrows - nrow(df),"\n")
+  # df <- df[complete.cases(df),]
+  # cat("Rows dropped due to missing covariates: ",Xrows - nrow(df),"\n")
   
   df <- droplevels(df)
   
   Wscreen=NULL
   if(!is.null(W)){
-    cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
+    #cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
     prescreen_family <- ifelse(family=="gaussian",family,"binomial")
     
     Wdf <- df %>% select(W)
@@ -42,7 +42,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
                        MICS_prescreen(Y = df$Y, 
                                        Ws = Wdf, 
                                        family = prescreen_family, 
-                                       pval = 0.2, print = T)))
+                                       pval = 0.2, print = F)))
     #select n/10 covariates if binary outcome
     if(family!="gaussian" & !is.null(Wscreen)){
       nY<-floor(min(table(df$Y, df$X))/10)
@@ -54,7 +54,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #Drop sparse factor levels
     if(!is.null(Wscreen)){
       Wdf <- df %>% subset(., select =c(Wscreen))
-      Wdf <- as.data.frame(model.matrix(~., Wdf)[,-1]) 
+      Wdf <- as.data.frame(model.matrix(~., model.frame(~ ., Wdf, na.action=na.pass))[,-1]) 
       
       #scale and drop covariates with near zero variance
       pp_no_nzv <- preProcess(Wdf,
@@ -66,7 +66,6 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     }
     
     df <- bind_cols(df %>% subset(., select =c("Y","X","id", "weight")), Wdf)
-    df <- df[complete.cases(df),]
   }
   
   #order by id for geeglm function
@@ -103,19 +102,11 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     f <- ifelse(is.null(Wscreen),
                 "Y ~ X",
                 paste0("Y ~ X  + ", paste(colnames(Wdf), collapse = " + ")))
-    fit <- mpreg(formula = as.formula(f), df = df, family="gaussian", vcv=FALSE)
     
-    coef <- as.data.frame(t(fit[2,]))
-    res <- data.frame(Y=varnames[1],
-                      X=varnames[2],
-                      coef=coef$Estimate,
-                      se=coef$`Std. Error`,
-                      Zval=coef$`z value`,
-                      pval=coef$`Pr(>|z|)`)
+    fit=NULL
     
-    #Calc 95%CI
-    res$ci.lb <- res$coef - 1.96*res$se
-    res$ci.ub <- res$coef + 1.96*res$se
+    #fit <- mpreg(formula = as.formula(f), df = df, family="gaussian", vcv=FALSE)
+    res <- mpreg(varnames=varnames, formula = as.formula(f), df = df, family="gaussian")
     
     res$N<-nrow(df)
     res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
@@ -133,9 +124,9 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     f <- ifelse(is.null(Wscreen),
                 "Y ~ X",
                 paste0("Y ~ X + ", paste(colnames(Wdf), collapse = " + ")))
-    # id <- df$id
-    # weight <- df$weight
+
     fit=NULL
+    res <- mpreg(varnames=varnames, formula = as.formula(f), df = df, family="modified possion", vcv=FALSE)
     
       
     #   #fit model
@@ -167,23 +158,10 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #   #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
 
     
-    fit <- mpreg(formula = as.formula(f), df = df, family="modified possion", vcv=FALSE)
-    coef <- as.data.frame(t(fit[2,]))
-    res <- data.frame(Y=varnames[1],
-                      X=varnames[2],
-                      coef=coef$Estimate,
-                      RR=exp(coef$Estimate),
-                      se=coef$`Std. Error`,
-                      Zval=coef$`z value`,
-                      pval=coef$`Pr(>|z|)`)
-
-      #Calc 95%CI
-      res$ci.lb <- exp(res$coef - 1.96*res$se)
-      res$ci.ub <- exp(res$coef + 1.96*res$se)
-      
-    
       if(calc_PAF){
-        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=100,dots=TRUE, low_risk_level=low_risk_level)
+        
+
+        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=10,dots=TRUE, low_risk_level=low_risk_level)
         res$PAF <- paflist$bootest[2]
         res$PAF.lb <- paflist$boot95lb[2]
         res$PAF.ub <- paflist$boot95ub[2]
@@ -434,20 +412,22 @@ MICS_prescreen<-function (Y, Ws, family = "gaussian", pval = 0.2, print = TRUE){
   }
   Ws <- as.data.frame(Ws)
   dat <- data.frame(Ws, Y)
-  dat <- dat[complete.cases(dat), ]
   nW <- ncol(Ws)
   LRp <- matrix(rep(NA, nW), nrow = nW, ncol = 1)
   rownames(LRp) <- names(Ws)
   colnames(LRp) <- "P-value"
     for (i in 1:nW) {
       dat$W <- dat[, i]
+      df <- data.frame(Y=dat$Y, W=dat$W)
+      df <- df[complete.cases(df), ]
+      
       if (class(dat$W) == "factor" & dim(table(dat$W)) == 
           1) {
-        fit1 <- fit0 <- glm(Y ~ 1, data = dat, family = family)
+        fit1 <- fit0 <- glm(Y ~ 1, data = df, family = family)
       }
       else {
-        fit1 <- glm(Y ~ W, data = dat, family = family)
-        fit0 <- glm(Y ~ 1, data = dat, family = family)
+        fit1 <- glm(Y ~ W, data = df, family = family)
+        fit0 <- glm(Y ~ 1, data = df, family = family)
       }
       LRp[i] <- lrtest(fit1, fit0)[2, 5]
     }
@@ -1080,49 +1060,140 @@ bootAR <- function(fn=ARfun,fmla,data,ID,strata,iter,low_risk_level,dots=TRUE) {
 # this is the work horse of all the 
 # regressions run in this analysis
 # --------------------------------------
-
-mpreg <- function(formula, df, family, vcv=FALSE) {
-  # modified Poisson regression formula
+# mpreg <- function(formula, df, family, vcv=FALSE) {
+#   # modified Poisson regression formula
+#   # dataaset used to fit the model	
+#   if(family=="gaussian"){
+#     fit <- glm(as.formula(formula),family="gaussian", weights = df$weight, data=df)
+#   }else{
+#     fit <- glm(as.formula(formula),family=poisson(link="log"), weights = df$weight, data=df)
+#   }
+#   vcovCL <- cl(df=df,fm=fit,cluster=df$id)
+#   rfit <- coeftest(fit, vcovCL)
+#   print(summary(fit))
+#   cat("\n\nRobust, Sandwich Standard Errors Account for Clustering:\n")
+#   print(rfit) 
+#   if(vcv==FALSE) {
+#     return(rfit)
+#   } else {
+#     list(fit=rfit,vcovCL=vcovCL)
+#   }
+# }
+mpreg <- function(varnames, formula, df, family, vcv=FALSE) {
+  meth <- make.method(df)
+  pred <- make.predictorMatrix(df)
+  
+  imp <-mice(df, 
+             meth = meth, 
+             pred = pred, 
+             print = FALSE, 
+             m = 10, 
+             maxit = 6)
+  
+    # modified Poisson regression formula
   # dataaset used to fit the model	
   if(family=="gaussian"){
-    fit <- glm(as.formula(formula),family="gaussian", weights = df$weight, data=df)
+    #fit <- glm(as.formula(formula),family="gaussian", weights = df$weight, data=df)
+    # fit_imp <- imp %>%
+    #   with(glm(as.formula(f),family=poisson(link="log"), weights = imp$weight))
+    
+    datlist <- miceadds::mids2datlist( imp )
+    # linear regression with cluster robust standard errors
+    mod <- lapply(datlist, FUN = function(x){glm.cluster( data=x ,         
+                                                                       formula=formula,  
+                                                                       cluster = x$id,
+                                                                       weight = x$weight,
+                                                                       family = family)}) 
+    
   }else{
-    fit <- glm(as.formula(formula),family=poisson(link="log"), weights = df$weight, data=df)
+    #fit <- glm(as.formula(formula),family=poisson(link="log"), weights = df$weight, data=df)
+    # fit_imp <- imp %>%
+    #   with(glm(formula = as.formula(f), family=poisson(link="log"), weights = imp$weight))
+    datlist <- miceadds::mids2datlist( imp )
+    # linear regression with cluster robust standard errors
+    
+        mod <- list()
+        for(i in 1:length(datlist)){
+         
+          df <- datlist[[i]]
+          Cluster = df$id
+          Weights = df$weight
+
+          mod_temp <- glm.cluster( data=df ,         
+                       formula=formula,  
+                       cluster = Cluster,
+                       weight = Weights,
+                       family = poisson(link="log"))
+          
+          mod[[i]] <-  mod_temp
+        }
+        
+    
   }
-  vcovCL <- cl(df=df,fm=fit,cluster=df$id)
-  rfit <- coeftest(fit, vcovCL)
-  print(summary(fit))
-  cat("\n\nRobust, Sandwich Standard Errors Account for Clustering:\n")
-  print(rfit) 
-  if(vcv==FALSE) {
-    return(rfit)
-  } else {
-    list(fit=rfit,vcovCL=vcovCL)
+  
+  # extract parameters and covariance matrix
+  betas <- lapply( mod , FUN = function(rr){ coef(rr) } )
+  vars <- lapply( mod , FUN = function(rr){ vcov(rr) } )
+  # conduct statistical inference
+  invisible(fit <- summary(pool_mi( qhat = betas, u = vars )))
+  
+  coef <- as.data.frame(fit[2,])
+  res <- data.frame(Y=varnames[1],
+                    X=varnames[2],
+                    coef=coef$results,
+                    RR=exp(coef$results),
+                    se=coef$se,
+                    pval=coef$p)
+  
+  #Calc 95%CI
+  if(family!="gaussian"){
+    res$ci.lb <- exp(res$coef - 1.96*res$se)
+    res$ci.ub <- exp(res$coef + 1.96*res$se)
   }
+  
+  return(res)
+  # print(summary(fit))
+  # cat("\n\nRobust, Sandwich Standard Errors Account for Clustering:\n")
+  # print(rfit) 
+  # if(vcv==FALSE) {
+  #   return(rfit)
+  # } else {
+  #   list(fit=rfit,vcovCL=vcovCL)
+  # }
 }
 
 
 
-cl   <- function(df,fm, cluster){
-  # df: data used to fit the model
-  # fm : model fit (object)
-  # cluster : vector of cluster IDs
-  require(sandwich, quietly = TRUE)
-  require(lmtest, quietly = TRUE)
-  M <- length(unique(cluster))
-  N <- length(cluster)
-  K <- fm$rank
-  dfc <- (M/(M-1))*((N-1)/(N-K))
-  uj  <- apply(estfun(fm),2, function(x) tapply(x, cluster, sum));
-  vcovCL <- dfc*sandwich(fm, meat=crossprod(uj)/N)
-  return(vcovCL)
+# cl   <- function(df,fm, cluster){
+#   # df: data used to fit the model
+#   # fm : model fit (object)
+#   # cluster : vector of cluster IDs
+#   require(sandwich, quietly = TRUE)
+#   require(lmtest, quietly = TRUE)
+#   M <- length(unique(cluster))
+#   N <- length(cluster)
+#   K <- fm$rank
+#   dfc <- (M/(M-1))*((N-1)/(N-K))
+#   uj  <- apply(estfun(fm),2, function(x) tapply(x, cluster, sum));
+#   vcovCL <- dfc*sandwich(fm, meat=crossprod(uj)/N)
+#   return(vcovCL)
+# }
+
+
+
+
+
+glm.cluster <- function (data, formula, cluster, weight, family){
+  
+  mod <- stats::glm(data = data, formula = formula, weights = weight, family = family)
+  
+  vcov2 <- miceadds:::lm_cluster_compute_vcov(mod = mod, cluster = cluster, 
+                                              data = data)
+  
+  res <- list(glm_res = mod, vcov = vcov2)
+  class(res) <- "glm.cluster"
+  return(res)
 }
-
-
-
-
-
-
 
 
 
