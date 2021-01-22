@@ -8,10 +8,10 @@ source("0-config.R")
 library(washb)
 
 
-dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
+d <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
 
 #TEMP
-d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
+#d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
 
 
 
@@ -283,11 +283,14 @@ df <- d %>% subset(., select = c(country, clust_num, HH_num, HC7A:HC15)) %>%
 # res <- df %>% group_by(country) %>%
 #   do(assetPCA(.))
 # ret <-df %>% filter(country=="Bangladesh")
-res1 <- assetPCA(df %>% filter(country=="Bangladesh"))
-res2 <- assetPCA(df %>% filter(country=="Zimbabwe"))
-res3 <- assetPCA(df %>% filter(country=="PakistanPunjab"))
-
-res <- bind_rows(res1, res2, res3)
+# res1 <- assetPCA(df %>% filter(country=="Bangladesh"))
+# res2 <- assetPCA(df %>% filter(country=="Zimbabwe"))
+# res3 <- assetPCA(df %>% filter(country=="PakistanPunjab"))
+# 
+# res <- bind_rows(res1, res2, res3)
+res <- d %>% group_by(country) %>%
+  do(assetPCA(.))
+  #do(res=try(assetPCA(.)))
 
 dim(d)
 dim(res)
