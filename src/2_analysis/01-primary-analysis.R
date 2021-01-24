@@ -20,14 +20,9 @@ rm(list=ls())
 source("0-config.R")
 
 
-#load clean data
-dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
+#d clean data
+d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 
-#subset to just POC countries
-d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
-d <- droplevels(d)
-
-saveRDS(d, file=here("data/compiled_clean_POC_survey.rds"))
 
                 # Y ="stunt"
                 # X="WASH"
