@@ -11,6 +11,17 @@ source("0-config.R")
 # especially if new languages are in the new surveys 
 #(save a conversion codebook)
 
+#To add (in the future):
+        # Samoa (not available yet)
+        # Tonga
+        # Iraq
+        # Guinea-Bissau
+
+
+
+
+
+
 
 #Newly added:
         #Congo
@@ -25,19 +36,29 @@ pakPun <- load_MICS_dataset("PakistanPunjab")
 ze <- load_MICS_dataset("Zimbabwe")
 
 al <- load_MICS_dataset("Algeria")
-        al <- clean_WASH("Algeria")
+        al <- clean_WASH(al)
 ks <- load_MICS_dataset("Kosovo")
+        ks <- clean_WASH(ks)
 #cuba <- load_MICS_dataset("Cuba") #check but Cuba doesn't have WQ module
 STP <- load_MICS_dataset("Sao Tome and Principe")
-
-
+        STP <- clean_WASH(STP)
 cg <- load_MICS_dataset("Congo") 
+        cg <- clean_WASH(cg)
+np <- load_MICS_dataset("Nepal") 
+        np <- clean_WASH(np)
+DRC <- load_MICS_dataset("DRC") 
+        DRC <- clean_WASH(DRC)
+ta <- load_MICS_dataset("Tonga")
+        ta <- clean_WASH(ta)
+G_B <- load_MICS_dataset("Guinea Bissau") #don
+        G_B <- clean_WASH(G_B)
+
+        
 ki <- load_MICS_dataset("Kiribati")
 laPDR <- load_MICS_dataset("LaoPDR")
 le <- load_MICS_dataset("Lesotho")
 md <- load_MICS_dataset("Madagascar")
 mo <- load_MICS_dataset("Mongolia")
-np <- load_MICS_dataset("Nepal") 
 ni <- load_MICS_dataset("Nigeria") 
 par <- load_MICS_dataset("Paraguay") 
 SL <- load_MICS_dataset("SierraLeone")
@@ -45,10 +66,10 @@ sur <- load_MICS_dataset("Suriname")
 tg <- load_MICS_dataset("Togo")
 tun <- load_MICS_dataset("Tunisia")
 #CI <- load_MICS_dataset("CoteIvoire") #Check, but I don't think has WQ modules
-DRC <- load_MICS_dataset("DRC") 
 gb <- load_MICS_dataset("Gambia")
 ga <- load_MICS_dataset("Georgia") #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
 gh <- load_MICS_dataset("Ghana") 
+iq <- load_MICS_dataset("Iraq")
 
 #Two studies with slightly different variable names. Recode:
 #Paraguay, Nigeria
@@ -84,8 +105,9 @@ d <- bind_rows(bd,
                #CI,
                ga,
                gb,
+               iq,
      gh,ki,laPDR, 
-     DRC, 
+     DRC, ta, G_B,
      le,md,mo,          
      ni,
      np,

@@ -2,7 +2,6 @@
 
 rm(list=ls())
 source("0-config.R")
-library(washb)
 
 d <- readRDS(here("data/compiled_intermediate_MICS_survey.rds"))
 

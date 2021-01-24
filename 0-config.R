@@ -17,6 +17,7 @@ library(metafor)
 library(R.utils)
 library(tlverse)
 library(sl3)
+library(washb)
 library(tmle3)
 
 library(mice) # Data imputation

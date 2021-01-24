@@ -5,7 +5,6 @@
 
 rm(list=ls())
 source("0-config.R")
-library(washb)
 
 
 d <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
@@ -144,6 +143,7 @@ d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
 d <- d %>% mutate(
   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
+                          wat_imp=="Unimproved"~"Unimproved",
                           wat_imp=="Improved" & d$WS4>30~"Limited",
                           wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2")~"Basic",
                           wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous",

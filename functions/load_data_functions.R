@@ -252,7 +252,7 @@ load_MICS_dataset <- function(country){
     #to do: use excel sheet to get the variable name conversion
     d <- plyr::rename( d, replace=namekey, warn_missing=F)
     #Generate the new variables
-    #d <-calc_wash(d)
+    #d <-clean_WASH(d)
     
   }
 
@@ -353,45 +353,150 @@ load_MICS_dataset <- function(country){
 
 
 #clean WASH variables
-# clean_WASH <- function(d){
-#   colnames(d)
-#   table(d$WS1)
-#   table(d$WS1_lab)
+clean_WASH <- function(d){
+  colnames(d)
+  table(d$WS1)
+  table(d$WS1_lab)
+  
+  d <- d %>% mutate(
+    wat_class_lab = case_when(
+      WS1=="11" ~ "Piped water",
+      WS1=="12" ~ "Piped water",
+      WS1=="13" ~ "Piped water",
+      WS1=="14" ~ "Piped water",
+      WS1=="21" ~ "Boreholes/Tubewells",
+      WS1=="22" ~ "Boreholes/Tubewells",
+      WS1=="23" ~ "Boreholes/Tubewells",
+      WS1=="31" ~ "Protected wells and springs",
+      WS1=="32" ~ "Unprotected wells and springs",
+      WS1=="41" ~ "Protected wells and springs",
+      WS1=="42" ~ "Unprotected wells and springs",
+      WS1=="51" ~ "Rainwater",
+      WS1=="61" ~ "Delivered water",
+      WS1=="62" ~ "Delivered water",
+      WS1=="71" ~ "Delivered water",
+      WS1=="72" ~ "Delivered water",
+      WS1=="73" ~ "Delivered water",
+      WS1=="81" ~ "Surface water",
+      WS1=="82" ~ "Surface water",
+      WS1=="91" ~ "Packaged water",
+      WS1=="92" ~ "Packaged water",
+      WS1=="93" ~ "Packaged water",
+      WS1=="96" ~ "Missing",
+      WS1=="99" ~ "Missing",
+      is.na(WS1)~ "Missing"),
+    wat2_class_lab = case_when(
+      WS2=="11" ~ "Piped water",
+      WS2=="12" ~ "Piped water",
+      WS2=="13" ~ "Piped water",
+      WS2=="14" ~ "Piped water",
+      WS2=="21" ~ "Boreholes/Tubewells",
+      WS2=="22" ~ "Boreholes/Tubewells",
+      WS2=="23" ~ "Boreholes/Tubewells",
+      WS2=="31" ~ "Protected wells and springs",
+      WS2=="32" ~ "Unprotected wells and springs",
+      WS2=="41" ~ "Protected wells and springs",
+      WS2=="42" ~ "Unprotected wells and springs",
+      WS2=="51" ~ "Rainwater",
+      WS2=="61" ~ "Delivered water",
+      WS2=="62" ~ "Delivered water",
+      WS2=="71" ~ "Delivered water",
+      WS2=="72" ~ "Delivered water",
+      WS2=="73" ~ "Delivered water",
+      WS2=="81" ~ "Surface water",
+      WS2=="82" ~ "Surface water",
+      WS2=="91" ~ "Packaged water",
+      WS2=="92" ~ "Packaged water",
+      WS2=="93" ~ "Packaged water",
+      WS2=="96" ~ "Missing",
+      WS2=="99" ~ "Missing",
+      is.na(WS2)~ "Missing"),
+    wat_imp = as.character(case_when(
+      wat_class_lab %in% c("Rainwater","Surface water","Unprotected wells and springs","Delivered water")  ~ 0,
+      wat_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells")  ~ 1,
+      wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Rainwater","Surface water","Unprotected wells and springs","Delivered water")  ~ 0,
+      wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells")  ~ 1,
+      wat_class_lab == "Missing" ~ NA_real_
+    )),
+    san_class_lab = NA,
+    san_class_lab = case_when(
+       WS11 %in% c("95") ~ "No facility",
+       WS11 %in% c("14","18","23","51") ~ "Unimproved",
+       WS15 == "2" & WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
+       WS11 %in% c("96","99") ~ NA_character_,
+       is.na(san_class_lab) ~ "Unimproved"
+    ),
+    san_imp = as.character(case_when(
+      san_class_lab %in% c("Unimproved","No facility")  ~ 0,
+      san_class_lab == c("Improved")  ~ 1,
+      san_class_lab == "Missing" | is.na(san_class_lab) ~ NA_real_
+      )),
+    ecpopweight_H = wqhweight,
+    ecpopweight_S = wqsweight,
+    popweight = hhweight
+    )
+d$EC_risk_H_1 <- ifelse(d$EC_100_H==0,"100","0") 	#Low risk: E. coli < 1 cfu/100 mL
+  d$EC_risk_H_1[is.na(d$EC_100_H)] <-  NA
+d$EC_risk_H_2 <- ifelse(d$EC_100_H>0 & d$EC_100_H<11,"100","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
+  d$EC_risk_H_2[is.na(d$EC_100_H)] <-  NA
+d$EC_risk_H_3 <- ifelse(d$EC_100_H>10 & d$EC_100_H<101,"100","0") 	#High risk: E. coli 11-100 cfu/100 mL
+  d$EC_risk_H_3[is.na(d$EC_100_H)] <-  NA
+d$EC_risk_H_4 <- ifelse(d$EC_100_H>100,"100","0") 	#Very high risk: E. coli >100 cfu/100 mL
+  d$EC_risk_H_4[is.na(d$EC_100_H)] <-  NA
+d$EC_risk_S_1 <- ifelse(d$EC_100_S==0,"100","0") 	#Low risk: E. coli < 1 cfu/100 mL
+  d$EC_risk_S_1[is.na(d$EC_100_S)] <-  NA
+d$EC_risk_S_2 <- ifelse(d$EC_100_S>0 & d$EC_100_S<11,"100","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
+  d$EC_risk_S_2[is.na(d$EC_100_S)] <-  NA
+d$EC_risk_S_3 <- ifelse(d$EC_100_S>10 & d$EC_100_S<101,"100","0") 	#High risk: E. coli 11-100 cfu/100 mL
+  d$EC_risk_S_3[is.na(d$EC_100_S)] <-  NA
+d$EC_risk_S_4 <- ifelse(d$EC_100_S>100,"100","0") 	#Very high risk: E. coli >100 cfu/100 mL
+  d$EC_risk_S_4[is.na(d$EC_100_S)] <-  NA
+# 
+#   table(d$EC_risk_H_1)
+#   table(d$EC_risk_H_2)
+#   table(d$EC_risk_H_3)
+#   table(d$EC_risk_H_4)
+#   table(d$EC_risk_S_1)
+#   table(d$EC_risk_S_2)
+#   table(d$EC_risk_S_3)
+#   table(d$EC_risk_S_4)
+  
+  
+  
+ #Variables to add: 
+  # EC_risk_H_1
+  # EC_risk_H_2
+  # EC_risk_H_3
+  # EC_risk_H_4
+  # EC_risk_S_1
+  # EC_risk_S_2
+  # EC_risk_S_3
+  # EC_risk_S_4
+  
+  
+  return(d)
+#  table(d$WS8) 
+#  table(d$WS9) 
+#  
+#  table(d$wat_class_lab)
+#  table(d$wat_imp)
+#  table(d$san_class_lab)
+#  table(d$san_imp)
+#        
 #   
-#   d <- d %>% mutate(
-#     wat_class_lab = case_when(
-#       WS1=="11" ~ "Piped water",
-#       WS1=="12" ~ "Piped water",
-#       WS1=="13" ~ "Piped water",
-#       WS1=="14" ~ "Piped water",
-#       WS1=="21" ~ "Boreholes/Tubewells",
-#       WS1=="22" ~ "Boreholes/Tubewells",
-#       WS1=="23" ~ "Boreholes/Tubewells",
-#       WS1=="31" ~ "Protected wells and springs",
-#       WS1=="32" ~ "Unprotected wells and springs",
-#       WS1=="41" ~ "Protected wells and springs",
-#       WS1=="42" ~ "Unprotected wells and springs",
-#     )
-#   
-#   [3] "Rainwater"                     "Surface water"                
-#   [5] "Protected wells and springs"   "Packaged water"               
-#   [7] "Unprotected wells and springs" "Delivered water"              
-#   [9] NA    
-#   
-#   res <- d %>% group_by(WS1) %>%
-#     do(res=paste0(.$WS1[1],": ", unique(.$WS1_lab)))
+# unique(d$wat_class_lab)
+# unique(d$wat_imp)
+# 
+#   res <- bd %>% group_by(WS11) %>%
+#     do(res=paste0(.$WS11[1],": ", unique(.$WS11_lab)))
 #   res[[2]]
-#   wat_class_lab
-#   
-#   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
-#                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
-#                           wat_imp=="Improved" & d$WS4>30~"Limited",
-#                           wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2")~"Basic",
-#                           wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous",
-#   ),
-#   wat_imp_cat = factor(wat_imp_cat, levels=c("Surface water", "Unimproved", "Limited", "Basic","Continuous"))
-#   
-#   
-#   
-#   
-# }
+#   res2 <- bd %>% group_by(WS15) %>%
+#     do(res=paste0(.$WS15[1],": ", unique(.$WS15_lab)))
+#   res2[[2]]
+# 
+# 
+#   table(bd$san_cat_lab)
+#   table(bd$san_imp)
+  
+  
+}
