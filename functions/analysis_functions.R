@@ -2,7 +2,7 @@
 
 mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num", family="modified possion", calc_PAF=FALSE, low_risk_level=0, return_model=FALSE){
   
-  cat("\n",Y,", ",X,"\n")
+  cat("\n",Y,", ",X," ",d$country[1],"\n")
   
   df <- data.frame(
     Y=subset(d, select=get(Y)),
@@ -25,6 +25,8 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   # cat("Rows dropped due to missing covariates: ",Xrows - nrow(df),"\n")
   
   df <- droplevels(df)
+  
+  if(nrow(df)!=0){
   
   Wscreen=NULL
   if(!is.null(W)){
@@ -117,7 +119,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
     #check sparsity
     sparseN<-min(table(df$X, df$Y))
-    if(sparseN>10){
+    if(sparseN>10 & min(dim(table(df$X, df$Y)))==2){
     
     
     #model formula
@@ -194,7 +196,17 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
   }  
   
-
+  }else{
+    res <- data.frame(Y=varnames[1],
+                      X=varnames[2],
+                      coef=NA,
+                      RR=NA,
+                      se=NA,
+                      Zval=NA,
+                      pval=NA,
+                      n=0,
+                      N=0)
+    }
   
   if(return_model){
     if(calc_PAF){

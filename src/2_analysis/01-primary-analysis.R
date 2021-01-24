@@ -20,7 +20,11 @@ rm(list=ls())
 source("0-config.R")
 
 
+<<<<<<< HEAD
 #d clean data
+=======
+#load clean data
+>>>>>>> 32d3d91ce75e065f90ce97c7b383a8c5bfda3288
 d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 
 
