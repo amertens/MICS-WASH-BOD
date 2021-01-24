@@ -99,6 +99,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     # res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
     
     
+    if(length(unique(df$X))>1){
     
     #model formula
     f <- ifelse(is.null(Wscreen),
@@ -112,7 +113,20 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
     res$N<-nrow(df)
     res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
-    
+    }else{
+      
+      res <- data.frame(Y=varnames[1],
+                        X=varnames[2],
+                        coef=NA,
+                        RR=NA,
+                        se=NA,
+                        Zval=NA,
+                        pval=NA)
+      
+      res$N<-nrow(df)
+      res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+      
+    }
     
   }
   if(family=="modified possion"){
