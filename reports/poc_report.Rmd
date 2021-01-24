@@ -19,6 +19,12 @@ options(warn = -1)
 library(janitor)
 library(knitr)
 library(here)
+library(table1)
+library(rvest)
+
+source(here("0-config.R"))
+
+
 op = function(x, d=2) sprintf(paste0("%1.",d,"f"), x) 
  library(pander)
 panderOptions('digits', 2)
@@ -34,76 +40,83 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
+## Descriptive statistics
+
 ```{r, echo=F, warning=F, message=F}
-
-#Make sure to subset HH measurements to the unique household level... right now they are duplicated based on merges with child ID
-
-
-source(here("0-config.R"))
 
 dfull <- readRDS(here("data/compiled_clean_POC_survey.rds"))
 
 #child health data
 ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea))
 
+#Make a N children and child age/ num kids per HH table
+res <-ch %>% group_by(country) %>%
+  summarise(N=n(), child_age=mean(aged, na.rm=T)/365, min_child_age=min(aged, na.rm=T)/365, max_child_age=max(aged, na.rm=T)/365)
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Descriptive statistics of measured children by country")
+
+
+
 res <- ch %>% group_by(country) %>%
   summarise(N_haz=sum(!is.na(haz)), Mean_HAZ=mean(haz, na.rm=T), Prev_Stunting=mean(haz < (-2), na.rm=T)*100, Prev_Sev_Stunting=mean(haz < (-3), na.rm=T)*100,
             N_whz=sum(!is.na(whz)), Mean_WHZ=mean(whz, na.rm=T), Prev_Wasting=mean(whz < (-2), na.rm=T)*100, Prev_Sev_Wasting=mean(whz < (-3), na.rm=T)*100)
-            
-  
-pander(res, digits=2)
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Descriptive statistics of growth outcomes by country")
 
 res <-ch %>% group_by(country) %>%
   summarise(N_diarrhea_meas=sum(!is.na(diarrhea)), N_diarrhea=sum(diarrhea, na.rm=T),  Prev_diarrhea=mean(diarrhea, na.rm=T)*100,
             N_ARI_meas=sum(!is.na(ari)), N_ARI=sum(ari, na.rm=T),  Prev_ARI=mean(ari, na.rm=T)*100)
 
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Descriptive statistics of diarrhea and acute respiratory infection outcomes by country")
 
 
-#Make a N children and child age/ num kids per HH table
-res <-ch %>% group_by(country) %>%
-  summarise(N=n(), child_age=mean(aged, na.rm=T)/365, min_child_age=min(aged, na.rm=T)/365, max_child_age=max(aged, na.rm=T)/365)
-            
-pander(res, digits=2)
+
 
 
 #HH data
-res <-d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
+d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
   distinct(country, clust_num, HH_num, .keep_all = T)
 
-pander(res, digits=2)
+
 
 
 res <-d %>% group_by(country) %>%
   summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp)-1, na.rm=T), N_imp_WASH=sum(as.numeric(WASH_noEC)-1, na.rm=T))
-    
-pander(res, digits=2)
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Binary measures of improved WASH conditions by country")
 
 
 res <-d %>% group_by(country) %>%
-  summarise(N_households=n(), N_EC_H=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_S=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_noEC=sum(as.numeric(WASH)-1, na.rm=T))
+  summarise(N_households=n(), N_EC_Household=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_Source=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_and_no_EC=sum(as.numeric(WASH)-1, na.rm=T))
 
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Binary measures of E.coli contamination by country")
 
 res <-d %>% tabyl(country, wat_imp_cat)
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Drinking water conditions by country")
 
 res <-d %>% tabyl(country, san_imp_cat)
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Sanitation conditions by country")
 
 res <-d %>% tabyl(country, hyg_imp_cat)
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Hygeine conditions by country")
 
 res <-d %>% tabyl(country, EC_risk_H)
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Household E.coli contamination by country")
 
 res <-d %>% tabyl(country, EC_risk_S)
-pander(res, digits=2)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Source water E.coli contamination by country")
 
-res <-d %>% group_by(country) %>%
-  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp_cat)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp_cat)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp_cat)-1, na.rm=T))
 
-pander(res, digits=2)
 
          
             
@@ -111,45 +124,276 @@ pander(res, digits=2)
 
 
 
+## Covariate information
+
+
+```{r, echo=F}
+
+
+
+#table1
+df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
+  subset(., select = c("country", Wvars)) %>%
+  rename(
+          `Caregiver education`=educ,
+          `Maternal age`=mage,
+          `Child age (days)`=aged,
+          `Child sex`=sex,
+          `Birth order`=birthord,
+          `Urban/rural`=rural,
+          `Currently breastfeeding`=currbf,
+          `Ever breastfed`=everbf,
+          `Number of children under 5`=nchild5,
+          `Household floor`=floor,
+          `Cookstove`=cookstove,
+          `Chimney`=chimney,
+          `Cooking fuel`=fuel,
+          `Roof construction`=roof,
+          `Wall material`=wall,
+          `Household size (people)`=nhh,
+          `House size (rooms)`=nroom_sleeping,
+          `Owns animals`=own_animals,
+          `Quartile of asset-based wealth`=HHwealth_quart,
+          
+          
+  )
 
 
 
 
 
+tab1 <- table1(~. |country, data=df)
+
+tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
+colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1)))
+
+pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country")
+```
 
 
-## plots
 
 
-```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 4}
+## Primary figures
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
 load(here("figures/figure_objects.Rdata"))
 
 p_prim_pooled
 
 ```
 
+__Figure 1.__ Random-effects pooled relative risks, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, for the 4 outcomes. Panels are divided by outcome, with ARI standing for acute respiratory infection. The Y axis lists the reference (improved) level of contrast, with the relative risk estimates between the listed reference level and the higher-risk (unimproved) level. For example, households with any level of E. coli contamination were compares to houses with uncontaminated HH water. Among other significant estimates, unimproved hygiene (no water and soap at handwashing station), unimproved sanitation, and unimproved combined WASH was associated with a higher risk of stunting, and unimproved combined WASH was associated with a higher risk of diarrhea. Larger confidence intervals may represent associations estimated less precisely (e.g. for a rarer outcome like ARI) or represent heterogeneity between the country-specific estimates.
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 6}
+p_multi_pooled
+```
+
+__Figure 2.__ Random-effects pooled relative risks, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, across the 4 outcomes for WASH conditions stratified into levels of the Joint Medical Program WASH ladder or by level of E.coli concentration. 
+The row labels list the WASH characteristic and the reference (most improved) level of contrast, and the Y-axis labels are the contrasting higher level of risk.
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 4}
+p_prim_forest_diar
+
+```
+
+__Figure 3.__ Country-specific and random-effects pooled relative risks for the primary outcome of diarrheal disease. Panels are divided by WASH condition, with the relative risk estimates between the reference level listed at the top of the panel and the higher-risk (unimproved) level. Missing estimates denote an outcome with too much sparsity in one strata of the contrast. For example, there are less than 10 cases of diarrhea in houses with improved WASH without E.coli contamination, so a relative risk was not estimated.
+
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 5}
+p_multi_forest_diar
+
+```
+
+__Figure 4.__ Country-specific and random-effects pooled relative risks, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, for the primary outcome of diarrhea across WASH conditions stratified into levels of the Joint Medical Program WASH ladder or by level of E.coli concentration. 
+The row labels list the WASH characteristic and the reference (most improved) level of contrast, and the Y-axis labels are the contrasting higher level of risk, and the color of points denotes the country of the survey.
+
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_prim_forest_secondary_outcomes
+
+```
+
+__Figure 5.__ Country-specific and random-effects pooled relative risks for the secondary outcomes. Panels are divided by WASH condition, with the relative risk estimates between the listed reference level and the higher-risk (unimproved) level. 
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_prim_Zscore_pooled
+
+```
+
+__Figure 6.__ Random-effects pooled Z-score differences, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, for the height-for-age Z-score (HAZ) and weight-for-height Z-scores (WHZ) outcomes. The Y axis lists the reference (improved) level of contrast, with the relative risk estimates between the listed reference level and the higher-risk (unimproved) level. 
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_prim_Zscore_forest
+
+```
+
+__Figure 7.__ Country-specific and random-effects pooled Z-score differences, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, for the HAZ and WHZ outcomes. The Y axis lists the reference (improved) level of contrast, with the relative risk estimates between the listed reference level and the higher-risk (unimproved) level. 
+
+
+
 ```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 8}
-p_prim_forest
+p_multi_forest_secondary_outcomes
+
+```
+
+__Figure 8.__ Country-specific and random-effects pooled relative risks, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, for the secondary binary outcomes. The row labels list the WASH characteristic and the reference (most improved) level of contrast, and the Y-axis labels are the contrasting higher level of risk, and the color of points denotes the country of the survey.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 4}
+pPAF_pos
+
+```
+
+__Figure 9.__ Country-specific population attributable fractions (PAFs) estimated from adjusted relative risks for the binary outcomes and WASH characterists. PAF's were only estimated for estimated relative risks greater than one. The confidence intervals are bootstrapped, with 100 bootstrap iteractions for the proof-of-concept analysis (the full analysis will use 1000 iterations).
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 4}
+p_prim_forest_mort
+
+```
+
+__Figure 10.__ Country-specific and random-effects pooled relative risks for all-cause child mortality. Panels are divided by WASH condition, with the relative risk estimates between the reference level listed at the top of the panel and the higher-risk (unimproved) level. Missing estimates denote an outcome with too much sparsity in one strata of the contrast. 
+
+
+## Sensitivity analysis figures
+
+Note: the sensitivity analyses are based on pooled estimated from binary codings of WASH characteristics for easier comparison between the primary and sensitivity results across the WASH conditions.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_rural_pooled
+
+```
+
+__Figure S1.__ Comparison of adjusted relative risks between urban and rural households across country-specific estimates of the relative risk of diarrhea. Eighty-one percent of Bangladeshi households are rural, 72% of Pakistani households are rural, and 65% of Zimbabwean households are rural. Missing estimates are from WASH-condition and outcome combinations with rarity in one strata. Relative risks are generally higher in urban populations, though the difference is small or imprecise.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_unadj_comp_RR
+
+```
+
+__Figure S2.__ Comparison of unadjusted and adjusted relative risks across pooled estimates and binary measures of improved WASH conditions. Unadjusted estimates are generally further from the null, indicating that covariate adjustment is correcting for some confounding between WASH conditions and child health outcomes (likely from socio-economic status as well as other factors).
+
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_unadj_comp_diff
+
+```
+
+__Figure S3.__ Comparison of unadjusted and adjusted Z-score differences across pooled estimates and binary measures of improved WASH conditions. Unadjusted estimates are generally further from the null, indicating that covariate adjustment is correcting for some confounding between WASH conditions and child growth.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_FE_comp_RR
+
+```
+__Figure S4.__ Comparison of random- and fixed-effects pooled relative risks across outcomes and binary measures of improved WASH conditions. Point estimates are very similiar, though random-effects estimates have larger confidence intervals when study-specific estimates are heterogeneous.
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_CC_comp_RR
+
+```
+__Figure S5.__ Comparison of pooled relative risks across outcomes and binary measures of improved WASH conditions from the primary analysis, where missing covariate information is imputed, and from a complete-case sensitivity analysis. Estimates are very similar, though the association between improved sanitation and stunting is larger and more precise after imputation. For categorical variables, a "missing" category was added, and for continuous variables missingness was imputed using the median. Multiple-imputation will be used in the full analysis.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_1step_comp_RR
+
+```
+__Figure S7.__ Comparison of 2-step (primary) and 1-step (sensitivity) pooled relative risks across outcomes and binary measures of improved WASH conditions. In 2-step meta-analyses, country-specific estimates are estimated first, and then pooled using traditional meta-analysis methods. In 1-step meta-analyses, the estimate of interest is estimated from a single model estimated using a dataset of all country-specific survey results. Here, the 2-step estimates are pooled using fixed effects to be more comparable to the 1-step estimate, as the random-effects for survey have not been implemented yet for the 1-step analysis. One and 2-step estimates are generally similiar here, with no discernible pattern in differences.
+
+
+
+# ```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+# 
+# p_tmle_glm_comp_RR
+# 
+# __Figure S8.__ Comparison of pooled relative risks across outcomes and binary measures of improved WASH conditions, estimated either with GLM and targeted maximum likelihood estimation (TMLE) models (fit using glm models). While the targeted estimation of the parameter of interest (here, the relative risk) can 
+# 
+# ```
+
+
+
+
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+
+p_tmle_comp_RR
 
 ```
 
 
 
-
-<!-- p_multi_pooled  -->
-<!-- p_multi_forest -->
-<!-- p_prim_Zscore_pooled -->
-<!-- p_prim_Zscore_forest -->
-<!--      pPAF -->
-<!--      p_unadj_comp_RR -->
-<!--      p_unadj_comp_diff -->
-<!--      p_tmle_comp_RR -->
-<!--      p_rural_pooled -->
-<!--      p_1step_comp_RR -->
-<!--      p_CC_comp_RR  -->
-<!--      p_FE_comp_RR -->
+__Figure S8.__ Comparison of pooled relative risks across outcomes and binary measures of improved WASH conditions, estimated either with GLM and targeted maximum likelihood estimation (TMLE) models, which use ensemble machine learning models in the estimation of relative risks. The TMLE models were estimated using library with simple means, generalized linear models, generalized additive models, penalized regressions, and gradient boosting machines. TMLE estimates are more precise and with different point estimates in certain cases, but were very slow to run, taking 7 days across all exposure-outcome combinations.
 
 
+
+## MICS surveys to use in full analysis
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 6}
+
+surv <- read.csv(here("data/water_quality_testing_surveys.csv")) %>% subset(., select = -c(X, reports))
+colnames(surv) <- c("Round","Region","Country","Year","Status","Datasets")
+surv <- surv %>% subset(., select = c(Region, Country, Year, Round,Status,Datasets)) %>% arrange(Region, Country, Year)
+pander(surv)
+```
+
+
+
+
+Questions
+* include severe growth outcomes?
+* change set of adjustment covariates
+*change TMLE to be just diarrhea outcome and E-Coli contamination
+
+
+
+Things to do
+* Make plot with adjusted TMLE
+* Compare Bangladesh estimates to WASH Benefits (focus on rural estimates). Zimbabwe to shine.
+
+
+
+
+Things to note
+* Modified poisson, clustered SE's on the household level with with glm() function
+* Convergence error when trying to use GEE for the modified poison
+* Sandwich SE
+* No weights implemented in the TMLE fits
+* no mortality outcome
+* Median, though Multiple-imputation will be used in the full analysis. Note CC analysis not that much different.
+* TMLE seems overly precise... increased statistical efficiency is one of the advantages, but checking into it
+
+* Make note on average number of covariates chosen
+  > summary(str_count(dfW$W, pattern = ", ") + 1)
+     Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    1.000   3.000  11.000   9.135  14.000  16.000 
+
+
+* Adjusted TMLE very slow - took 4 days to run for 3 countries, so choose just primary diarrhea outcome for full analysis
+* Note cutoff for MICS inclusion for full analysis
+* PAF
+* Check that the right contrasts were included.
+
+
+Things to note
+* proposed changes:
+* TMLE sensitivity analysis just for primary diarrhea outcome and measures of HH water contamination
+* Same with time-intensive stochastic intervention
+* Clustered SE on unique HH instead of inclusing a multi-level random effect for cluster and household. 
+* Add sensitivity analysis for clustering on the cluster ID
+
+* Add details on how covariates with many levels are coded
+  -coded from levels of given in the MICS documentation
 
 
 
