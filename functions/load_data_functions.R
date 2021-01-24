@@ -306,7 +306,7 @@ load_MICS_dataset <- function(country){
   }
   try(bh <- read_sav(data_path(bh_path)))
   
-  bh$mort <- ifelse(bh$BH5==2,1,0)
+  try(bh$mort <- ifelse(bh$BH5==2,1,0))
   # summary(d$BH9C)
   # table(d$BH9U, d$BH9N)
   
@@ -337,12 +337,12 @@ load_MICS_dataset <- function(country){
   d3 <- full_join(d2, hh, by = c("clust_num","HH_num"))
   dim(d3)
   
-  table(is.na(bh$brthord))
-  try(df <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
-  dim(df)
-  table(is.na(df$brthord))
+  #table(is.na(bh$brthord))
+  try(d3 <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
+  dim(d3)
+  #table(is.na(df$brthord))
   
-  df <- data.frame(df, country= country)
+  df <- data.frame(d3, country= country)
   df <- df %>%
     mutate_all(as.character)
   return(df)
@@ -352,5 +352,46 @@ load_MICS_dataset <- function(country){
 
 
 
-
-
+#clean WASH variables
+# clean_WASH <- function(d){
+#   colnames(d)
+#   table(d$WS1)
+#   table(d$WS1_lab)
+#   
+#   d <- d %>% mutate(
+#     wat_class_lab = case_when(
+#       WS1=="11" ~ "Piped water",
+#       WS1=="12" ~ "Piped water",
+#       WS1=="13" ~ "Piped water",
+#       WS1=="14" ~ "Piped water",
+#       WS1=="21" ~ "Boreholes/Tubewells",
+#       WS1=="22" ~ "Boreholes/Tubewells",
+#       WS1=="23" ~ "Boreholes/Tubewells",
+#       WS1=="31" ~ "Protected wells and springs",
+#       WS1=="32" ~ "Unprotected wells and springs",
+#       WS1=="41" ~ "Protected wells and springs",
+#       WS1=="42" ~ "Unprotected wells and springs",
+#     )
+#   
+#   [3] "Rainwater"                     "Surface water"                
+#   [5] "Protected wells and springs"   "Packaged water"               
+#   [7] "Unprotected wells and springs" "Delivered water"              
+#   [9] NA    
+#   
+#   res <- d %>% group_by(WS1) %>%
+#     do(res=paste0(.$WS1[1],": ", unique(.$WS1_lab)))
+#   res[[2]]
+#   wat_class_lab
+#   
+#   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
+#                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
+#                           wat_imp=="Improved" & d$WS4>30~"Limited",
+#                           wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2")~"Basic",
+#                           wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous",
+#   ),
+#   wat_imp_cat = factor(wat_imp_cat, levels=c("Surface water", "Unimproved", "Limited", "Basic","Continuous"))
+#   
+#   
+#   
+#   
+# }
