@@ -47,7 +47,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
                                        pval = 0.2, print = F)))
     #select n/10 covariates if binary outcome
     if(family!="gaussian" & !is.null(Wscreen)){
-      nY<-floor(min(table(df$Y, df$X))/10)
+      nY<-floor(min(table(df$Y))/10)
       if(length(Wscreen)>nY){
         Wscreen<-Wscreen[1:nY]
       }
@@ -118,7 +118,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   if(family=="modified possion"){
     
     #check sparsity
-    sparseN<-min(table(df$X, df$Y))
+    sparseN<-min(table(df$Y))
     if(sparseN>10 & min(dim(table(df$X, df$Y)))==2){
     
     
