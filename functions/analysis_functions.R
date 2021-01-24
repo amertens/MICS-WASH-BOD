@@ -437,7 +437,7 @@ MICS_prescreen<-function (Y, Ws, family = "gaussian", pval = 0.2, print = TRUE){
     stop("P-value threshold not set between 0 and 1.")
   }
   Ws <- as.data.frame(Ws)
-  dat <- data.frame(Ws, Y)
+  dat <- bind_cols(Ws, data.frame(Y=Y))
   nW <- ncol(Ws)
   LRp <- matrix(rep(NA, nW), nrow = nW, ncol = 1)
   rownames(LRp) <- names(Ws)
@@ -463,6 +463,8 @@ MICS_prescreen<-function (Y, Ws, family = "gaussian", pval = 0.2, print = TRUE){
   if (print == TRUE) {
     cat("\nLikelihood Ratio Test P-values:\n")
     print(round(LRp, 5))
+  }
+  
     if (sum(p20) > 0) {
       LRps <- matrix(LRp[p20 == 1, ], ncol = 1)
       rownames(LRps) <- names(Ws)[p20 == 1]
@@ -471,13 +473,12 @@ MICS_prescreen<-function (Y, Ws, family = "gaussian", pval = 0.2, print = TRUE){
       cat(paste("\n\nCovariates selected (P<", pval, 
                 "):\n", sep = ""))
       print(LRps)
-    }
-    else {
+    }else{
       cat(paste("\nNo covariates were associated with the outcome at P<", 
                 pval))
     }
-  }
-  if (sum(p20) > 0) {
+  
+  if(sum(p20) > 0){
     return(rownames(LRps))
   }else{
     return(NULL)
