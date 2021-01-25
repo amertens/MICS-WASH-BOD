@@ -124,6 +124,8 @@ table(d$cookstove)
 #----------------------------------------------------------------------
 unique(d$roof)
 
+table(d$country, is.na(d$roof))
+
 #d$roof <- clean_factor(d$roof)
 d$roof <- recode(d$roof, 
                  "11" = "unimproved",
@@ -212,7 +214,7 @@ d$wall <- recode(d$wall,
                  "96" = "missing",
                  "99" = "missing",
                  .default = "missing")
-d$roof <- factor(d$roof, levels = c("natural","rudimentary","finished","missing"))
+d$wall <- factor(d$wall, levels = c("natural","rudimentary","finished","missing"))
 
 table(d$wall)
 
@@ -293,3 +295,5 @@ d$birthord <- as.numeric(d$birthord)
 
 
 saveRDS(d, here("data/compiled_clean_MICS_survey.rds"))
+
+table(d$country, is.na(d$roof))
