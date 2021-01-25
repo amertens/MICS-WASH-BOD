@@ -1,5 +1,5 @@
 
-
+rm(list=ls())
 source("0-config.R")
 
 
@@ -13,14 +13,6 @@ source("0-config.R")
 
 #To add (in the future):
         # Samoa (not available yet)
-        # Tonga
-        # Iraq
-        # Guinea-Bissau
-
-
-
-
-
 
 
 #Newly added:
@@ -42,8 +34,6 @@ ks <- load_MICS_dataset("Kosovo")
 #cuba <- load_MICS_dataset("Cuba") #check but Cuba doesn't have WQ module
 STP <- load_MICS_dataset("Sao Tome and Principe")
         STP <- clean_WASH(STP)
-cg <- load_MICS_dataset("Congo") 
-        cg <- clean_WASH(cg)
 np <- load_MICS_dataset("Nepal") 
         np <- clean_WASH(np)
 DRC <- load_MICS_dataset("DRC") 
@@ -53,7 +43,7 @@ ta <- load_MICS_dataset("Tonga")
 G_B <- load_MICS_dataset("Guinea Bissau") #don
         G_B <- clean_WASH(G_B)
 
-        
+cg <- load_MICS_dataset("Congo") 
 ki <- load_MICS_dataset("Kiribati")
 laPDR <- load_MICS_dataset("LaoPDR")
 le <- load_MICS_dataset("Lesotho")
@@ -100,6 +90,25 @@ ni <- ni %>% rename(
 
 
 ls()
+
+
+  save(bd, 
+        cg,
+        ga,
+        gb,
+        iq,
+        gh,ki,laPDR, 
+        DRC, ta, G_B,
+        le,md,mo,          
+        ni,
+        np,
+        pakPun, par,
+        SL,              
+        sur, tg, tun, ze,
+        al, ks, STP, file=here("data/raw_MICS_surveys.rdata"))
+
+  
+#load(here("data/raw_MICS_surveys.rdata"))
 d <- bind_rows(bd, 
                cg,
                #CI,
@@ -118,5 +127,8 @@ d <- bind_rows(bd,
 
 
 dim(d)
+colnames(d)
 
 saveRDS(d, here("data/compiled_raw_MICS_survey.rds"))
+
+table(d$country, d$san_cat_lab)

@@ -1,0 +1,182 @@
+---
+title: "Tables"
+author: "Andrew Mertens"
+date: "Sept 28, 2020"
+output:
+  html_document:
+    df_print: paged
+  word_document:
+    reference_docx: MICS_WASH_BOD_analysis_plan.docx
+---
+
+<!-- output: html_notebook -->
+<!-- editor_options:  -->
+<!--   chunk_output_type: inline -->
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn = -1) 
+library(janitor)
+library(knitr)
+library(here)
+library(table1)
+library(rvest)
+
+source(here("0-config.R"))
+
+
+op = function(x, d=2) sprintf(paste0("%1.",d,"f"), x) 
+ library(pander)
+panderOptions('digits', 2)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('graph.fontsize', 8)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+## Descriptive statistics
+
+```{r, echo=F, warning=F, message=F}
+
+dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
+
+#child health data
+ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea))
+
+#Make a N children and child age/ num kids per HH table
+res <-ch %>% group_by(country) %>%
+  summarise(N=n(), child_age=mean(aged, na.rm=T)/365, min_child_age=min(aged, na.rm=T)/365, max_child_age=max(aged, na.rm=T)/365)
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Descriptive statistics of measured children by country")
+
+
+
+res <- ch %>% group_by(country) %>%
+  summarise(N_haz=sum(!is.na(haz)), Mean_HAZ=mean(haz, na.rm=T), Prev_Stunting=mean(haz < (-2), na.rm=T)*100, Prev_Sev_Stunting=mean(haz < (-3), na.rm=T)*100,
+            N_whz=sum(!is.na(whz)), Mean_WHZ=mean(whz, na.rm=T), Prev_Wasting=mean(whz < (-2), na.rm=T)*100, Prev_Sev_Wasting=mean(whz < (-3), na.rm=T)*100)
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Descriptive statistics of growth outcomes by country")
+
+res <-ch %>% group_by(country) %>%
+  summarise(N_diarrhea_meas=sum(!is.na(diarrhea)), N_diarrhea=sum(diarrhea, na.rm=T),  Prev_diarrhea=mean(diarrhea, na.rm=T)*100,
+            N_ARI_meas=sum(!is.na(ari)), N_ARI=sum(ari, na.rm=T),  Prev_ARI=mean(ari, na.rm=T)*100)
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Descriptive statistics of diarrhea and acute respiratory infection outcomes by country")
+
+
+
+
+
+#HH data
+d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
+  distinct(country, clust_num, HH_num, .keep_all = T)
+
+
+
+
+res <-d %>% group_by(country) %>%
+  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp)-1, na.rm=T), N_imp_WASH=sum(as.numeric(WASH_noEC)-1, na.rm=T))
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Binary measures of improved WASH conditions by country")
+
+
+res <-d %>% group_by(country) %>%
+  summarise(N_households=n(), N_EC_Household=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_Source=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_and_no_EC=sum(as.numeric(WASH)-1, na.rm=T))
+
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Binary measures of E.coli contamination by country")
+
+res <-d %>% tabyl(country, wat_imp_cat)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Drinking water conditions by country")
+
+res <-d %>% tabyl(country, san_imp_cat)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Sanitation conditions by country")
+
+res <-d %>% tabyl(country, hyg_imp_cat)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Hygeine conditions by country")
+
+res <-d %>% tabyl(country, EC_risk_H)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Household E.coli contamination by country")
+
+res <-d %>% tabyl(country, EC_risk_S)
+colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+pander(res, digits=2, caption = "Source water E.coli contamination by country")
+
+
+
+         
+            
+```
+
+
+
+## Covariate information
+
+
+```{r, echo=F}
+
+
+
+#table1
+df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
+  subset(., select = c("country", Wvars)) %>%
+  rename(
+          `Caregiver education`=educ,
+          `Maternal age`=mage,
+          `Child age (days)`=aged,
+          `Child sex`=sex,
+          `Birth order`=birthord,
+          `Urban/rural`=rural,
+          `Currently breastfeeding`=currbf,
+          `Ever breastfed`=everbf,
+          `Number of children under 5`=nchild5,
+          `Household floor`=floor,
+          `Cookstove`=cookstove,
+          `Chimney`=chimney,
+          `Cooking fuel`=fuel,
+          `Roof construction`=roof,
+          `Wall material`=wall,
+          `Household size (people)`=nhh,
+          `House size (rooms)`=nroom_sleeping,
+          `Owns animals`=own_animals,
+          `Quartile of asset-based wealth`=HHwealth_quart,
+          
+          
+  )
+
+
+miss_tab <- matrix(NA, nrow=length(unique(df$country)), ncol=ncol(df))
+miss_tab[,1] <- unique(df$country)
+for(i in 2:ncol(df)){
+  sub <- data.frame(country=df$country, var=df[,i])
+  res <- sub %>% group_by(country) %>%
+    summarize(miss=round(mean(is.na(var))*100,1))
+  miss_tab[,i] <- res$miss
+}
+
+pander(miss_tab, digits=2, caption = "Missingness of covariates by country")
+
+
+tab1 <- table1(~. |country, data=df)
+
+tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
+colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1)))
+
+pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country")
+```
