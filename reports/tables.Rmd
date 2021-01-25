@@ -169,7 +169,9 @@ for(i in 2:ncol(df)){
     summarize(miss=round(mean(is.na(var))*100,1))
   miss_tab[,i] <- res$miss
 }
-
+miss_tab <- data.frame(miss_tab)
+colnames(miss_tab) <- colnames(df)
+  
 pander(miss_tab, digits=2, caption = "Missingness of covariates by country")
 
 
