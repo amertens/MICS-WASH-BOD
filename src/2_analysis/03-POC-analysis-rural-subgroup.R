@@ -4,7 +4,7 @@ source("0-config.R")
 
 
 #load clean data
-d <- readRDS(here("data/compiled_clean_POC_survey.rds"))
+d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 
 
 
