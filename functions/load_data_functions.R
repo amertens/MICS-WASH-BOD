@@ -238,7 +238,7 @@ namekey <- c(
 country="Nigeria"
 country="Cuba"
 
-load_MICS_dataset <- function(country){
+load_MICS_dataset <- function(country, saveCodebook=F){
   path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
   bh_path=paste0(country,"/bh.sav")
@@ -318,9 +318,6 @@ load_MICS_dataset <- function(country){
                                         #HH.LN, 
                                         childLN, brthord, mort))) 
   
-  #lab<-makeVlist(d)
-  #write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
-  
   
   
   # Relations with: hl.sav, tn.sav, wm.sav, bh.sav, fg.sav, mm.sav, ch.sav, fs.sav and mn.sav
@@ -342,9 +339,17 @@ load_MICS_dataset <- function(country){
   dim(d3)
   #table(is.na(df$brthord))
   
+  if(saveCodebook){
+    lab<-makeVlist(d3)
+    write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
+  }
+  
   df <- data.frame(d3, country= country)
   df <- df %>%
     mutate_all(as.character)
+  
+  
+  
   return(df)
 }
 
@@ -418,23 +423,26 @@ clean_WASH <- function(d){
       wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells")  ~ 1,
       wat_class_lab == "Missing" ~ NA_real_
     )),
-    san_class_lab = NA,
-    san_class_lab = case_when(
+    san_cat_lab = NA,
+    san_cat_lab = case_when(
        WS11 %in% c("95") ~ "No facility",
        WS11 %in% c("14","18","23","51") ~ "Unimproved",
        WS15 == "2" & WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
        WS11 %in% c("96","99") ~ NA_character_,
-       is.na(san_class_lab) ~ "Unimproved"
+       is.na(san_cat_lab) ~ "Unimproved"
     ),
     san_imp = as.character(case_when(
-      san_class_lab %in% c("Unimproved","No facility")  ~ 0,
-      san_class_lab == c("Improved")  ~ 1,
-      san_class_lab == "Missing" | is.na(san_class_lab) ~ NA_real_
+      san_cat_lab %in% c("Unimproved","No facility")  ~ 0,
+      san_cat_lab == c("Improved")  ~ 1,
+      san_cat_lab == "Missing" | is.na(san_cat_lab) ~ NA_real_
       )),
     ecpopweight_H = wqhweight,
     ecpopweight_S = wqsweight,
     popweight = hhweight
     )
+  
+  d$EC_100_H <- as.numeric(d$EC_100_H)
+  d$EC_100_S <- as.numeric(d$EC_100_S)
 d$EC_risk_H_1 <- ifelse(d$EC_100_H==0,"100","0") 	#Low risk: E. coli < 1 cfu/100 mL
   d$EC_risk_H_1[is.na(d$EC_100_H)] <-  NA
 d$EC_risk_H_2 <- ifelse(d$EC_100_H>0 & d$EC_100_H<11,"100","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
@@ -451,7 +459,9 @@ d$EC_risk_S_3 <- ifelse(d$EC_100_S>10 & d$EC_100_S<101,"100","0") 	#High risk: E
   d$EC_risk_S_3[is.na(d$EC_100_S)] <-  NA
 d$EC_risk_S_4 <- ifelse(d$EC_100_S>100,"100","0") 	#Very high risk: E. coli >100 cfu/100 mL
   d$EC_risk_S_4[is.na(d$EC_100_S)] <-  NA
-# 
+  d$EC_100_H <- as.character(d$EC_100_H)
+  d$EC_100_S <- as.character(d$EC_100_S)
+
 #   table(d$EC_risk_H_1)
 #   table(d$EC_risk_H_2)
 #   table(d$EC_risk_H_3)
@@ -500,3 +510,14 @@ d$EC_risk_S_4 <- ifelse(d$EC_100_S>100,"100","0") 	#Very high risk: E. coli >100
   
   
 }
+
+
+
+
+
+
+
+
+
+
+

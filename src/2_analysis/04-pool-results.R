@@ -17,7 +17,7 @@ d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="mortality") 
 
 
 
-d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_CC_adj, d_clust_adj, d_mort)
+d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort)
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
 d$ref[is.na(d$ref)] <- "0"
 d$contrast[is.na(d$contrast )] <- "1"
@@ -77,7 +77,7 @@ df <- bind_rows(ind_df, RMAest_cont, RMAest_bin, df_FE)
 
 head(df)
 
-saveRDS(df, here("results/pooled_POC_results.rds"))
+saveRDS(df, here("results/pooled_results.rds"))
 
 #Get average number of covariates selected
 dfW <- d %>% filter(W!="unadjusted")

@@ -53,6 +53,8 @@ d <- d %>% mutate(
 
 table(d$EC_risk_S)
 table(d$EC_risk_H)
+table(d$country, d$EC_risk_S)
+table(d$country, d$EC_risk_H)
 table(is.na(d$EC_risk_S))
 table(is.na(d$EC_risk_H))
 prop.table(table(is.na(d$EC_risk_S)))
@@ -73,10 +75,34 @@ table(d$HW7A)
 table(d$HW7B)
 table(d$HW7C)
 
-d$hyg_imp <- factor(ifelse(d$HW2==1 & (d$HW7A=="A"|d$HW7B=="B"), "Improved","Unimproved"), levels=c("Improved","Unimproved"))
+table(d$country, d$HW2)
+table(d$country, d$HW7A)
+table(d$country, d$HW7B)
+
+
+HW3BB
+HW3BC
+table(d$country, d$HW3BA)
+table(d$country, d$HW3BB)
+table(d$country, d$HW3BC)
+table(d$country, d$HW3A)
+
+table(d$HW7A, d$HW3BA)
+table(d$HW7A=="A", d$HW3BA=="A")
+
+
+
+d$hyg_imp <- factor(ifelse(d$HW2==1 & 
+                             ((d$HW7A=="A" & !is.na(d$HW7A))|
+                                (d$HW7B=="B" & !is.na(d$HW7B))|
+                                (d$HW3BA=="A" & !is.na(d$HW3BA))|
+                                (d$HW3BB=="B" & !is.na(d$HW3BB))|
+                                (d$HW3BC=="C" & !is.na(d$HW3BC))), 
+                           "Improved","Unimproved"), levels=c("Improved","Unimproved"))
 d$hyg_imp[(d$HW2==9 | d$HW1>4)] <- NA
 table(d$hyg_imp)
 prop.table(table(d$hyg_imp))
+table(d$country, d$hyg_imp)
 
 # 1.	None (no facility)
 # 2.	Limited - availability of a handwashing facility on premises without soap or water
@@ -84,8 +110,8 @@ prop.table(table(d$hyg_imp))
 d <- d %>% mutate(
   hyg_imp_cat = case_when(
     HW2 == 2 ~"None",
-    HW2 == 1 & hyg_imp != 1 ~"Limited",
-    hyg_imp == 1 ~"Basic"
+    HW2 == 1 & hyg_imp != "Improved" ~"Limited",
+    hyg_imp == "Improved" ~"Basic"
   ),
   hyg_imp_cat = factor(hyg_imp_cat, levels=c("None", "Limited", "Basic"))
 )
@@ -94,13 +120,29 @@ table(d$hyg_imp_cat)
 
 #Recode improved sanitation and water
 #https://www.who.int/water_sanitation_health/monitoring/oms_brochure_core_questionsfinal24608.pdf
+d<- d %>% mutate(
+  san_imp = case_when(
+    san_imp==0 ~ "Unimproved",
+    san_imp==1 ~ "Improved",
+    is.na(san_imp) ~ NA_character_
+  ),
+  wat_imp = case_when(
+    wat_imp==0 ~ "Unimproved",
+    wat_imp==1 ~ "Improved",
+    is.na(wat_imp) ~ NA_character_
+  )
+)
+
+
 table(d$san_imp)
-d$san_imp<-factor(d$san_imp_lab, levels=c("Improved","Unimproved"))
+d$san_imp<-factor(d$san_imp, levels=c("Improved","Unimproved"))
 table(d$san_imp)
+table(d$country, d$san_imp)
 
 table(d$wat_imp)
-d$wat_imp<-factor(d$wat_imp_lab, levels=c("Improved","Unimproved"))
+d$wat_imp<-factor(d$wat_imp, levels=c("Improved","Unimproved"))
 table(d$wat_imp)
+table(d$country, d$wat_imp)
 
 
 #Recode categorical sanitation and water
@@ -122,6 +164,7 @@ d <- d %>% mutate(
   san_imp_cat = factor(san_imp_cat, levels=c("No facility", "Unimproved", "Limited", "Basic"))
 )
 table(d$san_imp_cat)
+table(d$country, d$san_imp_cat)
 
 
 
@@ -151,6 +194,7 @@ d <- d %>% mutate(
   wat_imp_cat = factor(wat_imp_cat, levels=c("Surface water", "Unimproved", "Limited", "Basic","Continuous"))
 )
 table(d$wat_imp_cat)
+table(d$country, d$wat_imp_cat)
 
 
 
