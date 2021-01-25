@@ -3,48 +3,28 @@
 rm(list=ls())
 source("0-config.R")
 
+d_unadj <- d_RR_multi_unadj <- d_adj <- d_RR_multi_adj <- d_tmle_adj <- d_rural_adj <- d_mort <- NULL
+
 d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="primary", W = "unadjusted")
 d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted")
 d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary")
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi")
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle") %>% rename(coef=est)
-d_tmle_glm_adj <- readRDS(here("results/adjusted_tmle_glm_ests.rds")) %>% mutate(analysis="tmle-glm") %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
-d_1step_adj <- readRDS(here("results/adjusted_1step_sens.rds")) %>% mutate(analysis="1step")
-d_CC_adj <- readRDS(here("results/adjusted_CC_sens.rds")) %>% mutate(analysis="CC")
-d_clust_adj <- readRDS(here("results/adjusted_RR_clustid_sens.rds")) %>% mutate(analysis="clustid")
 d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="mortality") %>% 
   #temp
   filter(adjusted==0)
 
 
-#Bangladesh rural estimates
-d_rural_adj %>% filter(country=="Bangladesh", subgroup=="Rural", Y=="diarrhea", !(X %in% c("EC_H", "EC_S", "WASH", "safely_manH20"))) %>% 
-  mutate(prot_RR = 1/RR, lb=1/ci.ub, ub=1/ci.lb) %>% subset(., select = -c(W, analysis, subgroup)) %>% as.data.frame()
 
-d_rural_adj %>% filter(country=="Zimbabwe", subgroup=="Rural", Y=="diarrhea", (X %in% c("WASH_noEC"))) %>% 
-  mutate(prot_RR = 1/RR, lb=1/ci.ub, ub=1/ci.lb) %>% subset(., select = -c(W, analysis, subgroup)) %>% as.data.frame()
-
-d_rural_adj %>% filter(country=="Bangladesh", subgroup=="Rural", Y=="stunt", !(X %in% c("EC_H", "EC_S", "WASH", "safely_manH20"))) %>% 
-  mutate(prot_RR = 1/RR, lb=1/ci.ub, ub=1/ci.lb) %>% subset(., select = -c(W, analysis, subgroup)) %>% as.data.frame()
-
-d_rural_adj %>% filter(country=="Zimbabwe", subgroup=="Rural", Y=="stunt", (X %in% c("WASH_noEC"))) %>% 
-  mutate(prot_RR = 1/RR, lb=1/ci.ub, ub=1/ci.lb) %>% subset(., select = -c(W, analysis, subgroup)) %>% as.data.frame()
-
-
-d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_tmle_glm_adj, d_rural_adj, d_1step_adj, d_CC_adj, d_clust_adj, d_mort)
+d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_CC_adj, d_clust_adj, d_mort)
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
 d$ref[is.na(d$ref)] <- "0"
 d$contrast[is.na(d$contrast )] <- "1"
 d$subgroup[is.na(d$subgroup )] <- "unstratified"
 
 
-#TEMP! Drop sparse levels
-#d <- d %>% filter(n >50)
 
-
-
-head(d)
 
 d$binary <- ifelse(d$Y %in% c("ari", "diarrhea", "stunt", "wast", "mort"), 1, 0)
 
@@ -96,7 +76,6 @@ df_FE <- bind_rows(RMAest_cont_FE, RMAest_bin_FE) %>% filter(analysis=="primary"
 df <- bind_rows(ind_df, RMAest_cont, RMAest_bin, df_FE)
 
 head(df)
-
 
 saveRDS(df, here("results/pooled_POC_results.rds"))
 

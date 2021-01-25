@@ -10,25 +10,6 @@ dPAF_pos <- readRDS(here("results/paf_pos_results.rds"))
 df <- readRDS(here("data/compiled_clean_POC_survey.rds")) %>% filter(country=="Bangladesh")
 table(df$san_imp, df$stunt)
 
-#proportion of cases that are exposed
-pc <- mean(as.numeric(df$san_imp[df$stunt==1])-1, na.rm=T)
-
-dPAF_sig[1,]
-d %>% filter(analysis=="primary", Y=="stunt", X=="san_imp", adjusted==1, country=="Bangladesh")  
-
-RR <- 1.13
-
-(pc *(RR-1))/RR * 100
-dPAF_sig[1,] #PAF's are very close
-
-
-#drop sparse levels
-#d <- d %>% filter(n >50 | country=="pooled") %>% filter(Y!="waz")
-
-table(d$analysis)
-table(d$X)
-table(d$Y)
-table(d$ref, d$contrast)
 
 #Clean data for primary figure
 d <- d %>% 
