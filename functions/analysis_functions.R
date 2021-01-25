@@ -1159,7 +1159,11 @@ mpreg <- function(varnames, formula, df, family, vcv=FALSE) {
   }
   
   # extract parameters and covariance matrix
-  betas <- lapply( mod , FUN = function(rr){ coef(rr) } )
+  get_coef <- function(df){
+    cf <- coef(df)
+    df <- cf[!is.na(cf)]
+  }
+  betas <- lapply( mod , FUN = function(rr){ get_coef(rr) } )
   vars <- lapply( mod , FUN = function(rr){ vcov(rr) } )
   # conduct statistical inference
   invisible(fit <- summary(pool_mi( qhat = betas, u = vars )))
