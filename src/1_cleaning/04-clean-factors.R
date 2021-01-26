@@ -45,7 +45,7 @@ d$educ <- recode(d$educ,
                  "9" = "missing",
                  "99" = "missing",
                  .default = "missing")
-
+d$educ <- fct_explicit_na(d$educ, "missing")
 d$educ <- factor(d$educ, levels = c("none","primary","secondary", "higher","missing"))
 
 table(d$educ)
@@ -88,7 +88,7 @@ d$floor <- recode(d$floor,
                   "98" = "missing",
                   "99" = "missing",
                   .default = "missing")
-
+d$floor <- fct_explicit_na(d$floor, "missing")
 d$floor <- factor(d$floor, levels = c("unimproved","rudimentary","improved","missing"))
 
 table(d$floor)
@@ -114,6 +114,7 @@ d$cookstove <- recode(d$cookstove,
                       "97" = "missing",
                       "99" = "missing",
                       .default = "missing")
+d$cookstove <- fct_explicit_na(d$cookstove, "missing")
 d$cookstove <- factor(d$cookstove, levels = c("unimproved","improved","missing"))
 
 table(d$cookstove)
@@ -148,6 +149,7 @@ d$roof <- recode(d$roof,
                  "96" = "missing",
                  "99" = "missing",
                  .default = "missing")
+d$roof <- fct_explicit_na(d$roof, "missing")
 d$roof <- factor(d$roof, levels = c("unimproved","improved","missing"))
 
 table(d$roof)
@@ -169,6 +171,7 @@ d <- d %>% mutate(
     chimney=="8" ~ "missing",  
     chimney=="9" ~ "missing"
   ))
+d$chimney <- fct_explicit_na(d$chimney, "missing")
 
 
 table(d$chimney)
@@ -215,6 +218,7 @@ d$wall <- recode(d$wall,
                  "99" = "missing",
                  .default = "missing")
 d$wall <- factor(d$wall, levels = c("natural","rudimentary","finished","missing"))
+d$wall <- fct_explicit_na(d$wall, "missing")
 
 table(d$wall)
 
@@ -248,6 +252,7 @@ d$fuel <- recode(d$fuel,
                  "missing" = "99",
                  .default = "missing")
 d$fuel <- factor(d$fuel, levels = c("solid","clean","missing"))
+d$fuel <- fct_explicit_na(d$fuel, "missing")
 
 table(d$fuel)
 
@@ -294,6 +299,7 @@ d$nroom_sleeping <- as.numeric(d$nroom_sleeping)
 d$birthord <- as.numeric(d$birthord)
 
 
+
+
 saveRDS(d, here("data/compiled_clean_MICS_survey.rds"))
 
-table(d$country, is.na(d$roof))

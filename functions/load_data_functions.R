@@ -236,13 +236,13 @@ namekey <- c(
 # }
 
 country="Nigeria"
-country="Cuba"
 
 load_MICS_dataset <- function(country, saveCodebook=F){
   path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
   bh_path=paste0(country,"/bh.sav")
   hh_path=paste0(country,"/hh.sav")
+  hl_path=paste0(country,"/hl.sav")
   
   d <- NULL
   try(d <- read_dta(data_path(path)))
@@ -264,13 +264,14 @@ load_MICS_dataset <- function(country, saveCodebook=F){
     }
   }
 
+
   if(isFile(data_path(hh_path))){
     hh <- read_sav(data_path(hh_path))
   }else{
     hh_path=paste0(country,"/hh.dta")
     hh <- read_dta(data_path(hh_path))
   }
-  summary(hh$WQ26)
+  #summary(hh$WQ26)
 
   dim(hh)
   hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
@@ -290,14 +291,17 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   }else{
     ch$childLN=NA
   }
+  if(!("UF4" %in% colnames(ch))){
+    ch <- ch %>% rename(UF4=UF6)
+  }
   #subset to relevant CH variables
   if(!is.null(ch$CAGED)){
-    ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "childLN", "HL4", "CAGED", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
+    ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "UF4", "childLN", "melevel", "HL4", "CAGED", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
                                                "HAZFLAG", "WAZFLAG", "WHZFLAG", "CA1","CA14","CA16","CA17","CA18","CA20")]]
     # ch <- ch %>% subset(., select = c(clust_num, HH_num, 
     #                                   childLN, HL4, CAGED, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20))
   }else{
-    ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "childLN", "HL4", "CAGE", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
+    ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "UF4", "childLN", "melevel","HL4", "CAGE", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
                                                "HAZFLAG", "WAZFLAG", "WHZFLAG", "CA1","CA14","CA16","CA17","CA18","CA20")]]
     # ch <- ch %>% subset(., select = c(clust_num, HH_num, 
     #                                   childLN, HL4, CAGE, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20)) %>%
@@ -314,11 +318,9 @@ load_MICS_dataset <- function(country, saveCodebook=F){
                            #HH.LN=LN, 
                            childLN=BH8))
   #subset to relevant BH variables
-  try(bh <- bh %>% subset(., select = c(clust_num, HH_num, 
-                                        #HH.LN, 
-                                        childLN, brthord, mort))) 
+  try(bh <- bh[,colnames(bh) %in% c("clust_num", "HH_num","childLN", "brthord", "mort")])
   
-  
+
   
   # Relations with: hl.sav, tn.sav, wm.sav, bh.sav, fg.sav, mm.sav, ch.sav, fs.sav and mn.sav
   # Base key variables: HH1 (cluster number) and HH2 (household number)
@@ -338,6 +340,33 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   try(d3 <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
   dim(d3)
   #table(is.na(df$brthord))
+  
+  hl <- NULL
+  if(is.null(d3$HHAGE)){
+    hl <- read_sav(data_path(hl_path))
+    #lab<-makeVlist(hl)
+    hl2 <- NULL
+    try(
+      hl2 <- hl %>%
+      rename(UF4=HL8,
+             HH_num=HH2,
+             clust_num=HH1,
+             HHAGE=ED2A) %>%
+      select(clust_num, HH_num, UF4, HHAGE) %>% filter(UF4!=0))
+    if(is.null(hl2)){
+      hl2 <- hl %>%
+        rename(UF4=HL7,
+               HH_num=HH2,
+               clust_num=HH1,
+               HHAGE=HL6) %>%
+        select(clust_num, HH_num, UF4, HHAGE) %>% filter(UF4!=0)
+    }
+    
+    dim(d3)
+    dim(hl2)
+    d3 <- left_join(d3, hl2, by=c("clust_num","HH_num","UF4"))
+    dim(d3)
+  }
   
   if(saveCodebook){
     lab<-makeVlist(d3)
