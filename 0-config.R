@@ -18,6 +18,8 @@ library(R.utils)
 library(tlverse)
 library(sl3)
 try(library(washb))
+
+#install_github("Larsvanderlaan/tmle3@firstChanges") #Lar's development version with survey weights
 library(tmle3)
 
 library(mice) # Data imputation

@@ -47,7 +47,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
                                        pval = 0.2, print = F)))
     #select n/10 covariates if binary outcome
     if(family!="gaussian" & !is.null(Wscreen)){
-      nY<-floor(min(table(df$Y))/10)
+      nY<-floor(min(table(df$Y))/10) -1 #minus one because 10 variables needed to estimate coef. of X
       if(length(Wscreen)>nY){
         Wscreen<-Wscreen[1:nY]
       }
@@ -132,8 +132,9 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   if(family=="modified possion"){
     
     #check sparsity
-    sparseN<-min(table(df$Y))
-    if(sparseN>10 & min(dim(table(df$X, df$Y)))==2){
+    sparseN1<-min(table(df$Y))
+    sparseN2<-min(table(df$Y,df$X))
+    if(sparseN1>=10 & sparseN2>=5 & min(dim(table(df$X, df$Y)))==2){
     
     
     #model formula
@@ -1110,6 +1111,7 @@ mpreg <- function(varnames, formula, df, family, vcv=FALSE) {
   meth <- make.method(df)
   pred <- make.predictorMatrix(df)
   
+  set.seed(12345)
   imp <-mice(df, 
              meth = meth, 
              pred = pred, 

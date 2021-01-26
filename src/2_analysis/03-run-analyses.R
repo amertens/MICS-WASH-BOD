@@ -2,7 +2,7 @@
 
 source("0-config.R")
 
-source(here("src/03-POC-analysis.R"))
+source(here("src/01-primary-analysis.R"))
 
 source(here("src/03-POC-analysis-multinomial.R"))
 # source(here("src/03-POC-analysis-rural-subgroup.R"))
