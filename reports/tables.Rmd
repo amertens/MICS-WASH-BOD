@@ -125,6 +125,38 @@ pander(res, digits=2, caption = "Source water E.coli contamination by country")
 ```
 
 
+## Outcome missingness
+```{r, echo=F}
+#table1
+Yvars = c("diarrhea", 
+                                "ari",
+                                "mort",
+                                "fever", 
+                                "haz","waz","whz",
+                                "stunt", "wast")
+
+df <- dfull  %>%
+  subset(., select = c("country", Yvars))
+
+
+# miss_tab <- data.frame(country=df$country)
+# for(i in 2:ncol(df)){
+#   sub <- data.frame(country=df$country, var=df[,i])
+#   res <- sub %>% group_by(country) %>%
+#     summarize(miss=round(mean(is.na(var))*100,1))
+#   colnames(res)[2] <- colnames(df)[i]
+#   miss_tab <- left_join(miss_tab, res, by="country")
+# }
+# miss_tab <- data.frame(miss_tab)
+
+miss_tab = df %>% 
+  group_by(country) %>% 
+  summarise_each(funs(mean(is.na(.))*100))
+
+  
+pander(miss_tab, digits=2, caption = "Missingness of otcomes by country")
+```
+
 
 ## Covariate information
 
@@ -161,18 +193,27 @@ df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
   )
 
 
-miss_tab <- matrix(NA, nrow=length(unique(df$country)), ncol=ncol(df))
-miss_tab[,1] <- unique(df$country)
-for(i in 2:ncol(df)){
-  sub <- data.frame(country=df$country, var=df[,i])
-  res <- sub %>% group_by(country) %>%
-    summarize(miss=round(mean(is.na(var))*100,1))
-  miss_tab[,i] <- res$miss
-}
-miss_tab <- data.frame(miss_tab)
-colnames(miss_tab) <- colnames(df)
-  
+# miss_tab <- data.frame(country=df$country)
+# for(i in 2:ncol(df)){
+#   sub <- data.frame(country=df$country, var=df[,i])
+#   res <- sub %>% group_by(country) %>%
+#     summarize(miss=round(mean(is.na(var))*100,1))
+#   colnames(res)[2] <- colnames(df)[i]
+#   miss_tab <- left_join(miss_tab, res, by="country")
+# }
+# miss_tab <- data.frame(miss_tab)
+
+miss_tab = df %>% 
+  group_by(country) %>% 
+  summarise_each(funs(mean(is.na(.))*100))
+
 pander(miss_tab, digits=2, caption = "Missingness of covariates by country")
+
+miss_tab = df %>% 
+  group_by(country) %>% 
+  summarise_each(funs(mean(.=="missing")*100))
+
+pander(miss_tab, digits=2, caption = "Percent factor level= missing")
 
 
 tab1 <- table1(~. |country, data=df)

@@ -7,10 +7,9 @@ rm(list=ls())
 source("0-config.R")
 
 
-d <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
+dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
 
-#TEMP
-#d <- dfull %>% filter(country %in% c("Bangladesh", "Zimbabwe","PakistanPunjab"))
+d <- dfull
 
 
 
@@ -69,23 +68,21 @@ prop.table(table(is.na(d$EC_risk_H)))
 
 #Denominators are obtained by weighting the number of households by the total number of 
 #household members (HH48).
-table(d$HW1)
-table(d$HW2)
-table(d$HW7A)
-table(d$HW7B)
-table(d$HW7C)
-
-table(d$country, d$HW2)
-table(d$country, d$HW7A)
-table(d$country, d$HW7B)
-
-
-HW3BB
-HW3BC
-table(d$country, d$HW3BA)
-table(d$country, d$HW3BB)
-table(d$country, d$HW3BC)
-table(d$country, d$HW3A)
+# table(d$HW1)
+# table(d$HW2)
+# table(d$HW7A)
+# table(d$HW7B)
+# table(d$HW7C)
+# 
+# table(d$country, d$HW2)
+# table(d$country, d$HW7A)
+# table(d$country, d$HW7B)
+# 
+# 
+# table(d$country, d$HW3BA)
+# table(d$country, d$HW3BB)
+# table(d$country, d$HW3BC)
+# table(d$country, d$HW3A)
 
 table(d$HW7A, d$HW3BA)
 table(d$HW7A=="A", d$HW3BA=="A")
@@ -99,10 +96,14 @@ d$hyg_imp <- factor(ifelse(d$HW2==1 &
                                 (d$HW3BB=="B" & !is.na(d$HW3BB))|
                                 (d$HW3BC=="C" & !is.na(d$HW3BC))), 
                            "Improved","Unimproved"), levels=c("Improved","Unimproved"))
-d$hyg_imp[(d$HW2==9 | d$HW1>4)] <- NA
+d$hyg_imp[(d$HW2==9 | d$HW1>4 | 
+             (is.na(d$HW7A)&is.na(d$HW7B)&is.na(d$HW3BA)&is.na(d$HW3BB)&is.na(d$HW3BC)))] <- NA
 table(d$hyg_imp)
 prop.table(table(d$hyg_imp))
 table(d$country, d$hyg_imp)
+
+
+
 
 # 1.	None (no facility)
 # 2.	Limited - availability of a handwashing facility on premises without soap or water
@@ -260,7 +261,7 @@ table(d$HAZFLAG)
 
 #diarrhea
 d$diarrhea <- ifelse(d$CA1=="1",1,0)
-d$diarrhea[d$CA1=="8"|d$CA1=="9"] <- NA
+d$diarrhea[d$CA1=="8"|d$CA1=="9"|is.na(d$CA1)] <- NA
 table(d$diarrhea)
 
 #ARI symptoms
@@ -273,8 +274,18 @@ d$ari <- ifelse(d$congestion %in% c(1,3) & (d$diff_breath==1 | d$cough==1), 1, 0
 d$ari[(d$diff_breath==8 | d$diff_breath==9) &
         (d$congestion==8 | d$congestion==9) &
         (d$cough==8 | d$cough==9)] <- NA
+d$ari[is.na(d$diff_breath) & is.na(d$congestion) & is.na(d$cough)]<- NA
 table(d$ari)
 
+
+#Bangladesh disease prevalence should be 6.9% diarrhea, 2.0% ARI,  23.5% Fever
+prop.table(table(d$ari[d$country=="Bangladesh"]))*100
+prop.table(table(d$diarrhea[d$country=="Bangladesh"]))*100
+prop.table(table(d$fever[d$country=="Bangladesh"]))*100
+
+
+#Drop observations missing all outcomes
+d <- d %>% filter(!is.na(ari) | !is.na(diarrhea) | !is.na(haz) | !is.na(waz) | !is.na(whz))
 
 #------------------------------------------------------
 # rename and clean covariates
@@ -282,21 +293,45 @@ table(d$ari)
 
 
 # Adjustment covariates:
-# a.	Asset-based wealth index (excluding WASH variables): wscore NOTE: IS THIS RIGHT?
-# b.	Parental education: helevel
-# c.	Parental age: HHAGE NOTE: can I get both parent's age?
+# a.	Asset-based wealth index 
+# b.	Parental education: melevel
+  # table(d$country, is.na(d$melevel))
+  # table(d$country, is.na(d$helevel))
+  # table(d$country, is.na(d$helevel1))
+  d$melevel[is.na(d$melevel)&!is.na(d$helevel)] <- d$helevel[is.na(d$melevel)&!is.na(d$helevel)] 
+  d$melevel[is.na(d$melevel)&!is.na(d$helevel1)] <- d$helevel1[is.na(d$melevel)&!is.na(d$helevel1)] 
+  #round(prop.table(table(d$country, is.na(d$melevel)),1)*100,2)
+
+# c.	Parental age: HHAGE 
 # d.	Breastfeeding history: BD2, BD3
 # e.	Child age: CAGED
 # f.	Child sex: HL4
 # g.	Birth order: brthord
 # h.	Urban/rural location: area_type #NOTE: is this right?
 # i.	Household type/construction: HC3, HC5, HC6
-# j.	Number of household residents: BD3
+# j.	Number of household residents: HH48
+  #hhsize 5: hhsize5 if is.na(HH48)
+  # Labels:
+  #   value          label
+  # 0  <5 hh members
+  # 1 >=5 hh members
+  #table(d$country, is.na(d$HH48))
+  d$HH48[is.na(d$HH48)&!is.na(d$hhsize5)] <- d$hhsize5[is.na(d$HH48)&!is.na(d$hhsize5)] 
+  #table(d$country, is.na(d$HH48))
+  
 # k.	Number of children under 5yrs in the household: HH51 
+  table(d$country, is.na(d$HH51))
+  d$HH51[is.na(d$HH51)&!is.na(d$HH14)] <- d$HH14[is.na(d$HH51)&!is.na(d$HH14)] 
+  table(d$country, is.na(d$HH51))
 # l.	Type of flooring: HC4
 # m.	Presence of animals in the household: animals #NOTE: check if indicator
-# n.	Cooking stove type: EU1
-
+# n.	Cooking stove type: EU1, If missing, use electric stove as an asset 
+            #table(d$country, is.na(d$EU1)) 
+            temp <- ifelse(d$HC9C=="1","1","9")
+             temp[d$HC9C=="9"] <- "99"
+             d$EU1[is.na(d$EU1)] <- temp[is.na(d$EU1)]
+            #table(d$country, is.na(d$EU1)) 
+             
 
 #Calculate household wealth (dropping WASH assets)
 df <- d %>% subset(., select = c(country, clust_num, HH_num, HC7A:HC15)) %>%
@@ -368,7 +403,8 @@ d <- d %>% subset(., select = c(country,
                                 wqsaweight,
                                 stratum,
                                 PSU,
-                                helevel, #education level
+                                #helevel, #education level
+                                melevel, #education level
                                 HHAGE, #age of hh head
                                 CAGED,
                                 HL4, #child sex
@@ -376,7 +412,7 @@ d <- d %>% subset(., select = c(country,
                                 area_type, #urban/rural
                                 BD2, #ever breastfed
                                 BD3, #current breastfed
-                                HH48, #number og hh members
+                                HH48, #number of hh members
                                 HH51, #number of kids <5
                                 HC4, #main material of floor
                                 EU1, #type of cookstove used
@@ -391,7 +427,8 @@ d <- d %>% subset(., select = c(country,
                                 HHwealth_quart
     )) %>% 
   rename(
-    educ=helevel, #education level
+    #educ=helevel, #education level
+    educ=melevel,#education level
     mage=HHAGE, #age of hh head
     aged=CAGED,
     sex=HL4, #child sex
@@ -412,11 +449,12 @@ d <- d %>% subset(., select = c(country,
     nroom_sleeping=HC3 #number of rooms used for sleeping
   ) %>%
   mutate(
-    mage = ifelse(mage=="95+","97",mage),
-    mage = as.numeric(mage),
-    aged = as.numeric(aged),
+    mage = ifelse(mage %in% c("95","97","98","99"),NA,mage), #95  ==   95+, 98  ==    DK, 99== Missing
+      mage = as.numeric(mage),
+    aged = ifelse(aged =="9999",NA,aged), 
+      aged = as.numeric(aged),
     sex = factor(sex),
-    educ = ifelse(educ%in% c("Manquant/NSP","Missing/DK","DK/Missing","DK / Missing"),NA,educ), 
+    educ = ifelse(educ %in% c("9","99"),NA,educ), 
       #educ = as.numeric(educ),
     birthord = factor(birthord),
     rural = ifelse(urban_rural == "2","Rural","Urban"),
