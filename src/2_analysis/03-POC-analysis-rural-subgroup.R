@@ -31,8 +31,10 @@ Wvars <- c("educ",
 
 
     
+d <- d %>% filter(rural!="Missing") %>% droplevels(.)
+table(d$country, d$rural)     
 
-                
+
 d$country <- paste0(d$country, "-",d$rural)
 
 
