@@ -48,8 +48,12 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #select n/10 covariates if binary outcome
     if(family!="gaussian" & !is.null(Wscreen)){
       nY<-floor(min(table(df$Y))/10) -1 #minus one because 10 variables needed to estimate coef. of X
-      if(length(Wscreen)>nY){
-        Wscreen<-Wscreen[1:nY]
+      if(nY>=1){
+        if(length(Wscreen)>nY){
+          Wscreen<-Wscreen[1:nY]
+        }        
+      }else{
+        Wscreen=NULL
       }
     }
    
