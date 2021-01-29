@@ -43,13 +43,15 @@ d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 #-------------------------------------------------
 
 
-res_unadj_bin <- run_MICS_regressions(outcomes = c("stunt", "wast","diarrhea","ari"), family="modified possion", PAF=F, Wvars=NULL)
-res_unadj_cont <- run_MICS_regressions(outcomes = c("haz", "whz"), family="gaussian", PAF=F, Wvars=NULL)
+res_unadj_bin <- run_MICS_regressions(outcomes = c("stunt", "wast","diarrhea","ari"), family="modified possion", PAF=F, Wvars=NULL, save.data=T)
+saveRDS(res_unadj_bin, here("results/unadjusted_RR_bin.rds"))
+
+res_unadj_cont <- run_MICS_regressions(outcomes = c("haz", "whz"), family="gaussian", PAF=F, Wvars=NULL, save.data=T)
+saveRDS(res_unadj_cont, here("results/unadjusted_RR_cont.rds"))
 
 
 
 res_unadj <- bind_rows(res_unadj_bin, res_unadj_cont)
-
 saveRDS(res_unadj, here("results/unadjusted_RR.rds"))
 
 
@@ -62,8 +64,11 @@ saveRDS(res_unadj, here("results/unadjusted_RR.rds"))
 res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
 d <- droplevels(d)
-res_adj_bin <- run_MICS_regressions(outcomes = c("stunt", "wast","diarrhea","ari"), family="modified possion", PAF=F, Wvars=Wvars)
-res_adj_cont <- run_MICS_regressions(outcomes = c("haz", "whz"), family="gaussian", PAF=F, Wvars=Wvars)
+res_adj_bin <- run_MICS_regressions(outcomes = c("stunt", "wast","diarrhea","ari"), family="modified possion", PAF=F, Wvars=Wvars, save.data=T)
+saveRDS(res_adj_bin, here("results/adjusted_RR_bin.rds"))
+
+res_adj_cont <- run_MICS_regressions(outcomes = c("haz", "whz"), family="gaussian", PAF=F, Wvars=Wvars, save.data=T)
+saveRDS(res_adj_cont, here("results/adjusted_RR_cont.rds"))
 
 
 

@@ -56,7 +56,10 @@ res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
 d <- droplevels(d)
 res_adj_bin <- run_MICS_regressions(outcomes = c("stunt", "wast","diarrhea","ari"), family="modified possion", PAF=F, Wvars=Wvars)
+saveRDS(res_adj_bin, here("results/adjusted_rural_subgroup_bin.rds"))
+
 res_adj_cont <- run_MICS_regressions(outcomes = c("haz", "whz"), family="gaussian", PAF=F, Wvars=Wvars)
+saveRDS(res_adj_cont, here("results/adjusted_rural_subgroup_cont.rds"))
 
 
 res_adj <- bind_rows(res_adj_bin, res_adj_cont)

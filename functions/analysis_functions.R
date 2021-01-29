@@ -33,10 +33,11 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     #cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
     prescreen_family <- ifelse(family=="gaussian",family,"binomial")
     
-    Wdf <- df %>% select(W)
+    Wdf = NULL
+    try(Wdf <- df %>% select(W))
     #drop covariates with near zero variance
      if(length(nearZeroVar(Wdf))>0){
-            Wdf<-Wdf[,-nearZeroVar(Wdf)]
+            try(Wdf<-Wdf[,-nearZeroVar(Wdf)])
      }
     
     #prescreen
@@ -59,14 +60,15 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
    
     #Drop sparse factor levels
     if(!is.null(Wscreen)){
-      Wdf <- df %>% subset(., select =c(Wscreen))
-      Wdf <- as.data.frame(model.matrix(~., model.frame(~ ., Wdf, na.action=na.pass))[,-1]) 
+      Wdf = NULL
+      try(Wdf <- df %>% subset(., select =c(Wscreen)))
+      try(Wdf <- as.data.frame(model.matrix(~., model.frame(~ ., Wdf, na.action=na.pass))[,-1]))
       
       #scale and drop covariates with near zero variance
-      pp_no_nzv <- preProcess(Wdf,
-                              method = c("center", "scale", "YeoJohnson", "nzv"))
-      pp_no_nzv
-      Wdf<- predict(pp_no_nzv, newdata = Wdf)
+      try(pp_no_nzv <- preProcess(Wdf, method = c("center", "scale", "YeoJohnson", "nzv")))
+      
+      try(Wdf<- predict(pp_no_nzv, newdata = Wdf))
+      try(Wdf<- data.frame(Wdf))
     }else{
       Wdf=NULL
     }
@@ -106,7 +108,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     if(length(unique(df$X))>1){
     
     #model formula
-    f <- ifelse(is.null(Wscreen),
+    f <- ifelse(is.null(Wdf),
                 "Y ~ X",
                 paste0("Y ~ X  + ", paste(colnames(Wdf), collapse = " + ")))
     
@@ -116,7 +118,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     res <- mpreg(varnames=varnames, formula = as.formula(f), df = df, family="gaussian")
     
     res$N<-nrow(df)
-    res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+    res$W <-ifelse(is.null(Wdf), "unadjusted", paste(Wscreen, sep="", collapse=", "))
     }else{
       
       res <- data.frame(Y=varnames[1],
@@ -128,7 +130,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
                         pval=NA)
       
       res$N<-nrow(df)
-      res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+      res$W <-ifelse(is.null(Wdf), "unadjusted", paste(Wscreen, sep="", collapse=", "))
       
     }
     
@@ -142,7 +144,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     
     
     #model formula
-    f <- ifelse(is.null(Wscreen),
+    f <- ifelse(is.null(Wdf),
                 "Y ~ X",
                 paste0("Y ~ X + ", paste(colnames(Wdf), collapse = " + ")))
 
