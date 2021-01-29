@@ -48,7 +48,7 @@ RMAest_cont_FE <- dcont %>% group_by(analysis, Y, X, ref, contrast, adjusted, su
 
 
 #Combine pooled and country-level results
-ind_df <- d %>%  mutate(est=ifelse(is.na(RR),coef,RR)) %>%
+ind_df <- d %>%  mutate(est=ifelse(binary==0,coef,RR)) %>%
   subset(., select =c(analysis, country, Y, X, ref, contrast, est,ci.lb, ci.ub, n,N, binary, adjusted, subgroup))
  
 
@@ -87,18 +87,18 @@ table(str_count(dfW$W, pattern = ", ") + 1)
 #calc pooled PAF - to add if needed... just report individual PAF?
 head(d)
 
-#Save PAF dataset
-paf <- d %>% subset(., select=c(country, Y,X, PAF:binary)) %>% filter(!is.na(PAF))
-saveRDS(paf, here("results/paf_results.rds"))
-
-
-#Save just PAF's from significant RR's
-
-paf <- d %>% filter(!is.na(PAF), W!="unadjusted", ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
-saveRDS(paf, here("results/paf_sig_results.rds"))
-
-
-#Save just PAF's from RR's > 1
-
-paf <- d %>% filter(!is.na(PAF), W!="unadjusted", RR>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
-saveRDS(paf, here("results/paf_pos_results.rds"))
+# #Save PAF dataset
+# paf <- d %>% subset(., select=c(country, Y,X, PAF:binary)) %>% filter(!is.na(PAF))
+# saveRDS(paf, here("results/paf_results.rds"))
+# 
+# 
+# #Save just PAF's from significant RR's
+# 
+# paf <- d %>% filter(!is.na(PAF), W!="unadjusted", ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
+# saveRDS(paf, here("results/paf_sig_results.rds"))
+# 
+# 
+# #Save just PAF's from RR's > 1
+# 
+# paf <- d %>% filter(!is.na(PAF), W!="unadjusted", RR>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
+# saveRDS(paf, here("results/paf_pos_results.rds"))

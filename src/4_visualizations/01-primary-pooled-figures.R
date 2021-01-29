@@ -22,7 +22,7 @@ d <- d %>%
       country=="PakistanPunjab" ~ "Pakistan",
       country==country ~ country
     ),
-    country=factor(country, levels=rev(c("Bangladesh", "Pakistan", "Zimbabwe", "Pooled"))),
+    #country=factor(country, levels=rev(c("Bangladesh", "Pakistan", "Zimbabwe", "Pooled"))),
     X = case_when(X=="EC_H" ~ "Uncontaminated\nHH water", 
                      X=="EC_S" ~ "Uncontaminated\nsource water", 
                      X=="san_imp" ~ "Improved\nsanitation", 
@@ -68,7 +68,7 @@ table(d$X)
 table(d$Y)
 
 #TEMP! Drop "Improved WASH,\nno contamination"
-d <- d %>% filter(X!="Improved WASH,\nno contamination") %>% droplevels(.)
+#d <- d %>% filter(X!="Improved WASH,\nno contamination") %>% droplevels(.)
 
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
