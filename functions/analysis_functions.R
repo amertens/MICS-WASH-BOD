@@ -264,38 +264,59 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   df <- df %>% filter(!is.na(X))
   Xrows <- nrow(df)
   cat("Rows dropped due to missing exposure: ",Yrows -Xrows,"\n")
-  df <- df[complete.cases(df),]
-  cat("Rows dropped due to missing covariates: ",Xrows - nrow(df),"\n")
-  
+
   df <- droplevels(df)
   
-  Wscreen=NULL
-  if(!is.null(W)){
-    cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
-    prescreen_family <- ifelse(family=="gaussian",family,"binomial")
+  if(nrow(df)!=0){
     
-    Wdf <- df %>% select(W)
-    #drop covariates with near zero variance
-    if(length(nearZeroVar(Wdf))>0){
-      Wdf<-Wdf[,-nearZeroVar(Wdf)]
-    }
-    
-    #prescreen
-    suppressWarnings(Wscreen <- 
-                       MICS_prescreen(Y = df$Y, 
-                                      Ws = Wdf, 
-                                      family = prescreen_family, 
-                                      pval = 0.2, print = T))
-    #select n/10 covariates if binary outcome
-    if(family!="gaussian" & !is.null(Wscreen)){
-      nY<-floor(min(table(df$Y, df$X))/10)
-      if(length(Wscreen)>nY){
-        Wscreen<-Wscreen[1:nY]
+    Wscreen=NULL
+    if(!is.null(W)){
+      #cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
+      prescreen_family <- ifelse(family=="gaussian",family,"binomial")
+      
+      Wdf = NULL
+      try(Wdf <- df %>% select(W))
+      #drop covariates with near zero variance
+      if(length(nearZeroVar(Wdf))>0){
+        try(Wdf<-Wdf[,-nearZeroVar(Wdf)])
       }
+      
+      #prescreen
+      suppressWarnings(try(Wscreen <- 
+                             MICS_prescreen(Y = df$Y, 
+                                            Ws = Wdf, 
+                                            family = prescreen_family, 
+                                            pval = 0.2, print = F)))
+      #select n/10 covariates if binary outcome
+      if(family!="gaussian" & !is.null(Wscreen)){
+        nY<-floor(min(table(df$Y))/10) -1 #minus one because 10 variables needed to estimate coef. of X
+        if(nY>=1){
+          if(length(Wscreen)>nY){
+            Wscreen<-Wscreen[1:nY]
+          }        
+        }else{
+          Wscreen=NULL
+        }
+      }
+      
+      #Drop sparse factor levels
+      if(!is.null(Wscreen)){
+        Wdf = NULL
+        try(Wdf <- df %>% subset(., select =c(Wscreen)))
+        try(Wdf <- as.data.frame(model.matrix(~., model.frame(~ ., Wdf, na.action=na.pass))[,-1]))
+        
+        #scale and drop covariates with near zero variance
+        try(pp_no_nzv <- preProcess(Wdf, method = c("center", "scale", "YeoJohnson", "nzv")))
+        
+        try(Wdf<- predict(pp_no_nzv, newdata = Wdf))
+        try(Wdf<- data.frame(Wdf))
+      }else{
+        Wdf=NULL
+      }
+      
+      df <- bind_cols(df %>% subset(., select =c("Y","X","id", "weight")), Wdf)
     }
     
-  }
-  
   
   
   
@@ -310,11 +331,23 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
       Y="Y"
     )
   
-  
-  processed <- process_missing(data=df, node_list,  max_p_missing = 0.5)
-  df_processed <- processed$data
-  df_processed <- droplevels(df_processed)
-  node_list <- processed$node_list
+    meth <- make.method(df)
+    pred <- make.predictorMatrix(df)
+    
+    set.seed(12345)
+    imp <-mice(df, 
+               meth = meth, 
+               pred = pred, 
+               print = FALSE, 
+               m = 10, 
+               maxit = 6)
+    
+      datlist <- miceadds::mids2datlist( imp )
+      df_processed <- datlist[[1]]
+  # processed <- process_missing(data=df, node_list,  max_p_missing = 0.5)
+  # df_processed <- processed$data
+  # df_processed <- droplevels(df_processed)
+  # node_list <- processed$node_list
   
   if(identical(node_list$W,character(0))){
     node_list$W <- NULL
@@ -417,6 +450,19 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   
   
   res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+  
+  }else{
+    fit=NULL
+    res <- data.frame(Y=varnames[1],
+                      X=varnames[2],
+                      RR=NA,
+                      est=NA,
+                      se=NA,
+                      ci.lb=NA,
+                      ci.ub=NA,
+                      n=0,
+                      N=0)
+  }
   
   if(return_model){
     return(list(res=res, fit=fit))
