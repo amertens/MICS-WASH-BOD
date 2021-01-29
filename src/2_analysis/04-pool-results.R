@@ -7,7 +7,7 @@ d_unadj <- d_RR_multi_unadj <- d_adj <- d_RR_multi_adj <- d_tmle_adj <- d_rural_
 
 d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="primary", W = "unadjusted")
 d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted")
-d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary")
+d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary", temp=1)
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi")
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle") %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
@@ -28,7 +28,7 @@ d$subgroup[is.na(d$subgroup )] <- "unstratified"
 
 d$binary <- ifelse(d$Y %in% c("ari", "diarrhea", "stunt", "wast", "mort"), 1, 0)
 
-dbin <- d %>% filter(binary==1)
+dbin <- d %>% filter(binary==1) %>% mutate(est=RR)
 
 RMAest_bin <- dbin %>% group_by(analysis, Y, X, ref, contrast, adjusted, subgroup) %>%
   do(poolRR(.)) %>% as.data.frame()
@@ -37,7 +37,7 @@ RMAest_bin_FE <- dbin %>% group_by(analysis, Y, X, ref, contrast, adjusted, subg
 
 
 
-dcont <- d %>% filter(binary==0)
+dcont <- d %>% filter(binary==0) %>% mutate(est=coef, RR=NA, ci.lb=coef - 1.96*se, ci.ub=coef + 1.96*se )
 
 RMAest_cont <- dcont %>% group_by(analysis, Y, X, ref, contrast, adjusted, subgroup) %>%
   do(pool.cont(.)) %>% as.data.frame()
@@ -48,7 +48,7 @@ RMAest_cont_FE <- dcont %>% group_by(analysis, Y, X, ref, contrast, adjusted, su
 
 
 #Combine pooled and country-level results
-ind_df <- d %>%  mutate(est=ifelse(is.na(RR),coef,RR)) %>%
+ind_df <- bind_rows(dbin, dcont) %>%  
   subset(., select =c(analysis, country, Y, X, ref, contrast, est,ci.lb, ci.ub, n,N, binary, adjusted, subgroup))
  
 
@@ -87,18 +87,18 @@ table(str_count(dfW$W, pattern = ", ") + 1)
 #calc pooled PAF - to add if needed... just report individual PAF?
 head(d)
 
-#Save PAF dataset
-paf <- d %>% subset(., select=c(country, Y,X, PAF:binary)) %>% filter(!is.na(PAF))
-saveRDS(paf, here("results/paf_results.rds"))
-
-
-#Save just PAF's from significant RR's
-
-paf <- d %>% filter(!is.na(PAF), W!="unadjusted", ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
-saveRDS(paf, here("results/paf_sig_results.rds"))
-
-
-#Save just PAF's from RR's > 1
-
-paf <- d %>% filter(!is.na(PAF), W!="unadjusted", RR>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
-saveRDS(paf, here("results/paf_pos_results.rds"))
+# #Save PAF dataset
+# paf <- d %>% subset(., select=c(country, Y,X, PAF:binary)) %>% filter(!is.na(PAF))
+# saveRDS(paf, here("results/paf_results.rds"))
+# 
+# 
+# #Save just PAF's from significant RR's
+# 
+# paf <- d %>% filter(!is.na(PAF), W!="unadjusted", ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
+# saveRDS(paf, here("results/paf_sig_results.rds"))
+# 
+# 
+# #Save just PAF's from RR's > 1
+# 
+# paf <- d %>% filter(!is.na(PAF), W!="unadjusted", RR>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
+# saveRDS(paf, here("results/paf_pos_results.rds"))
