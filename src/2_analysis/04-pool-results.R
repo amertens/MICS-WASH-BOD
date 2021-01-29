@@ -23,6 +23,7 @@ d$ref[is.na(d$ref)] <- "0"
 d$contrast[is.na(d$contrast )] <- "1"
 d$subgroup[is.na(d$subgroup )] <- "unstratified"
 
+table(d$Y, d$analysis, d$adjusted)
 
 
 
