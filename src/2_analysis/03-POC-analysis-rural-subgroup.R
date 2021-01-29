@@ -1,5 +1,5 @@
 
-
+rm(list=ls())
 source("0-config.R")
 
 
