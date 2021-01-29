@@ -79,6 +79,11 @@ table(d$Y)
 #-------------------------------------------------------------
 # RR's single increase
 #-------------------------------------------------------------
+d %>% filter(adjusted==0, binary==1, analysis=="primary", country=="Pooled")
+d %>% filter(adjusted==1)
+d %>% filter(adjusted==1, binary==1)
+d %>% filter(adjusted==1, binary==1, country=="Pooled")
+d %>% filter(adjusted==1, binary==0, analysis=="primary")
 p_prim_pooled <- d %>% filter(adjusted==1, binary==1, analysis=="primary", country=="Pooled") %>% 
   droplevels(.) %>%
   mutate(X=factor(X, levels = rev(levels(X)))) %>%
@@ -93,50 +98,8 @@ p_prim_pooled <- d %>% filter(adjusted==1, binary==1, analysis=="primary", count
   xlab("WASH Characteristic reference level") + ylab("Relative Risk")
 
 
-p_prim_forest_diar <- d %>% filter(adjusted==1, binary==1, analysis=="primary", Y=="Diarrhea") %>% 
-  droplevels(.) %>%
-  ggplot(., aes(y=est, x=country, color=country)) +
-  facet_wrap(~X) +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  scale_color_manual(values=tableau11[1:4]) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("Country") + ylab("Relative Risk")
-
-p_prim_forest_mort <- d %>% filter( analysis=="mortality") %>% 
-  droplevels(.) %>%
-  ggplot(., aes(y=est, x=country, color=country)) +
-  facet_wrap(~X) +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  scale_color_manual(values=tableau11[1:4]) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("Country") + ylab("Relative Risk")
 
 
-p_prim_forest_secondary_outcomes <- d %>% filter(adjusted==1, binary==1, analysis=="primary", Y!="Diarrhea") %>% 
-  droplevels(.) %>%
-  ggplot(., aes(y=est, x=country, color=country)) +
-  facet_grid(Y~X, switch = "y") +
-  geom_point() + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  scale_color_manual(values=tableau11[1:4]) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("Country") + ylab("Relative Risk") +
-  theme(strip.background = element_blank(),
-        axis.text.y = element_text(size=8, hjust = 1),
-        strip.text.x = element_text(size=8, face = "bold"),
-        strip.text.y = element_text(size=8, angle = 180, face = "bold"),
-        strip.placement = "outside",
-        axis.text.x = element_text(size=10, vjust = 0.5),
-        legend.box.background = element_rect(colour = "black"), 
-        title = element_text(margin=margin(0,0,-10,0)))
 
 
 
@@ -173,64 +136,6 @@ p_multi_pooled <-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi",
         title = element_text(margin=margin(0,0,-10,0)))
 
 
-p_multi_forest_diar <- d %>% filter(adjusted==1, binary==1, analysis=="primary-multi",  multinomial==1, Y=="Diarrhea") %>% 
-  droplevels(.) %>%
-  mutate(X=factor(X, levels = rev(levels(X)))) %>%
-  arrange(X) %>%
-  mutate(Xref=paste0(X,"\n(Ref.: ",ref,")"),
-         Xref=factor(Xref, levels = unique(Xref))) %>%
-  ggplot(., aes(y=est, x=contrast, group=country, color=country)) +
-  #facet_grid(Xref~Y, scale="free_y", switch = "y") +
-  facet_wrap(~Xref, scale="free_y") +
-  geom_point(position = position_dodge(0.6)) + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub ), position = position_dodge(0.6)) +
-  scale_color_manual(values=tableau11) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("") + ylab("Relative Risk") +
-  theme(strip.background = element_blank(),
-        legend.position="bottom",
-        legend.title = element_blank(),
-        axis.text.y = element_text(size=8, hjust = 1),
-        strip.text.x = element_text(size=8, face = "bold"),
-        strip.text.y = element_text(size=8, angle = 180, face = "bold"),
-        # strip.placement = "outside",
-         axis.text.x = element_text(size=10, vjust = 0.5),
-        # #panel.spacing = unit(0, "lines"),
-        #legend.box.background = element_rect(colour = "black"), 
-        title = element_text(margin=margin(0,0,-10,0)))
-
-
-
-p_multi_forest_secondary_outcomes <- d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", Y!="Diarrhea",  multinomial==1) %>% 
-  droplevels(.) %>%
-  mutate(X=factor(X, levels = rev(levels(X)))) %>%
-  arrange(X) %>%
-  mutate(Xref=paste0(X,"\n(Ref.: ",ref,")"),
-         Xref=factor(Xref, levels = unique(Xref))) %>%
-  ggplot(., aes(y=est, x=contrast, group=country, color=country)) +
-  facet_grid(Xref~Y, scale="free_y", switch = "y") +
-  geom_point(position = position_dodge(0.6)) + 
-  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub ), position = position_dodge(0.6)) +
-  scale_color_manual(values=tableau11) +
-  geom_hline(yintercept = 1) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +
-  xlab("") + ylab("Relative Risk") +
-  theme(strip.background = element_blank(),
-        legend.position="bottom",
-        axis.text.y = element_text(size=8, hjust = 1),
-        strip.text.x = element_text(size=8, face = "bold"),
-        strip.text.y = element_text(size=8, angle = 180, face = "bold"),
-        strip.placement = "outside",
-        legend.title = element_blank(),
-        axis.text.x = element_text(size=10, vjust = 0.5),
-        #panel.spacing = unit(0, "lines"),
-        #legend.box.background = element_rect(colour = "black"), 
-        title = element_text(margin=margin(0,0,-10,0)))
-
-
 #-------------------------------------------------------------
 # Z-score differences
 #-------------------------------------------------------------
@@ -246,7 +151,8 @@ p_prim_Zscore_pooled <- d %>% filter(adjusted==1, binary==0, analysis=="primary"
   xlab("WASH Characteristic reference level") + ylab("Z-score difference")
 
 
-
+#To do: make 2 plots, for HAZ and for WHZ
+#To do: diagnose extreme improved WASH-no contamination
 
 p_prim_Zscore_forest <- d %>% filter(adjusted==1, binary==0, analysis=="primary") %>% 
   droplevels(.) %>%
@@ -254,7 +160,7 @@ p_prim_Zscore_forest <- d %>% filter(adjusted==1, binary==0, analysis=="primary"
   facet_grid(Y~X, switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  scale_color_manual(values=tableau11[1:4]) +
+  #scale_color_manual(values=tableau11[1:4]) +
   geom_hline(yintercept = 0) +
   coord_flip() +
   xlab("Country and outcome") + ylab("Z-score difference") +
@@ -266,7 +172,7 @@ p_prim_Zscore_forest <- d %>% filter(adjusted==1, binary==0, analysis=="primary"
         axis.text.x = element_text(size=10, vjust = 0.5),
         legend.box.background = element_rect(colour = "black"), 
         title = element_text(margin=margin(0,0,-10,0)))
-
+p_prim_Zscore_forest
 
 
 #-------------------------------------------------------------

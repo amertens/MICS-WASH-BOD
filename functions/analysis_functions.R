@@ -1186,6 +1186,10 @@ mpreg <- function(varnames, formula, df, family, vcv=FALSE) {
   if(family!="gaussian"){
     res$ci.lb <- exp(res$coef - 1.96*res$se)
     res$ci.ub <- exp(res$coef + 1.96*res$se)
+  }else{
+    res$RR <- NA
+    res$ci.lb <- res$coef - 1.96*res$se
+    res$ci.ub <- res$coef + 1.96*res$se
   }
   
   return(res)
