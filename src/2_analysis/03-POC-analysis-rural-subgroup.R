@@ -42,11 +42,6 @@ d$country <- paste0(d$country, "-",d$rural)
 # Adjusted analysis
 #-------------------------------------------------
 
-res_adj <- res_adj_bin <- res_adj_cont <- NULL
-
-d <- droplevels(d)
-
-
 
 
 #binary_outcomes
