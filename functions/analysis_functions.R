@@ -310,6 +310,7 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
         
         try(Wdf<- predict(pp_no_nzv, newdata = Wdf))
         try(Wdf<- data.frame(Wdf))
+        try(Wscreen <- colnames(Wdf))
       }else{
         Wdf=NULL
       }
@@ -413,8 +414,9 @@ mics_tmle <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clust_num"
   if(family=="binomial"){
     
     #check sparsity
-    sparseN<-min(table(df$X, df$Y))
-    if(sparseN>10){
+    sparseN1<-min(table(df_processed$Y))
+    sparseN2<-min(table(df_processed$Y,df_processed$X))
+    if(sparseN1>=10 & sparseN2>=5 & min(dim(table(df_processed$X, df_processed$Y)))==2){
       
     tmle_fit <- tmle3(RR_spec, df_processed, node_list, learner_list)$summary
     
