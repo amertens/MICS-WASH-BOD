@@ -50,7 +50,9 @@ res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
 d <- droplevels(d)
 res_adj_bin <- run_mics_multinomial_regressions(outcomes = c("stunt", "wast","diarrhea","ari"), family="modified possion", PAF=F, Wvars=Wvars)
+saveRDS(res_adj_bin, here("results/adjusted_mult_bin.rds"))
 res_adj_cont <- run_mics_multinomial_regressions(outcomes = c("haz", "whz"), family="gaussian", PAF=F, Wvars=Wvars)
+saveRDS(res_adj_cont, here("results/adjusted_mult_cont.rds"))
 
 
 
