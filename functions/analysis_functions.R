@@ -29,11 +29,11 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   if(nrow(df)!=0){
   
   Wscreen=NULL
+  Wdf = NULL
   if(!is.null(W)){
     #cat("\n-----------------------------------------\nPre-screening the adjustment covariates:\n-----------------------------------------\n")
     prescreen_family <- ifelse(family=="gaussian",family,"binomial")
     
-    Wdf = NULL
     try(Wdf <- df %>% select(W))
     #drop covariates with near zero variance
      if(length(nearZeroVar(Wdf))>0){
