@@ -1,93 +1,83 @@
 
 source("0-config.R")
 
-d <- readRDS(here("results/pooled_POC_results.rds"))
-
-
-#Clean data for primary figure
-d <- d %>% 
-  mutate(
-    multinomial = ifelse(X %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat"),1,0),
-    Y=case_when(
-    Y=="stunt" ~ "Stunting",
-    Y=="wast" ~ "Wasting",
-    Y=="diarrhea" ~ "Diarrhea",
-    Y=="ari" ~ "ARI",
-    Y=="haz" ~ "HAZ",
-    Y=="whz" ~ "WHZ",
-    Y=="mort" ~ "Mortality"
-      ),
-    Y=factor(Y, levels=c("Diarrhea", "Stunting", "Wasting", "ARI", "HAZ", "WHZ","Mortality")),
-    country=case_when(
-      country=="pooled" ~ "Pooled",
-      country=="PakistanPunjab" ~ "Pakistan",
-      country==country ~ country
-    ),
-    country=factor(country, levels=rev(c("Bangladesh", "Pakistan", "Zimbabwe", "Pooled"))),
-    X = case_when(X=="EC_H" ~ "Uncontaminated\nHH water", 
-                     X=="EC_S" ~ "Uncontaminated\nsource water", 
-                     X=="san_imp" ~ "Improved\nsanitation", 
-                     X=="wat_imp" ~ "Improved\nwater supply", 
-                     X=="hyg_imp" ~ "Improved\nhygiene", 
-                     X=="WASH" ~ "Improved WASH,\nno contamination",
-                     X=="WASH_noEC" ~ "Improved\nWASH",
-                     X=="safely_manH20" ~ "Safely managed\ndrinking water",
-                  X=="EC_risk_H" ~ "HH water\ncontamination", 
-                  X=="EC_risk_S" ~ "Source water\ncontamination", 
-                  X=="san_imp_cat" ~ "Sanitation\ncategory", 
-                  X=="wat_imp_cat" ~ "Water supply\ncategory", 
-                  X=="hyg_imp_cat" ~ "Hygiene\ncategory"),
-   X=factor(X, levels = c(
-                          "Improved\nwater supply", 
-                          "Improved\nsanitation", 
-                          "Improved\nhygiene", 
-                          "Improved\nWASH",
-                          "Uncontaminated\nHH water", 
-                          "Uncontaminated\nsource water", 
-                          "Safely managed\ndrinking water",
-                          "Improved WASH,\nno contamination",
-                          "HH water\ncontamination", 
-                          "Source water\ncontamination", 
-                          "Sanitation\ncategory", 
-                          "Water supply\ncategory", 
-                          "Hygiene\ncategory")),
-   contrast = case_when(
-     contrast=="1" ~ "Unimproved",
-     contrast=="2" ~ "Moderate risk",
-     contrast=="3" ~ "High risk", 
-     contrast=="4" ~ "Very high risk", 
-     contrast==contrast ~ contrast 
-   ),
-   contrast=factor(contrast, levels=rev(c("Moderate risk", "High risk",  "Very high risk",   "Basic", "Limited",  "No facility", "None",  "Unimproved", "Surface water"))),
-   ref = case_when(
-     ref=="0" ~ "Improved",
-     ref=="1" ~ "Low risk",
-     ref==ref ~ ref 
-   ))
-
-table(d$X)
-table(d$Y)
+d <- readRDS(here("results/pooled_results.rds"))
 
 
 
-#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-# Primary figures
-#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+unique(d$Y)
+unique(d$X)
+table(d$X, d$Y)
+
+unique(d$analysis)
 
 
-#-------------------------------------------------------------
-# RR's single increase
-#-------------------------------------------------------------
+i=unique(d$Y)[1]
+j=unique(d$X)[9]
 
+plist <- list()
 
-p_prim_forest_diar <- d %>% filter(adjusted==1, binary==1, analysis=="primary", Y=="Diarrhea") %>% 
+#Add pooled FE to multinomial...
+
+for(i in unique(d$Y)){
+  for(j in unique(d$X)){
+   df <- d %>% filter(adjusted==1, analysis %in% c("primary","primary-multi","FE"), Y==i, X==j) %>% 
+      droplevels(.) 
+   
+   if(nrow(df)>0){
+   
+   Xlabel <- df$Xlab[1]  
+   reference <- df$ref[1]  
+   
+   if(df$binary[1]==1){
+    p <-  ggplot(df, aes(y=est, x=countrylab, color=region)) +
+      geom_point() + 
+      geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
+      scale_color_manual(values=tableau11[c(1, 8:2,9,10,11)]) +
+      geom_hline(yintercept = 1) +
+      geom_vline(xintercept = 2.5, linetype="dashed") +
+      scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+      coord_flip() + 
+      xlab("Country") + ylab(paste0("Relative Risk (ref=",reference,")"))
+   }else{
+     p <-  ggplot(df, aes(y=est, x=countrylab, color=region)) +
+       geom_point() + 
+       geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
+       scale_color_manual(values=tableau11[c(1, 8:2,9,10,11)]) +
+       geom_hline(yintercept = 1) +
+       geom_vline(xintercept = 2.5, linetype="dashed") +
+       coord_flip() +
+       xlab("Country") + ylab(paste0("Mean difference (ref=",reference,")"))  
+   }
+   
+   if(df$multinomial[1]==1){
+     p <- p + facet_wrap(~contrast, scales="free") + 
+       ggtitle(paste0("Outcome: ",i, "\nExposure: ", Xlabel))
+   }else{
+     p <- p + ggtitle(paste0("Outcome: ",i, "\nExposure: ", Xlabel))
+   }
+   
+    plist[[length(plist)+1]] <- p
+    names(plist)[length(plist)] <- paste0(i, ".",j)
+   }
+  } 
+}
+
+plist[[1]]
+names(plist)
+length(plist)
+
+plist$Mortality.WASH
+
+p_prim_forest_diar <- d %>% filter(adjusted==1, binary==1, analysis %in% c("primary","FE"), Y=="Diarrhea", exposure_type=="HH") %>% 
   droplevels(.) %>%
-  ggplot(., aes(y=est, x=country, color=country)) +
-  facet_wrap(~X) +
+  ggplot(., aes(y=est, x=countrylab, color=region)) +
+  facet_wrap(~Xlab, ncol=1, scales="free") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  scale_color_manual(values=tableau11[1:4]) +
+  scale_color_manual(values=tableau11) +
   geom_hline(yintercept = 1) +
+  geom_vline(xintercept = 2.5, linetype="dashed") +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
   xlab("Country") + ylab("Relative Risk")

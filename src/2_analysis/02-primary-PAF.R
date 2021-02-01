@@ -11,7 +11,7 @@ d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 res_unadj_bin <- NULL
 #res_unadj_bin <- run_MICS_regressions(outcomes = c("stunt","diarrhea"), family="modified possion", PAF=T, Wvars=NULL)
 res_adj_bin <- run_MICS_regressions(outcomes = c("stunt","diarrhea"), family="modified possion", PAF=T, Wvars=Wvars)
-res_unadj_bin <- res_unadj_bin %>% mutate(adjusted=0)
+#res_unadj_bin <- res_unadj_bin %>% mutate(adjusted=0)
 res_adj_bin <- res_adj_bin %>% mutate(adjusted=1)
 
 

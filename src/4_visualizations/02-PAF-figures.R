@@ -4,19 +4,18 @@ source("0-config.R")
 
 
 dPAF <- readRDS(here("results/prim_PAFs.rds"))
-#TEMP unadjusted
-dPAF <- dPAF %>% filter(W=="unadjusted", !is.na(PAF)) %>%
+dPAF <- dPAF %>% filter(adjusted==1, !is.na(PAF)) %>%
   subset(., select=c(country, Y, X,RR,  pval,PAF, PAF.lb, PAF.ub, ci.lb, ci.ub))
 head(dPAF)
 
-#get just PAF's from significant RR's
-dPAF_sig <- dPAF %>% filter(!is.na(PAF), ci.lb>1) 
+# #get just PAF's from significant RR's
+# dPAF_sig <- dPAF %>% filter(!is.na(PAF), ci.lb>1) 
+# 
+# #get just PAF's from RR's > 1
+# dPAF_pos <- dPAF %>% filter(!is.na(PAF),  RR>1) 
 
-#get just PAF's from RR's > 1
-dPAF_pos <- dPAF %>% filter(!is.na(PAF),  RR>1) 
 
-
-dPAF_pos  <- dPAF_pos  %>% 
+dPAF  <- dPAF  %>% 
   mutate(
     multinomial = ifelse(X %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat"),1,0),
     Y=case_when(
@@ -91,17 +90,18 @@ dPAF_pos  <- dPAF_pos  %>%
 
 
 
-p_PAF_pos <- dPAF_pos %>%
+p_PAF <- dPAF %>%
   ggplot(., aes(y=PAF, x=country, color=country)) +
   facet_grid(Y~X, switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=PAF.lb, ymax=PAF.ub )) +
-  scale_color_manual(values=tableau10[1:3]) +
+  #scale_color_manual(values=tableau10[1:3]) +
   geom_hline(yintercept = 0) +
-  coord_flip(ylim=c(-5,60)) +
+  #coord_flip(ylim=c(-5,60)) +
+  coord_flip() +
   xlab("Country and outcome") + ylab("Population Attributable Fraction") +
   theme(strip.background = element_blank(),
-        legend.position="bottom",
+        legend.position="none",
         axis.text.y = element_text(size=8, hjust = 1),
         strip.text.x = element_text(size=8, face = "bold"),
         strip.text.y = element_text(size=8, angle = 180, face = "bold"),
