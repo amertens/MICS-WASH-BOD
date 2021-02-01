@@ -73,7 +73,7 @@ prop.table(table(is.na(d$EC_risk_H)))
 # table(d$HW7A)
 # table(d$HW7B)
 # table(d$HW7C)
-# 
+
 # table(d$country, d$HW2)
 # table(d$country, d$HW7A)
 # table(d$country, d$HW7B)
@@ -101,6 +101,7 @@ d$hyg_imp[(d$HW2==9 | d$HW1>4 |
 table(d$hyg_imp)
 prop.table(table(d$hyg_imp))
 table(d$country, d$hyg_imp)
+prop.table(table(d$country, d$hyg_imp),1)
 
 
 
@@ -158,6 +159,8 @@ table(d$country, d$wat_imp)
 
 table(d$WS11_lab, d$WS11)
 table(d$san_cat_lab)
+table(d$WS15, d$WS15_lab)
+table(d$country, d$WS15)
 
 #calculate levels without community coverage
 d <- d %>% mutate(
@@ -180,6 +183,7 @@ prop.table(table(d$san_imp_cat, d$high_coverage),1)
 table(d$san_cat_lab, d$high_coverage, d$WS15)
 
 table(d$country, d$WS15)
+table(d$country, d$san_cat_lab, d$WS15)
 
 #add in community coverage level
 d <- d %>% mutate(
@@ -215,20 +219,37 @@ table(d$country, d$WS7)
 d$WS3 <- as.numeric(d$WS3)
 d$WS4 <- as.numeric(d$WS4)
 d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
+d$continious_wat[is.na(d$WS3)|d$WS3==9|d$wat_class_lab=="Missing"|is.na(d$wat_class_lab)] <- NA
+table(d$continious_wat)
 
+table(d$continious_wat)
+
+table(d$country, d$wat_class_lab)
+table(d$WS3, d$WS3_lab)
+table(d$WS7, d$WS7_lab)
+
+table(d$WS3, d$WS7, d$wat_imp)
+table(d$WS3, d$WS7, is.na(d$WS4))
 
 d <- d %>% mutate(
   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
                           wat_imp=="Unimproved"~"Unimproved",
                           wat_imp=="Improved" & d$WS4>30~"Limited",
-                          wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2")~"Basic",
+                          wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2"| WS7==8|WS7==9|is.na(WS7))~"Basic",
                           wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous",
   ),
   wat_imp_cat = factor(wat_imp_cat, levels=c("Surface water", "Unimproved", "Limited", "Basic","Continuous"))
 )
-table(d$wat_imp_cat)
+
+#Note: don't use is.na(d$WS4) because it's missing when water is piped/continious
 table(d$country, d$wat_imp_cat)
+d$wat_imp_cat[is.na(d$wat_class_lab)|is.na(wat_imp)] <- NA
+d$wat_imp_cat[d$wat_imp=="Improved" & (d$WS3==9|is.na(d$WS3)|d$WS4>=998|is.na(d$WS4))] <- NA
+table(d$country, d$wat_imp_cat)
+
+table(is.na(d$wat_imp_cat))
+table(d$wat_imp_cat)
 
 
 
@@ -291,11 +312,14 @@ d <- d %>% mutate(
 )
 table(d$HAZFLAG)
 
+table(d$country,d$stunt)
+
 
 #diarrhea
 d$diarrhea <- ifelse(d$CA1=="1",1,0)
 d$diarrhea[d$CA1=="8"|d$CA1=="9"|is.na(d$CA1)] <- NA
 table(d$diarrhea)
+table(d$country,d$diarrhea)
 
 #ARI symptoms
 table(d$diff_breath)
@@ -309,6 +333,7 @@ d$ari[(d$diff_breath==8 | d$diff_breath==9) &
         (d$cough==8 | d$cough==9)] <- NA
 d$ari[is.na(d$diff_breath) & is.na(d$congestion) & is.na(d$cough)]<- NA
 table(d$ari)
+table(d$country,d$ari)
 
 
 #Bangladesh disease prevalence should be 6.9% diarrhea, 2.0% ARI,  23.5% Fever

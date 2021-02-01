@@ -262,8 +262,10 @@ load_MICS_dataset <- function(country, saveCodebook=F){
     )
   }
   if(is.null(d$WS4)){
-    d <- d %>% rename(WS4=WS4A,
-                      WS7=WS5A)
+    try(d <- d %>% rename(WS4=WS4A))
+  }
+  if(is.null(d$WS7)){
+    try(d <- d %>% rename(WS7=WS5A))
   }
 
   for(i in colnames(d)){
