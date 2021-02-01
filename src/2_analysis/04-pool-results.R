@@ -11,10 +11,7 @@ d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary",
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi")
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle") %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
-d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="mortality") %>% 
-  #temp
-  filter(adjusted==0)
-
+d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary") 
 
 
 d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort)
@@ -116,7 +113,7 @@ df <- df %>%
                   X=="san_imp_cat" ~ "Sanitation\ncategory", 
                   X=="wat_imp_cat" ~ "Water supply\ncategory", 
                   X=="hyg_imp_cat" ~ "Hygiene\ncategory"),
-    Xlab=factor(X, levels = c(
+    Xlab=factor(Xlab, levels = rev(c(
       "Improved\nwater supply", 
       "Improved\nsanitation", 
       "Improved\nhygiene", 
@@ -129,7 +126,7 @@ df <- df %>%
       "Source water\ncontamination", 
       "Sanitation\ncategory", 
       "Water supply\ncategory", 
-      "Hygiene\ncategory")),
+      "Hygiene\ncategory"))),
     contrast = case_when(
       contrast=="1" ~ "Unimproved",
       contrast=="2" ~ "Moderate risk",
@@ -147,8 +144,6 @@ df <- df %>%
       "WQ","HH"
     ))
 
-table(d$X)
-table(d$Y)
 
 
 
@@ -162,19 +157,3 @@ table(str_count(dfW$W, pattern = ", ") + 1)
 
 #calc pooled PAF - to add if needed... just report individual PAF?
 head(d)
-
-# #Save PAF dataset
-# paf <- d %>% subset(., select=c(country, Y,X, PAF:binary)) %>% filter(!is.na(PAF))
-# saveRDS(paf, here("results/paf_results.rds"))
-# 
-# 
-# #Save just PAF's from significant RR's
-# 
-# paf <- d %>% filter(!is.na(PAF), W!="unadjusted", ci.lb>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
-# saveRDS(paf, here("results/paf_sig_results.rds"))
-# 
-# 
-# #Save just PAF's from RR's > 1
-# 
-# paf <- d %>% filter(!is.na(PAF), W!="unadjusted", RR>1) %>% subset(., select=c(country, Y,X, PAF:binary)) 
-# saveRDS(paf, here("results/paf_pos_results.rds"))

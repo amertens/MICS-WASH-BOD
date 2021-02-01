@@ -184,7 +184,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
       if(calc_PAF){
         
 
-        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=10,dots=TRUE, low_risk_level=low_risk_level)
+        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=100,dots=TRUE, low_risk_level=low_risk_level)
         res$PAF <- paflist$bootest[2]
         res$PAF.lb <- paflist$boot95lb[2]
         res$PAF.ub <- paflist$boot95ub[2]
@@ -959,6 +959,18 @@ ARfun <- function(fmla,data,low_risk_level) {
   
   data$X <- ifelse(data$X==low_risk_level, 1, 0)
   
+  #multiple imputation - one imputed dataset per bootstrap
+  meth <- make.method(data)
+  pred <- make.predictorMatrix(data)
+  
+  set.seed(12345)
+  data <-mice(data, 
+             meth = meth, 
+             pred = pred, 
+             print = FALSE, 
+             m = 1, 
+             maxit = 6)[[1]]
+  
   # --------------------------------------
   # Fit log-linear model used to estimate
   # counterfactuals.
@@ -966,6 +978,8 @@ ARfun <- function(fmla,data,low_risk_level) {
   id <- data$id
   weight <- data$weight
   regfit <- glm(as.formula(fmla), family=poisson(link="log"), data=data, weights = weight)
+
+  
   # regfit <- geeglm(formula = as.formula(fmla),
   #                  data    = data,
   #                  weights = weight,
