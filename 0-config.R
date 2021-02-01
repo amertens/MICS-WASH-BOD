@@ -59,6 +59,7 @@ sandwichSE <- function(dat, fm, cluster){
 
 
 scaleFUN <- function(x) sprintf("%.2f", x)
+scaleRR <- function(x) sprintf("%.1f", x)
 
 
 
