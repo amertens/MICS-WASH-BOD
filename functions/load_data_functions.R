@@ -235,7 +235,6 @@ namekey <- c(
 #   # popweight	NULL
 # }
 
-country="Nigeria"
 
 load_MICS_dataset <- function(country, saveCodebook=F){
   path=paste0(country,"/",country,"_cleaned.dta")
@@ -251,9 +250,20 @@ load_MICS_dataset <- function(country, saveCodebook=F){
     
     #to do: use excel sheet to get the variable name conversion
     d <- plyr::rename( d, replace=namekey, warn_missing=F)
-    #Generate the new variables
-    #d <-clean_WASH(d)
-    
+  }
+  
+  #Rename variables if needed
+  if(is.null(d$WS15)){
+    d <- d %>% 
+      subset(., select= -c(WS11)) %>%
+      rename(
+      WS11=WS8,
+      WS15=WS9
+    )
+  }
+  if(is.null(d$WS4)){
+    d <- d %>% rename(WS4=WS4A,
+                      WS7=WS5A)
   }
 
   for(i in colnames(d)){
@@ -273,12 +283,10 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   }
   #summary(hh$WQ26)
 
-  dim(hh)
   hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
     filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
     subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S))
-  dim(hh)
-  head(hh)
+
   
   
   

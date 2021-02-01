@@ -108,6 +108,7 @@ table(d$country, d$hyg_imp)
 # 1.	None (no facility)
 # 2.	Limited - availability of a handwashing facility on premises without soap or water
 # 3.	Basic - availability of a handwashing facility on premises with soap and water (highest measured level of service measured)
+table(d$country,d$HW2)
 d <- d %>% mutate(
   hyg_imp_cat = case_when(
     HW2 == 2 ~"None",
@@ -116,7 +117,9 @@ d <- d %>% mutate(
   ),
   hyg_imp_cat = factor(hyg_imp_cat, levels=c("None", "Limited", "Basic"))
 )
+d$hyg_imp_cat[is.na(d$HW2)] <- NA
 table(d$hyg_imp_cat)
+table(d$country,d$hyg_imp_cat)
 
 
 #Recode improved sanitation and water
@@ -156,16 +159,41 @@ table(d$country, d$wat_imp)
 table(d$WS11_lab, d$WS11)
 table(d$san_cat_lab)
 
+#calculate levels without community coverage
+d <- d %>% mutate(
+  san_imp_cat = case_when(san_cat_lab=="No facility"~"No facility",
+                          san_cat_lab=="Unimproved"~"Unimproved",
+                          san_cat_lab=="Improved" & (WS15!="2")~"Limited",
+                          san_cat_lab=="Improved" & (WS15=="2")~"Basic"
+  ))
+table(d$san_imp_cat)
+table(is.na(d$san_imp_cat))
+table(d$country, d$san_imp_cat)
+
+#calculate community coverage 
+d <- d %>% group_by(country, clust_num) %>% 
+  mutate(san_coverage= mean(san_imp_cat=="Basic"), high_coverage=ifelse(san_coverage>0.75,1,0)) %>%
+  ungroup()
+
+summary(d$san_coverage)
+prop.table(table(d$san_imp_cat, d$high_coverage),1)
+table(d$san_cat_lab, d$high_coverage, d$WS15)
+
+table(d$country, d$WS15)
+
+#add in community coverage level
 d <- d %>% mutate(
   san_imp_cat = case_when(san_cat_lab=="No facility"~"No facility",
                            san_cat_lab=="Unimproved"~"Unimproved",
                            san_cat_lab=="Improved" & (WS15!="2")~"Limited",
-                           san_cat_lab=="Improved" & (WS15=="2")~"Basic"
+                          san_cat_lab=="Improved" & (WS15=="2") & high_coverage==0~"Basic",
+                          san_cat_lab=="Improved" & (WS15=="2") & high_coverage==1~"High coverage"
                            ),
-  san_imp_cat = factor(san_imp_cat, levels=c("No facility", "Unimproved", "Limited", "Basic"))
+  san_imp_cat = factor(san_imp_cat, levels=c("No facility", "Unimproved", "Limited", "Basic", "High coverage"))
 )
 table(d$san_imp_cat)
 table(d$country, d$san_imp_cat)
+table(d$san_imp, d$san_imp_cat)
 
 
 
@@ -178,6 +206,11 @@ table(d$country, d$san_imp_cat)
 table(d$WS1_lab, d$WS1)
 table(d$wat_class_lab, d$wat_imp)
 table(d$WS3_lab, d$WS3)
+
+table(d$country, d$WS3)
+table(d$country, is.na(d$WS4))
+table(d$country, d$WS7)
+
 
 d$WS3 <- as.numeric(d$WS3)
 d$WS4 <- as.numeric(d$WS4)
