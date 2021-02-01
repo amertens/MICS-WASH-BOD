@@ -184,7 +184,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
       if(calc_PAF){
         
 
-        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=10,dots=TRUE, low_risk_level=low_risk_level)
+        paflist <- bootAR(fn=ARfun,fmla = as.formula(f),data=df,ID=df$id,strata=rep(1, nrow(df)),iter=100,dots=FALSE, low_risk_level=low_risk_level)
         res$PAF <- paflist$bootest[2]
         res$PAF.lb <- paflist$boot95lb[2]
         res$PAF.ub <- paflist$boot95ub[2]
