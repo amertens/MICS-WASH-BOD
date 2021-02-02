@@ -15,7 +15,7 @@ res_adj_bin <- run_MICS_regressions(outcomes = c("stunt","diarrhea"), family="mo
 res_adj_bin <- res_adj_bin %>% mutate(adjusted=1)
 
 
-saveRDS(res_unadj_bin, here("results/unadj_PAFs.rds"))
+#saveRDS(res_unadj_bin, here("results/unadj_PAFs.rds"))
 saveRDS(res_adj_bin, here("results/adj_PAFs.rds"))
 
 res_paf <- bind_rows(res_adj_bin, res_unadj_bin)
