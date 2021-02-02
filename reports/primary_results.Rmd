@@ -126,49 +126,51 @@ pander(res, digits=2, caption = "Source water E.coli contamination by country")
 
 ## Covariate information
 
-
-```{r, echo=F}
-
+need to better figure out how to show covariate values by country
 
 
-#table1
-df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
-  subset(., select = c("country", Wvars)) %>%
-  rename(
-          `Caregiver education`=educ,
-          `Maternal age`=mage,
-          `Child age (days)`=aged,
-          `Child sex`=sex,
-          `Birth order`=birthord,
-          `Urban/rural`=rural,
-          `Currently breastfeeding`=currbf,
-          `Ever breastfed`=everbf,
-          `Number of children under 5`=nchild5,
-          `Household floor`=floor,
-          `Cookstove`=cookstove,
-          `Chimney`=chimney,
-          `Cooking fuel`=fuel,
-          `Roof construction`=roof,
-          `Wall material`=wall,
-          `Household size (people)`=nhh,
-          `House size (rooms)`=nroom_sleeping,
-          `Owns animals`=own_animals,
-          `Quartile of asset-based wealth`=HHwealth_quart,
-          
-          
-  )
-
-
-
-
-
-tab1 <- table1(~. |country, data=df)
-
-tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
-colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1)))
-
-pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country")
-```
+<!-- # ```{r, echo=F} -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- # #table1 -->
+<!-- # df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>% -->
+<!-- #   subset(., select = c("country", Wvars)) %>% -->
+<!-- #   rename( -->
+<!-- #           `Caregiver education`=educ, -->
+<!-- #           `Maternal age`=mage, -->
+<!-- #           `Child age (days)`=aged, -->
+<!-- #           `Child sex`=sex, -->
+<!-- #           `Birth order`=birthord, -->
+<!-- #           `Urban/rural`=rural, -->
+<!-- #           `Currently breastfeeding`=currbf, -->
+<!-- #           `Ever breastfed`=everbf, -->
+<!-- #           `Number of children under 5`=nchild5, -->
+<!-- #           `Household floor`=floor, -->
+<!-- #           `Cookstove`=cookstove, -->
+<!-- #           `Chimney`=chimney, -->
+<!-- #           `Cooking fuel`=fuel, -->
+<!-- #           `Roof construction`=roof, -->
+<!-- #           `Wall material`=wall, -->
+<!-- #           `Household size (people)`=nhh, -->
+<!-- #           `House size (rooms)`=nroom_sleeping, -->
+<!-- #           `Owns animals`=own_animals, -->
+<!-- #           `Quartile of asset-based wealth`=HHwealth_quart, -->
+<!-- #            -->
+<!-- #            -->
+<!-- #   ) -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- #  -->
+<!-- # tab1 <- table1(~. |country, data=df) -->
+<!-- #  -->
+<!-- # tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE)) -->
+<!-- # colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1))) -->
+<!-- #  -->
+<!-- # pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country") -->
+<!-- # ``` -->
 
 
 

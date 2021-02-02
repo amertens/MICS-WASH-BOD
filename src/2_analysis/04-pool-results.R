@@ -15,6 +15,15 @@ d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary")
 d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi") 
 
 
+
+#only include countries with both subgroups
+head(d_rural_adj)
+dim(d_rural_adj)
+d_rural_adj <- d_rural_adj  %>% group_by(country, analysis, Y, X, ref, contrast) %>% 
+  mutate(Nsubgroups=n()) %>% filter(Nsubgroups>1) %>% subset(., select = -c(Nsubgroups))
+dim(d_rural_adj)
+
+#combine results
 d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort, d_mort_multi) %>%
   filter(!is.na(coef))
 d$adjusted <- ifelse(d$W=="unadjusted",0,1)
