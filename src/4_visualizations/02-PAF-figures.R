@@ -4,8 +4,8 @@ source("0-config.R")
 
 
 dPAF <- readRDS(here("results/prim_PAFs.rds"))
-dPAF <- dPAF %>% filter(adjusted==1, !is.na(PAF)) %>%
-  subset(., select=c(country, Y, X,RR,  pval,PAF, PAF.lb, PAF.ub, ci.lb, ci.ub))
+# dPAF <- dPAF %>% filter(adjusted==1, !is.na(PAF)) %>%
+#   subset(., select=c(country, Y, X,RR,  pval,PAF, PAF.lb, PAF.ub, ci.lb, ci.ub))
 head(dPAF)
 
 # #get just PAF's from significant RR's

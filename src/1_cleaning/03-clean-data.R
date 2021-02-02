@@ -46,8 +46,8 @@ d <- d %>% mutate(
       EC_risk_S_3 ==100 ~ 3,   
       EC_risk_S_4 ==100 ~ 4
     ),
-    EC_risk_H = factor(EC_risk_H, levels=c("4","3","2","1")),
-    EC_risk_S = factor(EC_risk_S, levels=c("4","3","2","1"))
+    EC_risk_H = factor(EC_risk_H, levels=c("1","2","3","4")),
+    EC_risk_S = factor(EC_risk_S, levels=c("1","2","3","4"))
   )
 
 table(d$EC_risk_S)
@@ -116,7 +116,7 @@ d <- d %>% mutate(
     HW2 == 1 & hyg_imp != "Improved" ~"Limited",
     hyg_imp == "Improved" ~"Basic"
   ),
-  hyg_imp_cat = factor(hyg_imp_cat, levels=c("None", "Limited", "Basic"))
+  hyg_imp_cat = factor(hyg_imp_cat, levels=c( "Basic", "Limited","None"))
 )
 d$hyg_imp_cat[is.na(d$HW2)] <- NA
 table(d$hyg_imp_cat)
@@ -193,7 +193,7 @@ d <- d %>% mutate(
                           san_cat_lab=="Improved" & (WS15=="2") & high_coverage==0~"Basic",
                           san_cat_lab=="Improved" & (WS15=="2") & high_coverage==1~"High coverage"
                            ),
-  san_imp_cat = factor(san_imp_cat, levels=c("No facility", "Unimproved", "Limited", "Basic", "High coverage"))
+  san_imp_cat = factor(san_imp_cat, levels=rev(c("No facility", "Unimproved", "Limited", "Basic", "High coverage")))
 )
 table(d$san_imp_cat)
 table(d$country, d$san_imp_cat)
@@ -235,17 +235,17 @@ d <- d %>% mutate(
   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
                           wat_imp=="Unimproved"~"Unimproved",
-                          wat_imp=="Improved" & d$WS4>30~"Limited",
+                          wat_imp=="Improved" & (d$WS4>30 | (is.na(WS4) & WS7!="2" & (WS3>2 | is.na(WS3)))) ~"Limited",
                           wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2"| WS7==8|WS7==9|is.na(WS7))~"Basic",
-                          wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous",
+                          wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous"
   ),
-  wat_imp_cat = factor(wat_imp_cat, levels=c("Surface water", "Unimproved", "Limited", "Basic","Continuous"))
+  wat_imp_cat = factor(wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
 )
 
 #Note: don't use is.na(d$WS4) because it's missing when water is piped/continious
 table(d$country, d$wat_imp_cat)
-d$wat_imp_cat[is.na(d$wat_class_lab)|is.na(wat_imp)] <- NA
-d$wat_imp_cat[d$wat_imp=="Improved" & (d$WS3==9|is.na(d$WS3)|d$WS4>=998|is.na(d$WS4))] <- NA
+d$wat_imp_cat[is.na(d$wat_class_lab)|is.na(d$wat_imp)] <- NA
+#d$wat_imp_cat[d$wat_imp=="Improved" & (d$WS3==9|is.na(d$WS3)|d$WS4>=998|is.na(d$WS4))] <- NA
 table(d$country, d$wat_imp_cat)
 
 table(is.na(d$wat_imp_cat))

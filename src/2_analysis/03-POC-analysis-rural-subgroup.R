@@ -36,15 +36,19 @@ table(d$country, d$rural)
 
 
 d$country <- paste0(d$country, "-",d$rural)
+table(d$country)     
 
 
 #-------------------------------------------------
 # Adjusted analysis
 #-------------------------------------------------
 
-
-
-#binary_outcomes
+# d <- d %>% filter(country %in% c("SierraLeone-Rural","SierraLeone-Urban","Suriname-Rural","Suriname-Urban"))
+# 
+# #binary_outcomes
+# 
+# d <- droplevels(d)
+# res_adj_bin <- run_MICS_regressions(outcomes = c("ari"), family="modified possion", PAF=F, Wvars=NULL)
 
 
 res_adj <- res_adj_bin <- res_adj_cont <- NULL

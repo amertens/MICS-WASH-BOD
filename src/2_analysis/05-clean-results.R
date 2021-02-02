@@ -22,7 +22,7 @@ LAC <- c("Suriname","Paraguay" )
 MENA <- c("Algeria","Iraq","Tunisia" )
 SA <- c("Bangladesh", "Nepal", "Pakistan")
 ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome and Principe")
+WCA <- c("Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
 
 EAP <- EAP[order(EAP)]
 ECA <- ECA[order(ECA)]
@@ -66,6 +66,7 @@ df <- df %>%
       country=="PakistanPunjab" ~ "Pakistan",
       country=="LaoPDR" ~ "Laos",
       country=="SierraLeone" ~ "Sierra Leone",
+      country=="Sao Tome and Principe" ~ "Sao Tome+Prin.",
       country==country ~ country
     ),
     region = case_when(
@@ -107,6 +108,33 @@ df <- df %>%
       "Sanitation\ncategory", 
       "Water supply\ncategory", 
       "Hygiene\ncategory"))),
+    Xlab2 = case_when(X=="EC_H" ~ "Uncontaminated HH water", 
+                     X=="EC_S" ~ "Uncontaminated source water", 
+                     X=="san_imp" ~ "Improved sanitation", 
+                     X=="wat_imp" ~ "Improved water supply", 
+                     X=="hyg_imp" ~ "Improved hygiene", 
+                     X=="WASH" ~ "Improved WASH, no contamination",
+                     X=="WASH_noEC" ~ "Improved WASH",
+                     X=="safely_manH20" ~ "Safely managed drinking water",
+                     X=="EC_risk_H" ~ "HH water contamination", 
+                     X=="EC_risk_S" ~ "Source water contamination", 
+                     X=="san_imp_cat" ~ "Sanitation category", 
+                     X=="wat_imp_cat" ~ "Water supply category", 
+                     X=="hyg_imp_cat" ~ "Hygiene category"),
+    Xlab2=factor(Xlab2, levels = rev(c(
+      "Improved water supply", 
+      "Improved sanitation", 
+      "Improved hygiene", 
+      "Improved WASH",
+      "Uncontaminated HH water", 
+      "Uncontaminated source water", 
+      "Safely managed drinking water",
+      "Improved WASH, no contamination",
+      "HH water contamination", 
+      "Source water contamination", 
+      "Sanitation category", 
+      "Water supply category", 
+      "Hygiene category"))),
     contrast = case_when(
       contrast=="1" ~ "Unimproved",
       contrast=="2" ~ "Moderate risk",
@@ -125,7 +153,7 @@ df <- df %>%
     )) %>%
   filter(!is.na(est)) %>%
   arrange(Y,X,region, binary, adjusted, subgroup, country) %>%
-  mutate(countrylab=paste0(country, " (N=",N,")"),
+  mutate(countrylab=paste0(country, " (",N,")"),
          countrylab=case_when(grepl("Pooled",country)==TRUE ~ as.character(country),
                               grepl("Pooled",country)==FALSE ~ countrylab),
          countrylab=factor(countrylab, levels=unique(countrylab))) 
