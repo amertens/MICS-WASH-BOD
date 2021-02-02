@@ -9,12 +9,28 @@ d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 d <- droplevels(d)
 
 
+# Y ="stunt"
+# X="san_imp_cat"
+# W=Wvars
+# weight = "popweight"
+# clustid= "clust_num"
+# family="modified possion"
+# calc_PAF=F
+# low_risk_level="High coverage"
 
-
-                
-# d$clust_num <- 1:nrow(d)                
-
-
+# d <- d %>% filter(country=="Bangladesh")
+#                 
+# 
+# res <- mics_regression(d=d,
+#                                    Y ="stunt",
+#                                    X="san_imp_cat",
+#                                    W=Wvars,
+#                                    weight = "ecpopweight_H",
+#                                    clustid= "clust_num",
+#                                    family="modified possion", calc_PAF=F, low_risk_level="High coverage")
+# res
+# 
+# 
 # res <- mics_multinomial_regression(d=d,
 #                 Y ="stunt",
 #                 X="EC_risk_H",

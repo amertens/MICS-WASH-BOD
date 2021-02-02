@@ -60,11 +60,6 @@ prop.table(table(d$educ))
 unique(d$floor)
 
 
-
-"improved"
- "missing"
-"unimproved"
-
 d$floor <- recode(d$floor, 
                   "11" = "unimproved",
                   "12" = "unimproved",

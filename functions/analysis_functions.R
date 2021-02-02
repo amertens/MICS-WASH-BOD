@@ -79,6 +79,13 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   #order by id for geeglm function
   df <- df %>% arrange(id)
   
+  #Reorder X for multinomial
+  # if(low_risk_level %in% unique(df$X)){
+  #   df$X<- relevel(df$X, ref=low_risk_level)
+  # }else{
+  #   df$X<- relevel(df$X, ref=levels())
+  # }
+  
   if(family=="gaussian"){
     # #model formula
     # f <- ifelse(is.null(Wscreen),
@@ -1234,9 +1241,14 @@ mpreg <- function(varnames, formula, df, family, vcv=FALSE) {
   # conduct statistical inference
   invisible(fit <- summary(pool_mi( qhat = betas, u = vars )))
   
-  coef <- as.data.frame(fit[2,])
+  #
+  Xlevels <- length(unique(df$X))
+  
+  coef <- as.data.frame(fit[2:Xlevels,])
   res <- data.frame(Y=varnames[1],
                     X=varnames[2],
+                    ref=levels(df$X)[1],
+                    contrast=gsub("X","",rownames(coef)),
                     coef=coef$results,
                     RR=exp(coef$results),
                     se=coef$se,

@@ -1,0 +1,60 @@
+---
+title: "Forest plots of country-specific estimates"
+author: "Andrew Mertens"
+output:
+  html_document:
+    df_print: paged
+  word_document:
+    reference_docx: MICS_WASH_BOD_analysis_plan.docx
+---
+
+<!-- output: html_notebook -->
+<!-- editor_options:  -->
+<!--   chunk_output_type: inline -->
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn = -1) 
+library(janitor)
+library(knitr)
+library(here)
+library(table1)
+library(rvest)
+
+source(here("0-config.R"))
+
+
+op = function(x, d=2) sprintf(paste0("%1.",d,"f"), x) 
+ library(pander)
+panderOptions('digits', 2)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('graph.fontsize', 8)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+
+plist <- readRDS(here("figures/forest_figure_objects.rds"))
+
+
+```
+
+
+
+_Figure details for all plots:_ Each plot shows country-specific and pooled estimates for each WASH characteristic-outcome combination (printed in each figure title). All estimates are adjusted for potential confounders. Sample size for each estimate are in parentheses. Multi-panel figures compare categories of WASH characteristics (printed at the top of each panel) to the most-improved reference level (printed after `ref=` in the X-axis label). Points are colored by the MICS region, with pooled estimates in black, and labeled as pooled estimates from random effects (RE) or fixed effects (FE) models.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 5}
+#for(i in 1:4){
+for(i in 1:length(plist)){
+  print(plist[[i]])
+}
+
+
+```
