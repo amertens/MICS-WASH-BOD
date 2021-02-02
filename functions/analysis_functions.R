@@ -964,29 +964,25 @@ ARfun <- function(fmla,data,low_risk_level) {
   pred <- make.predictorMatrix(data)
   
   set.seed(12345)
-  data <-mice(data, 
-             meth = meth, 
-             pred = pred, 
-             print = FALSE, 
-             m = 1, 
-             maxit = 6)[[1]]
+  df <-mice(data, 
+            meth = meth, 
+            pred = pred, 
+            print = FALSE, 
+            m = 1, 
+            maxit = 6)
+  
+  datlist <- miceadds::mids2datlist(df)
+  data.imp <- datlist[[1]]
   
   # --------------------------------------
   # Fit log-linear model used to estimate
   # counterfactuals.
   # --------------------------------------
-  id <- data$id
-  weight <- data$weight
-  regfit <- glm(as.formula(fmla), family=poisson(link="log"), data=data, weights = weight)
+  id <- data.imp$id
+  weight <- data.imp$weight
+  regfit <- glm(as.formula(fmla), family=poisson(link="log"), data=data.imp, weights = weight)
 
   
-  # regfit <- geeglm(formula = as.formula(fmla),
-  #                  data    = data,
-  #                  weights = weight,
-  #                  family  = poisson(link = "log"),
-  #                  id      = id,
-  #                  corstr  = "exchangeable") 
-  # 
   # --------------------------------------
   # create counterfactual datasets
   # and predicted P(Y|A,W)
@@ -995,12 +991,12 @@ ARfun <- function(fmla,data,low_risk_level) {
   pY <- predict(regfit,type="response")
   
   # Counterfactual: everybody has improved WASH characteristic
-  cf1 <- data
+  cf1 <- data.imp
   cf1$X  <- 1
   pY1 <- predict(regfit,newdata=cf1,type="response")
   
   # Counterfactual: nobody has improved WASH characteristic
-  cf0 <- data
+  cf0 <- data.imp
   cf0$X  <- 0
   pY0 <- predict(regfit,newdata=cf0,type="response")
   
