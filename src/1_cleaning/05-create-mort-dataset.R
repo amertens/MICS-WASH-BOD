@@ -24,6 +24,9 @@ source("0-config.R")
 #Cuba 2019 Datasets 
 #Sao Tome and Principe 2019 Datasets
 
+chad <- load_MICS_mort_dataset("Chad")
+CAR <- load_MICS_mort_dataset("CAR")
+
 bd <- load_MICS_mort_dataset("Bangladesh")
 pakPun <- load_MICS_mort_dataset("PakistanPunjab")
 ze <- load_MICS_mort_dataset("Zimbabwe")
@@ -50,7 +53,7 @@ SL <- load_MICS_mort_dataset("SierraLeone")
 sur <- load_MICS_mort_dataset("Suriname")
 tg <- load_MICS_mort_dataset("Togo")
 tun <- load_MICS_mort_dataset("Tunisia")
-#CI <- load_MICS_mort_dataset("CoteIvoire") #Check, but I don't think has WQ modules
+CI <- load_MICS_mort_dataset("CoteIvoire") 
 #ga <- load_MICS_mort_dataset("Georgia") #Georgia doesn't have mortality
 gh <- load_MICS_mort_dataset("Ghana") 
 iq <- load_MICS_mort_dataset("Iraq")
@@ -67,6 +70,9 @@ save(bd,
      cg,
      gb,
      iq,
+     chad,
+     CAR,
+     CI,
      gh,ki,laPDR, 
      DRC, ta, G_B,
      le,md,mo,          
@@ -81,9 +87,11 @@ save(bd,
 #load(here("data/raw_MICS_surveys.rdata"))
 d <- bind_rows(bd, 
                cg,
-               #CI,
                gb,
                iq,
+               chad,
+               CAR,
+               CI,
                gh,ki,laPDR, 
                DRC, ta, G_B,
                le,md,mo,          

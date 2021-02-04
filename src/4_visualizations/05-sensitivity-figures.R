@@ -1,7 +1,7 @@
 
 source("0-config.R")
 
-d <- readRDS(here("results/pooled_results.rds"))
+d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(ci.lb))
 
 
 
@@ -98,6 +98,7 @@ p_tmle_comp_diff_forest <- d %>% filter(Y=="HAZ", X %in% c("EC_H","EC_S"), binar
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
+#NEED to add a RE vs. FE comparison
 
 
 #-------------------------------------------------------------

@@ -1,7 +1,6 @@
 ---
-title: "POC"
+title: "Primary figures and tables"
 author: "Andrew Mertens"
-date: "Sept 28, 2020"
 output: 
   word_document:
     reference_docx: MICS_WASH_BOD_analysis_plan.docx
@@ -10,6 +9,17 @@ output:
 <!-- output: html_notebook -->
 <!-- editor_options:  -->
 <!--   chunk_output_type: inline -->
+
+
+###To do
+
+  *  Put saved tables after figures
+  *  Adapt figure captions
+  *  Put main interpretations after figures
+  *  Write results section with references to figures
+  *  Write limitation/open questions
+  * look at Ben's notes - add reference blank point to plots
+  
 
 
 

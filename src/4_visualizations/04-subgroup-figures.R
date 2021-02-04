@@ -1,7 +1,7 @@
 
 source("0-config.R")
 
-d <- readRDS(here("results/pooled_results.rds"))
+d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(ci.lb))
 
 #mark if both
 

@@ -3,10 +3,7 @@ source("0-config.R")
 
 d <- readRDS(here("results/pooled_results.rds"))
 
-
-#TEMP! Drop "Improved WASH,\nno contamination"
-#d <- d %>% filter(X!="Improved WASH,\nno contamination") %>% droplevels(.)
-
+#fix so unimproved in Y axis and (ref: Improved) in X-axis
 
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # Primary figures
@@ -19,7 +16,7 @@ d <- readRDS(here("results/pooled_results.rds"))
 
 
 #To do: make labeling of Y axis clearer, add in mortality
-p_prim_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="primary", country=="Pooled - RE", exposure_type=="HH") %>% 
+p_prim_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binary==1, analysis=="primary", country=="Pooled - RE", exposure_type=="HH") %>% 
   droplevels(.) %>%
   #mutate(=factor(X, levels = rev(levels(X)))) %>%
   ggplot(., aes(y=est, x=Xlab),color="black") +
@@ -31,11 +28,11 @@ p_prim_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="primary", co
   #scale_y_continuous(breaks=c(0.25, 0.5,1, 1.1, 1.5, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_y_continuous(trans='log10') +
   coord_flip() +
-  xlab("WASH Characteristic reference level") + ylab("Relative Risk")
+  xlab("WASH Characteristic") + ylab("Relative Risk (ref: Improved)")
 p_prim_pooled_HH
 
 
-p_prim_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="primary", country=="Pooled - RE", exposure_type=="WQ") %>% 
+p_prim_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binary==1, analysis=="primary", country=="Pooled - RE", exposure_type=="WQ") %>% 
   droplevels(.) %>%
   #mutate(=factor(X, levels = rev(levels(X)))) %>%
   ggplot(., aes(y=est, x=Xlab),color="black") +
@@ -47,7 +44,7 @@ p_prim_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="primary", co
   #scale_y_continuous(breaks=c(0.25, 0.5,1, 1.1, 1.5, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_y_continuous(trans='log10') +
   coord_flip() +
-  xlab("WASH Characteristic reference level") + ylab("Relative Risk")
+  xlab("WASH Characteristic") + ylab("Relative Risk (ref: Improved)")
 p_prim_pooled_WQ
 
 
@@ -63,16 +60,14 @@ p_prim_pooled_WQ
 #Note: make the facet labels on the left sife and add the reference to the facet labels
 #Make sure changes to put low-risk level as reference
 
-p_multi_pooled_HH <-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled - RE", exposure_type=="HH") %>% 
+p_multi_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled - RE", exposure_type=="HH") %>% 
   droplevels(.) %>%
   arrange(Xlab) %>%
-  mutate(Xref=paste0(Xlab,"\n(Ref.: ",ref,")"),
-         Xref=factor(Xref, levels = unique(Xref))) %>%
   ggplot(., aes(y=est, x=contrast),color="black") +
-  facet_grid(Xref~Y, scale="free_y", switch = "y") +
+  facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  #scale_color_manual(values=tableau10) +
+  geom_text(aes(label=reflab), nudge_y=.2, size = 3) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
@@ -86,16 +81,14 @@ p_multi_pooled_HH <-d %>% filter(adjusted==1, binary==1, analysis=="primary-mult
         legend.box.background = element_rect(colour = "black"), 
         title = element_text(margin=margin(0,0,-10,0)))
 
-p_multi_pooled_WQ <-d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled - RE", exposure_type=="WQ") %>% 
+p_multi_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="primary-multi", country=="Pooled - RE", exposure_type=="WQ") %>% 
   droplevels(.) %>%
   arrange(Xlab) %>%
-  mutate(Xref=paste0(Xlab,"\n(Ref.: ",ref,")"),
-         Xref=factor(Xref, levels = unique(Xref))) %>%
   ggplot(., aes(y=est, x=contrast),color="black") +
-  facet_grid(Xref~Y, scale="free_y", switch = "y") +
+  facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  #scale_color_manual(values=tableau10) +
+  geom_text(aes(label=reflab), nudge_y=.2, size = 3) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
@@ -113,7 +106,7 @@ p_multi_pooled_WQ <-d %>% filter(adjusted==1, binary==1, analysis=="primary-mult
 #-------------------------------------------------------------
 # Z-score differences
 #-------------------------------------------------------------
-p_prim_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis=="primary", country=="Pooled - RE", exposure_type=="HH") %>% 
+p_prim_Zscore_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binary==0, analysis=="primary", country=="Pooled - RE", exposure_type=="HH") %>% 
   droplevels(.) %>%
   ggplot(., aes(y=est, x=Xlab),color="black") +
   facet_grid(~Y) +
@@ -121,9 +114,9 @@ p_prim_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis=="prima
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_hline(yintercept = 0) +
   coord_flip() +
-  xlab("WASH Characteristic reference level") + ylab("Z-score difference")
+  xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")
 
-p_prim_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis=="primary", country=="Pooled - RE", exposure_type=="WQ") %>% 
+p_prim_Zscore_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binary==0, analysis=="primary", country=="Pooled - RE", exposure_type=="WQ") %>% 
   droplevels(.) %>%
   ggplot(., aes(y=est, x=Xlab),color="black") +
   facet_grid(~Y) +
@@ -131,7 +124,7 @@ p_prim_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis=="prima
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_hline(yintercept = 0) +
   coord_flip() +
-  xlab("WASH Characteristic reference level") + ylab("Z-score difference")
+  xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")
 
 
 
@@ -141,16 +134,16 @@ p_prim_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis=="prima
 # Z-score differences - multinomial
 #-------------------------------------------------------------
 
+#missing categories- where is WASH and safely managed, etc.
+
 p_multi_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis=="primary-multi", country=="Pooled - RE", multinomial==1, exposure_type=="HH") %>% 
   droplevels(.) %>%
   arrange(Xlab) %>%
-  mutate(Xref=paste0(Xlab,"\n(Ref.: ",ref,")"),
-         Xref=factor(Xref, levels = unique(Xref))) %>%
   ggplot(., aes(y=est, x=contrast),color="black") +
-  facet_grid(Xref~Y, scale="free_y", switch = "y") +
+  facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  #scale_color_manual(values=tableau10) +
+  geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 0) +
   coord_flip() +
   xlab("") + ylab("Z-score difference")+
@@ -166,13 +159,11 @@ p_multi_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis=="prim
 p_multi_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis=="primary-multi", country=="Pooled - RE", multinomial==1, exposure_type=="WQ") %>% 
   droplevels(.) %>%
   arrange(Xlab) %>%
-  mutate(Xref=paste0(Xlab,"\n(Ref.: ",ref,")"),
-         Xref=factor(Xref, levels = unique(Xref))) %>%
   ggplot(., aes(y=est, x=contrast),color="black") +
-  facet_grid(Xref~Y, scale="free_y", switch = "y") +
+  facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point() + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  #scale_color_manual(values=tableau10) +
+  geom_text(aes(label=reflab), nudge_y=.05, size = 3) +
   geom_hline(yintercept = 0) +
   coord_flip() +
   xlab("") + ylab("Z-score difference")+
