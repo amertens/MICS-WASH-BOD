@@ -246,8 +246,9 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   d <- NULL
   try(d <- read_dta(data_path(path)))
   if(is.null(d)){
-    d <- read_sav(data_path(hh_path))
-    
+    try(d <- read_sav(data_path(hh_path)))
+    if(is.null(d)){d <- read_dta(data_path(paste0(country,"/hh.dta")))} 
+
     #to do: use excel sheet to get the variable name conversion
     d <- plyr::rename( d, replace=namekey, warn_missing=F)
   }
@@ -284,10 +285,9 @@ load_MICS_dataset <- function(country, saveCodebook=F){
     hh <- read_dta(data_path(hh_path))
   }
   #summary(hh$WQ26)
-
-  hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
+  try(hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
     filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
-    subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S))
+    subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S)))
 
   
   
@@ -344,7 +344,9 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   dim(d2)
   
   dim(hh)
-  d3 <- full_join(d2, hh, by = c("clust_num","HH_num"))
+  d3 <- NULL
+  try(d3 <- full_join(d2, hh, by = c("clust_num","HH_num")))
+  if(is.null(d3)){d3<-d2}
   dim(d3)
   
   #table(is.na(bh$brthord))
@@ -354,7 +356,7 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   #table(is.na(df$brthord))
   
   hl <- NULL
-  if(is.null(d3$HHAGE)){
+  try(if(is.null(d3$HHAGE)){
     hl <- read_sav(data_path(hl_path))
     #lab<-makeVlist(hl)
     hl2 <- NULL
@@ -378,7 +380,7 @@ load_MICS_dataset <- function(country, saveCodebook=F){
     dim(hl2)
     d3 <- left_join(d3, hl2, by=c("clust_num","HH_num","UF4"))
     dim(d3)
-  }
+  })
   
   if(saveCodebook){
     lab<-makeVlist(d3)
@@ -401,7 +403,10 @@ load_MICS_mort_dataset <- function(country){
   bh_path=paste0(country,"/bh.sav")
   hh_path=paste0(country,"/hh.sav")
 
-    d <- read_sav(data_path(hh_path))
+    d<-NULL
+    try(d <- read_sav(data_path(hh_path)))
+    if(is.null(d)){d <- read_dta(data_path(paste0(country,"/hh.dta")))} 
+    
     d <- plyr::rename( d, replace=namekey, warn_missing=F)
     d <- d[, unique(colnames(d))]
     d <- d %>% mutate(

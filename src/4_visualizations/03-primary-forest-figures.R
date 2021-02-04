@@ -2,19 +2,13 @@
 rm(list=ls())
 source("0-config.R")
 
-d <- readRDS(here("results/pooled_results.rds"))
+d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(ci.lb))
 
-
-
-unique(d$Y)
-unique(d$X)
-table(d$X, d$Y)
-
-unique(d$analysis)
 
 
 i=unique(d$Y)[1]
 j=unique(d$X)[1]
+j="san_imp_cat"
 
 plist <- list()
 

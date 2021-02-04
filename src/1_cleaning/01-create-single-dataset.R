@@ -14,6 +14,22 @@ source("0-config.R")
 #To add (in the future):
         # Samoa (not available yet)
 
+#To add
+chad <- load_MICS_dataset("Chad")
+    chad <- clean_WASH(chad)
+
+table(chad$EC_100_H)
+table(chad$wat_class_lab)
+
+CAR <- load_MICS_dataset("CAR")
+  CAR <- clean_WASH(CAR)
+  
+table(CAR$EC_100_H)
+table(CAR$wat_class_lab)
+
+
+
+
 
 #Newly added:
         #Congo
@@ -57,10 +73,10 @@ SL <- load_MICS_dataset("SierraLeone")
 sur <- load_MICS_dataset("Suriname")
 tg <- load_MICS_dataset("Togo")
 tun <- load_MICS_dataset("Tunisia")
-#CI <- load_MICS_dataset("CoteIvoire") #Check, but I don't think has WQ modules
 ga <- load_MICS_dataset("Georgia") #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
 gh <- load_MICS_dataset("Ghana") 
 iq <- load_MICS_dataset("Iraq")
+CI <- load_MICS_dataset("CoteIvoire") #Check, but I don't think has WQ modules
 
 #Two studies with slightly different variable names. Recode:
 #Paraguay, Nigeria
@@ -95,6 +111,9 @@ ls()
 
   save(bd, 
         cg,
+       CI,
+       chad,
+       CAR,
         ga,
         gb,
         iq,
@@ -112,6 +131,9 @@ ls()
 #load(here("data/raw_MICS_surveys.rdata"))
 d <- bind_rows(bd, 
                cg,
+               CI,
+               chad,
+               CAR,
                #CI,
                ga,
                gb,

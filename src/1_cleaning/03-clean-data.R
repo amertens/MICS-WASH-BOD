@@ -160,17 +160,18 @@ table(d$country, d$wat_imp)
 table(d$WS11_lab, d$WS11)
 table(d$san_cat_lab)
 table(d$WS15, d$WS15_lab)
-table(d$country, d$WS15)
+table(d$country, d$WS15, d$san_cat_lab)
+table(d$country, is.na(d$WS15), d$san_cat_lab)
 
 #calculate levels without community coverage
 d <- d %>% mutate(
   san_imp_cat = case_when(san_cat_lab=="No facility"~"No facility",
                           san_cat_lab=="Unimproved"~"Unimproved",
-                          san_cat_lab=="Improved" & (WS15!="2")~"Limited",
+                          san_cat_lab=="Improved" & (WS15!="2"|is.na(WS15))~"Limited", #Note is.na is not needed currently because no improved is missing WS15
                           san_cat_lab=="Improved" & (WS15=="2")~"Basic"
   ))
 table(d$san_imp_cat)
-table(is.na(d$san_imp_cat))
+table(is.na(d$san_imp_cat), d$san_imp)
 table(d$country, d$san_imp_cat)
 
 #calculate community coverage 
@@ -189,7 +190,7 @@ table(d$country, d$san_cat_lab, d$WS15)
 d <- d %>% mutate(
   san_imp_cat = case_when(san_cat_lab=="No facility"~"No facility",
                            san_cat_lab=="Unimproved"~"Unimproved",
-                           san_cat_lab=="Improved" & (WS15!="2")~"Limited",
+                           san_cat_lab=="Improved" & (WS15!="2"|is.na(WS15))~"Limited",
                           san_cat_lab=="Improved" & (WS15=="2") & high_coverage==0~"Basic",
                           san_cat_lab=="Improved" & (WS15=="2") & high_coverage==1~"High coverage"
                            ),
@@ -207,48 +208,68 @@ table(d$san_imp, d$san_imp_cat)
 # 3.	Limited - drinking water from an improved source for which collection time exceeds 30 minutes for a roundtrip including queuing.
 # 4.	Basic - drinking water from an improved source (piped water, boreholes or tubewells, protected dug wells, protected springs, rainwater, and packaged or delivered water), provided collection time is not more than 30 minutes for a roundtrip including queuing,
 # 5.	Continuous drinking water on premises from an improved water source (highest measured level of service).
-table(d$WS1_lab, d$WS1)
-table(d$wat_class_lab, d$wat_imp)
-table(d$WS3_lab, d$WS3)
 
-table(d$country, d$WS3)
-table(d$country, is.na(d$WS4))
-table(d$country, d$WS7)
 
 
 d$WS3 <- as.numeric(d$WS3)
 d$WS4 <- as.numeric(d$WS4)
-d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
-d$continious_wat[is.na(d$WS3)|d$WS3==9|d$wat_class_lab=="Missing"|is.na(d$wat_class_lab)] <- NA
-table(d$continious_wat)
 
-table(d$continious_wat)
+# d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
+# d$continious_wat[is.na(d$WS3)|d$WS3==9|d$wat_class_lab=="Missing"|is.na(d$wat_class_lab)] <- NA
+# table(d$continious_wat)
 
-table(d$country, d$wat_class_lab)
-table(d$WS3, d$WS3_lab)
-table(d$WS7, d$WS7_lab)
 
-table(d$WS3, d$WS7, d$wat_imp)
-table(d$WS3, d$WS7, is.na(d$WS4))
+# table(d$WS3, d$wat_class_lab)
+# table(is.na(d$WS3), d$wat_class_lab)
+# table(d$WS4, d$wat_class_lab)
+# table(is.na(d$WS4), d$wat_class_lab)
+# table(d$WS7, d$wat_class_lab)
+# table(is.na(d$WS7), d$wat_class_lab)
 
-d <- d %>% mutate(
-  wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
-                          wat_class_lab=="Unprotected wells and springs"~"Unimproved",
-                          wat_imp=="Unimproved"~"Unimproved",
-                          wat_imp=="Improved" & (d$WS4>30 | (is.na(WS4) & WS7!="2" & (WS3>2 | is.na(WS3)))) ~"Limited",
-                          wat_imp=="Improved" & d$WS4<=30 & (WS3>2 | WS7!="2"| WS7==8|WS7==9|is.na(WS7))~"Basic",
-                          wat_imp=="Improved" & WS3<=2 & WS7=="2"~"Continuous"
-  ),
-  wat_imp_cat = factor(wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
-)
+# table(d$WS7, d$WS7_lab)
+# 
+# table(d$WS3, d$WS7, d$wat_imp)
+# table(d$WS3, d$WS7, is.na(d$WS4))
+# 
+# 
+# table(d$country, d$wat_class_lab)
+# table(d$country, d$wat_imp)
+# table(d$wat_class_lab, d$WS4)
+# table(d$wat_class_lab, is.na(d$WS3))
+# table(d$wat_class_lab, is.na(d$WS4))
+# table(d$wat_class_lab, is.na(d$WS3))
 
-#Note: don't use is.na(d$WS4) because it's missing when water is piped/continious
+# WS3	Location of the water source
+# WS4	Time (in minutes) to get water and come back
+# WS7	There been any time in the last month without sufficient water
+
+
+# d <- d %>% mutate(
+#   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
+#                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
+#                           wat_imp=="Unimproved"~"Unimproved",
+#                           wat_imp=="Improved" & WS4>30  ~"Limited",
+#                           wat_imp=="Improved" & (WS4<=30 | is.na(WS4))~"Basic",
+#                           wat_imp=="Improved" & (WS4<=30 | is.na(WS4)) & WS3<=2 & WS7==2~"Continuous"
+#   ),
+#   wat_imp_cat = factor(wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
+# )
+
+d$wat_imp_cat <- NA
+d$wat_imp_cat[d$wat_class_lab=="Surface water"] <- "Surface water"
+d$wat_imp_cat[d$wat_class_lab=="Unprotected wells and springs"] <- "Unimproved"
+d$wat_imp_cat[d$wat_imp=="Improved"& d$WS4>30] <- "Limited"
+d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4))] <- "Basic"
+d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4)) &  d$WS3<=2 & d$WS7==2] <- "Continuous"
+d$wat_imp_cat = factor(d$wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
+
 table(d$country, d$wat_imp_cat)
-d$wat_imp_cat[is.na(d$wat_class_lab)|is.na(d$wat_imp)] <- NA
+d$wat_imp_cat[is.na(d$wat_class_lab)|d$wat_class_lab=="Missing"|is.na(d$wat_imp)] <- NA
 #d$wat_imp_cat[d$wat_imp=="Improved" & (d$WS3==9|is.na(d$WS3)|d$WS4>=998|is.na(d$WS4))] <- NA
 table(d$country, d$wat_imp_cat)
 
-table(is.na(d$wat_imp_cat))
+table((d$wat_class_lab), d$wat_imp)
+table(is.na(d$wat_imp_cat), d$wat_imp)
 table(d$wat_imp_cat)
 
 
@@ -341,9 +362,6 @@ prop.table(table(d$ari[d$country=="Bangladesh"]))*100
 prop.table(table(d$diarrhea[d$country=="Bangladesh"]))*100
 prop.table(table(d$fever[d$country=="Bangladesh"]))*100
 
-
-#Drop observations missing all outcomes
-d <- d %>% filter(!is.na(ari) | !is.na(diarrhea) | !is.na(haz) | !is.na(waz) | !is.na(whz))
 
 #------------------------------------------------------
 # rename and clean covariates

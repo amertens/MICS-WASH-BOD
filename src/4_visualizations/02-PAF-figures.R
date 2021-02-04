@@ -98,7 +98,7 @@ p_PAF <- dPAF %>%
   #scale_color_manual(values=tableau10[1:3]) +
   geom_hline(yintercept = 0) +
   #coord_flip(ylim=c(-5,60)) +
-  coord_flip() +
+  coord_flip(ylim=c(-100,100)) +
   xlab("Country and outcome") + ylab("Population Attributable Fraction") +
   theme(strip.background = element_blank(),
         legend.position="none",
@@ -110,4 +110,6 @@ p_PAF <- dPAF %>%
         axis.text.x = element_text(size=10, vjust = 0.5),
         title = element_text(margin=margin(0,0,-10,0)))
 
+
+save(list = ls(pattern="p_"), file=here("figures/PAF_figure_objects.Rdata"))
 

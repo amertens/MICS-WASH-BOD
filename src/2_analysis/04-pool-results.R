@@ -5,19 +5,29 @@ source("0-config.R")
 
 d_unadj <- d_RR_multi_unadj <- d_adj <- d_RR_multi_adj <- d_tmle_adj <- d_rural_adj <- d_mort <- NULL
 
-d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="primary", W = "unadjusted")
-d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted")
-d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary", temp=1)
-d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi")
-d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle") %>% rename(coef=est)
-d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
-d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary") 
-d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi") 
+d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="primary", W = "unadjusted", adjusted=0)
+d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted", adjusted=0)
+d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary", adjusted=1)
+d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", adjusted=1)
+d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle", adjusted=1) %>% rename(coef=est)
+d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", adjusted=1, subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
+d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary", adjusted=1) 
+d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi, adjusted=1") 
 
 
+
+#only include countries with both subgroups
+head(d_rural_adj)
+dim(d_rural_adj)
+d_rural_adj <- d_rural_adj  %>% group_by(country, analysis, Y, X, ref, contrast) %>% 
+  mutate(Nsubgroups=n()) %>% filter(Nsubgroups>1) %>% subset(., select = -c(Nsubgroups))
+dim(d_rural_adj)
+
+#combine results
 d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort, d_mort_multi) %>%
   filter(!is.na(coef))
-d$adjusted <- ifelse(d$W=="unadjusted",0,1)
+table(d$analysis, is.na(d$adjusted))
+
 d$ref[is.na(d$ref)] <- "0"
 d$contrast[is.na(d$contrast )] <- "1"
 d$subgroup[is.na(d$subgroup )] <- "unstratified"
