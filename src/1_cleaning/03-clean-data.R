@@ -210,13 +210,9 @@ table(d$san_imp, d$san_imp_cat)
 # 5.	Continuous drinking water on premises from an improved water source (highest measured level of service).
 
 
-
-d$WS3 <- as.numeric(d$WS3)
-d$WS4 <- as.numeric(d$WS4)
-
-# d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
-# d$continious_wat[is.na(d$WS3)|d$WS3==9|d$wat_class_lab=="Missing"|is.na(d$wat_class_lab)] <- NA
-# table(d$continious_wat)
+d$continious_wat <- ifelse(d$WS3<=2 & d$wat_class_lab=="Piped water", 1, 0)
+d$continious_wat[is.na(d$WS3)|d$WS3==9|d$wat_class_lab=="Missing"|is.na(d$wat_class_lab)] <- NA
+table(d$continious_wat)
 
 
 # table(d$WS3, d$wat_class_lab)
@@ -255,12 +251,18 @@ d$WS4 <- as.numeric(d$WS4)
 #   wat_imp_cat = factor(wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
 # )
 
+
+
+d$WS3 <- as.numeric(d$WS3)
+d$WS4 <- as.numeric(d$WS4)
+
 d$wat_imp_cat <- NA
 d$wat_imp_cat[d$wat_class_lab=="Surface water"] <- "Surface water"
 d$wat_imp_cat[d$wat_class_lab=="Unprotected wells and springs"] <- "Unimproved"
 d$wat_imp_cat[d$wat_imp=="Improved"& d$WS4>30] <- "Limited"
 d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4))] <- "Basic"
-d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4)) &  d$WS3<=2 & d$WS7==2] <- "Continuous"
+#d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4)) &  d$WS3<=2 & d$WS7==2] <- "Continuous"
+d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4)) &  d$WS3<=2 & (d$WS7!=1|is.na(d$WS7))] <- "Continuous"
 d$wat_imp_cat = factor(d$wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
 
 table(d$country, d$wat_imp_cat)
