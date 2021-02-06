@@ -9,7 +9,10 @@ d <- readRDS(here("results/pooled_results.rds"))
 # Primary figures
 #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-
+d %>% filter(X=="safely_manH20",ref!=contrast, adjusted==1, binary==1, analysis=="primary", country=="Pooled - RE", exposure_type=="WQ") %>% 
+  droplevels(.) 
+df<- d %>% filter(X=="safely_manH20", binary==1, analysis=="primary", country=="Pooled - RE", exposure_type=="WQ") %>% 
+  droplevels(.) 
 #-------------------------------------------------------------
 # RR's single increase
 #-------------------------------------------------------------

@@ -15,11 +15,7 @@ d <- RR_multi_adj %>% filter(!is.na(ci.lb)) %>% group_by(country, analysis, Y, X
            X %in% c("san_imp_cat", "wat_imp_cat") & N==4)
 table(d$N)
 
-d$ref[is.na(d$ref)] <- "0"
-d$contrast[is.na(d$contrast )] <- "1"
-d$subgroup[is.na(d$subgroup )] <- "unstratified"
 
-table(d$Y, d$analysis, d$adjusted)
 
 
 

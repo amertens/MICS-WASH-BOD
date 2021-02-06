@@ -117,12 +117,7 @@ d %>% group_by(country) %>%
   summarise(N_households=n(), N_EC_H=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_S=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_noEC=sum(as.numeric(WASH)-1, na.rm=T))
 
 
-d %>% tabyl(country, wat_imp_cat)
-d %>% tabyl(country, san_imp_cat)
-d %>% tabyl(country, hyg_imp_cat)
-d %>% tabyl(country, EC_risk_H)
-d %>% tabyl(country, EC_risk_S)
-
+#Need to clean country names
 
 
 #Make function out of this then combine N's and percents
@@ -133,7 +128,7 @@ tab_cat <- function(d, x){
   rowtotal <- rowSums(cattab)
   rownames(cattab) <- df[,1]
   df2 <- round(prop.table(as.matrix(cattab),1)*100, 1)    
-  
+  df2[is.nan(df2)] <- 0
   
   
   cattab <- as.matrix(cattab)
@@ -146,12 +141,24 @@ tab_cat <- function(d, x){
   return(tab)
 }
 
-tab_cat(d, "wat_imp_cat")
-tab_cat(d, "san_imp_cat")
-tab_cat(d, "hyg_imp_cat")
-tab_cat(d, "EC_risk_H")
-tab_cat(d, "EC_risk_S")
+wat_imp_cat <- tab_cat(d, "wat_imp_cat")
+san_imp_cat <- tab_cat(d, "san_imp_cat")
+hyg_imp_cat <- tab_cat(d, "hyg_imp_cat")
+EC_risk_H <- tab_cat(d, "EC_risk_H")
+EC_risk_S <- tab_cat(d, "EC_risk_S")
 
 
-            
+#Make combined table of improved water/san/hygeine
+wat_imp <- tab_cat(d, "wat_imp")
+san_imp <- tab_cat(d, "san_imp")
+hyg_imp <- tab_cat(d, "hyg_imp")
+WASH_noEC <- tab_cat(d, "WASH_noEC")
+
+WASHtab <- as.data.frame(bind_cols(wat_imp[,1],san_imp[,1],hyg_imp[,1],WASH_noEC[,1]))
+rownames(WASHtab) <- rownames(wat_imp)
+colnames(WASHtab) <- c("Improved\nWater","Improved\nSanitation","Improved\nHygeine","Improved\nWASH")
+
+save(WASHtab, wat_imp_cat, san_imp_cat, hyg_imp_cat, EC_risk_H, EC_risk_S,
+     file=here("tables/table_objects.Rdata"))
+
             

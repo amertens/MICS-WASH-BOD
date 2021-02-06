@@ -25,7 +25,7 @@ LAC <- c("Suriname","Paraguay" )
 MENA <- c("Algeria","Iraq","Tunisia" )
 SA <- c("Bangladesh", "Nepal", "Pakistan")
 ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
+WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
 
 EAP <- EAP[order(EAP)]
 ECA <- ECA[order(ECA)]
@@ -34,6 +34,7 @@ MENA <- MENA[order(MENA)]
 SA <- SA[order(SA)]
 ESA <- ESA[order(ESA)]
 WCA <- WCA[order(WCA)]
+
 
 
 
@@ -150,7 +151,7 @@ df <- df %>%
       contrast=="4" ~ "Very high risk", 
       contrast==contrast ~ contrast 
     ),
-    contrast=factor(contrast, levels=rev(c("Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
+    contrast=factor(contrast, levels=rev(c("Safe","Unsafe","Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
     ref = case_when(
       ref=="0" & !grepl("EC",X)~ "Improved",
       ref=="0" & grepl("EC",X) ~ "Uncontaminated",
