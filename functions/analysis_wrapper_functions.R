@@ -221,6 +221,44 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
   return(fullres) 
 }
 
+run_mics_multinomial_regressions_sens <- function(outcomes, family, PAF, Wvars){
+  
+  adj <- ifelse(is.null(Wvars),"unadj","adj")
+  
+  fullres <- NULL 
+  
+  
+  for(i in outcomes){
+    res1 <- res2 <- res3 <- res4 <- res5 <- NULL
+    print(i)
+  
+    
+    res3 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="san_imp_cat",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="High coverage"))
+    #saveRDS(res3, file=here(paste0("results/individual_estimates/",i,"_san_imp_",adj,".rds")))
+    
+    res4 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="wat_imp_cat",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Basic"))
+    #saveRDS(res4, file=here(paste0("results/individual_estimates/",i,"_wat_imp_",adj,".rds")))
+   
+    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5)
+  }
+  
+  return(fullres) 
+}
+
 
 
 run_mics_multinomial_regressions_old <- function(outcomes, family, PAF, Wvars){
@@ -289,6 +327,7 @@ run_mics_multinomial_regressions_old <- function(outcomes, family, PAF, Wvars){
   
   return(fullres) 
 }
+
 
 
 
