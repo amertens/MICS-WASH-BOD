@@ -3,10 +3,10 @@ title: "Tables"
 author: "Andrew Mertens"
 date: "Sept 28, 2020"
 output:
-  html_document:
-    df_print: paged
   word_document:
     reference_docx: MICS_WASH_BOD_analysis_plan.docx
+  html_document:
+    df_print: paged
 ---
 
 <!-- output: html_notebook -->
@@ -42,81 +42,122 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ```
 
-## Descriptive statistics
+## Sample details
+
+## WASH characteristics
 
 ```{r, echo=F, warning=F, message=F}
 
-dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
+load(here("tables/table_objects.Rdata"))
 
-#child health data
-ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea))
-
-#Make a N children and child age/ num kids per HH table
-res <-ch %>% group_by(country) %>%
-  summarise(N=n(), child_age=mean(aged, na.rm=T)/365, min_child_age=min(aged, na.rm=T)/365, max_child_age=max(aged, na.rm=T)/365)
-
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Descriptive statistics of measured children by country")
-
-
-
-res <- ch %>% group_by(country) %>%
-  summarise(N_haz=sum(!is.na(haz)), Mean_HAZ=mean(haz, na.rm=T), Prev_Stunting=mean(haz < (-2), na.rm=T)*100, Prev_Sev_Stunting=mean(haz < (-3), na.rm=T)*100,
-            N_whz=sum(!is.na(whz)), Mean_WHZ=mean(whz, na.rm=T), Prev_Wasting=mean(whz < (-2), na.rm=T)*100, Prev_Sev_Wasting=mean(whz < (-3), na.rm=T)*100)
-
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Descriptive statistics of growth outcomes by country")
-
-res <-ch %>% group_by(country) %>%
-  summarise(N_diarrhea_meas=sum(!is.na(diarrhea)), N_diarrhea=sum(diarrhea, na.rm=T),  Prev_diarrhea=mean(diarrhea, na.rm=T)*100,
-            N_ARI_meas=sum(!is.na(ari)), N_ARI=sum(ari, na.rm=T),  Prev_ARI=mean(ari, na.rm=T)*100)
-
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Descriptive statistics of diarrhea and acute respiratory infection outcomes by country")
+pander(HH_tab, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(EC_risk_H, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(EC_risk_S, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(wat_imp_cat, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(san_imp_cat, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(hyg_imp_cat, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(WASHtab, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(anthro_tab, digits=2, caption = "Descriptive statistics of covariate by country")
+pander(infection_tab, digits=2, caption = "Descriptive statistics of covariate by country")
 
 
 
+pander(tab1[c(1,2:6)], digits=2, caption = "Descriptive statistics of covariates by country")
+pander(tab1[c(1,7:11)], digits=2, caption = "Descriptive statistics of covariates by country")
+pander(tab1[c(1,12:16)], digits=2, caption = "Descriptive statistics of covariates by country")
+pander(tab1[c(1,17:21)], digits=2, caption = "Descriptive statistics of covariates by country")
+pander(tab1[c(1,22:26)], digits=2, caption = "Descriptive statistics of covariates by country")
+pander(tab1[c(1,27:31)], digits=2, caption = "Descriptive statistics of covariates by country")
 
 
-#HH data
-d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
-  distinct(country, clust_num, HH_num, .keep_all = T)
+
+ 
+ 
+ 
 
 
+ 
+ 
+
+```
 
 
-res <-d %>% group_by(country) %>%
-  summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp)-1, na.rm=T), N_imp_WASH=sum(as.numeric(WASH_noEC)-1, na.rm=T))
-
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Binary measures of improved WASH conditions by country")
+## Child health outcomes
 
 
-res <-d %>% group_by(country) %>%
-  summarise(N_households=n(), N_EC_Household=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_Source=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_and_no_EC=sum(as.numeric(WASH)-1, na.rm=T))
+```{r, echo=F, warning=F, message=F}
 
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Binary measures of E.coli contamination by country")
-
-res <-d %>% tabyl(country, wat_imp_cat)
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Drinking water conditions by country")
-
-res <-d %>% tabyl(country, san_imp_cat)
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Sanitation conditions by country")
-
-res <-d %>% tabyl(country, hyg_imp_cat)
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Hygeine conditions by country")
-
-res <-d %>% tabyl(country, EC_risk_H)
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Household E.coli contamination by country")
-
-res <-d %>% tabyl(country, EC_risk_S)
-colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
-pander(res, digits=2, caption = "Source water E.coli contamination by country")
+# dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
+# 
+# #child health data
+# ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea))
+# 
+# #Make a N children and child age/ num kids per HH table
+# res <-ch %>% group_by(country) %>%
+#   summarise(N=n(), child_age=mean(aged, na.rm=T)/365, min_child_age=min(aged, na.rm=T)/365, max_child_age=max(aged, na.rm=T)/365)
+# 
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Descriptive statistics of measured children by country")
+# 
+# 
+# 
+# res <- ch %>% group_by(country) %>%
+#   summarise(N_haz=sum(!is.na(haz)), Mean_HAZ=mean(haz, na.rm=T), Prev_Stunting=mean(haz < (-2), na.rm=T)*100, Prev_Sev_Stunting=mean(haz < (-3), na.rm=T)*100,
+#             N_whz=sum(!is.na(whz)), Mean_WHZ=mean(whz, na.rm=T), Prev_Wasting=mean(whz < (-2), na.rm=T)*100, Prev_Sev_Wasting=mean(whz < (-3), na.rm=T)*100)
+# 
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Descriptive statistics of growth outcomes by country")
+# 
+# res <-ch %>% group_by(country) %>%
+#   summarise(N_diarrhea_meas=sum(!is.na(diarrhea)), N_diarrhea=sum(diarrhea, na.rm=T),  Prev_diarrhea=mean(diarrhea, na.rm=T)*100,
+#             N_ARI_meas=sum(!is.na(ari)), N_ARI=sum(ari, na.rm=T),  Prev_ARI=mean(ari, na.rm=T)*100)
+# 
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Descriptive statistics of diarrhea and acute respiratory infection outcomes by country")
+# 
+# 
+# 
+# 
+# 
+# #HH data
+# d <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
+#   distinct(country, clust_num, HH_num, .keep_all = T)
+# 
+# 
+# 
+# 
+# res <-d %>% group_by(country) %>%
+#   summarise(N_households=n(), N_imp_wat=sum(as.numeric(wat_imp)-1, na.rm=T), N_imp_san=sum(as.numeric(san_imp)-1, na.rm=T),  N_imp_hygeine=sum(as.numeric(hyg_imp)-1, na.rm=T), N_imp_WASH=sum(as.numeric(WASH_noEC)-1, na.rm=T))
+# 
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Binary measures of improved WASH conditions by country")
+# 
+# 
+# res <-d %>% group_by(country) %>%
+#   summarise(N_households=n(), N_EC_Household=sum(as.numeric(EC_H)-1, na.rm=T), N_EC_Source=sum(as.numeric(EC_S)-1, na.rm=T), N_safely_manH20=sum(as.numeric(safely_manH20)-1, na.rm=T),  N_imp_WASH_and_no_EC=sum(as.numeric(WASH)-1, na.rm=T))
+# 
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Binary measures of E.coli contamination by country")
+# 
+# res <-d %>% tabyl(country, wat_imp_cat)
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Drinking water conditions by country")
+# 
+# res <-d %>% tabyl(country, san_imp_cat)
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Sanitation conditions by country")
+# 
+# res <-d %>% tabyl(country, hyg_imp_cat)
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Hygeine conditions by country")
+# 
+# res <-d %>% tabyl(country, EC_risk_H)
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Household E.coli contamination by country")
+# 
+# res <-d %>% tabyl(country, EC_risk_S)
+# colnames(res) <- str_to_sentence(gsub("_", " ", colnames(res)))
+# pander(res, digits=2, caption = "Source water E.coli contamination by country")
 
 
 
@@ -126,36 +167,25 @@ pander(res, digits=2, caption = "Source water E.coli contamination by country")
 
 
 ## Outcome missingness
-```{r, echo=F}
-#table1
-Yvars = c("diarrhea", 
-                                "ari",
-                                "mort",
-                                "fever", 
-                                "haz","waz","whz",
-                                "stunt", "wast")
-
-df <- dfull  %>%
-  subset(., select = c("country", Yvars))
-
-
-# miss_tab <- data.frame(country=df$country)
-# for(i in 2:ncol(df)){
-#   sub <- data.frame(country=df$country, var=df[,i])
-#   res <- sub %>% group_by(country) %>%
-#     summarize(miss=round(mean(is.na(var))*100,1))
-#   colnames(res)[2] <- colnames(df)[i]
-#   miss_tab <- left_join(miss_tab, res, by="country")
-# }
-# miss_tab <- data.frame(miss_tab)
-
-miss_tab = df %>% 
-  group_by(country) %>% 
-  summarise_each(funs(mean(is.na(.))*100))
-
-  
-pander(miss_tab, digits=2, caption = "Missingness of otcomes by country")
-```
+<!-- # ```{r, echo=F} -->
+<!-- # #table1 -->
+<!-- # Yvars = c("diarrhea",  -->
+<!-- #                                 "ari", -->
+<!-- #                                 "mort", -->
+<!-- #                                 "fever",  -->
+<!-- #                                 "haz","waz","whz", -->
+<!-- #                                 "stunt", "wast") -->
+<!-- #  -->
+<!-- # df <- dfull  %>% -->
+<!-- #   subset(., select = c("country", Yvars)) -->
+<!-- #  -->
+<!-- # miss_tab = df %>%  -->
+<!-- #   group_by(country) %>%  -->
+<!-- #   summarise_each(funs(mean(is.na(.))*100)) -->
+<!-- #  -->
+<!-- #    -->
+<!-- # pander(miss_tab, digits=2, caption = "Missingness of otcomes by country") -->
+<!-- # ``` -->
 
 
 ## Covariate information
@@ -165,61 +195,65 @@ pander(miss_tab, digits=2, caption = "Missingness of otcomes by country")
 
 
 
-#table1
-df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
-  subset(., select = c("country", Wvars)) %>%
-  rename(
-          `Caregiver education`=educ,
-          `Maternal age`=mage,
-          `Child age (days)`=aged,
-          `Child sex`=sex,
-          `Birth order`=birthord,
-          `Urban/rural`=rural,
-          `Currently breastfeeding`=currbf,
-          `Ever breastfed`=everbf,
-          `Number of children under 5`=nchild5,
-          `Household floor`=floor,
-          `Cookstove`=cookstove,
-          `Chimney`=chimney,
-          `Cooking fuel`=fuel,
-          `Roof construction`=roof,
-          `Wall material`=wall,
-          `Household size (people)`=nhh,
-          `House size (rooms)`=nroom_sleeping,
-          `Owns animals`=own_animals,
-          `Quartile of asset-based wealth`=HHwealth_quart,
-          
-          
-  )
-
-
-# miss_tab <- data.frame(country=df$country)
-# for(i in 2:ncol(df)){
-#   sub <- data.frame(country=df$country, var=df[,i])
-#   res <- sub %>% group_by(country) %>%
-#     summarize(miss=round(mean(is.na(var))*100,1))
-#   colnames(res)[2] <- colnames(df)[i]
-#   miss_tab <- left_join(miss_tab, res, by="country")
-# }
-# miss_tab <- data.frame(miss_tab)
-
-miss_tab = df %>% 
-  group_by(country) %>% 
-  summarise_each(funs(mean(is.na(.))*100))
-
-pander(miss_tab, digits=2, caption = "Missingness of covariates by country")
-
-miss_tab = df %>% 
-  group_by(country) %>% 
-  summarise_each(funs(mean(.=="missing")*100))
-
-pander(miss_tab, digits=2, caption = "Percent factor level= missing")
-
-
-tab1 <- table1(~. |country, data=df)
-
-tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
-colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1)))
-
-pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country")
+# #table1
+# df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>%
+#   subset(., select = c("country", Wvars)) %>%
+#   rename(
+#           `Caregiver education`=educ,
+#           `Maternal age`=mage,
+#           `Child age (days)`=aged,
+#           `Child sex`=sex,
+#           `Birth order`=birthord,
+#           `Urban/rural`=rural,
+#           `Currently breastfeeding`=currbf,
+#           `Ever breastfed`=everbf,
+#           `Number of children under 5`=nchild5,
+#           `Household floor`=floor,
+#           `Cookstove`=cookstove,
+#           `Chimney`=chimney,
+#           `Cooking fuel`=fuel,
+#           `Roof construction`=roof,
+#           `Wall material`=wall,
+#           `Household size (people)`=nhh,
+#           `House size (rooms)`=nroom_sleeping,
+#           `Owns animals`=own_animals,
+#           `Quartile of asset-based wealth`=HHwealth_quart,
+#           
+#           
+#   )
+# 
+# 
+# # miss_tab <- data.frame(country=df$country)
+# # for(i in 2:ncol(df)){
+# #   sub <- data.frame(country=df$country, var=df[,i])
+# #   res <- sub %>% group_by(country) %>%
+# #     summarize(miss=round(mean(is.na(var))*100,1))
+# #   colnames(res)[2] <- colnames(df)[i]
+# #   miss_tab <- left_join(miss_tab, res, by="country")
+# # }
+# # miss_tab <- data.frame(miss_tab)
+# 
+# miss_tab = df %>% 
+#   group_by(country) %>% 
+#   summarise_each(funs(mean(is.na(.))*100))
+# 
+# pander(miss_tab, digits=2, caption = "Missingness of covariates by country")
+# 
+# miss_tab = df %>% 
+#   group_by(country) %>% 
+#   summarise_each(funs(mean(.=="missing")*100))
+# 
+# pander(miss_tab, digits=2, caption = "Percent factor level= missing")
+# 
+# 
+# tab1 <- table1(~. |country, data=df)
+# 
+# tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
+# colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1)))
+# 
+# pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country")
 ```
+
+
+
+## MICS surveys used

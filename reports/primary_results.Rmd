@@ -51,18 +51,7 @@ panderOptions('keep.trailing.zeros', TRUE)
 
 ## Descriptive statistics
 
-```{r, echo=F, warning=F, message=F}
 
-load(here("tables/table_objects.Rdata"))
-
-WASHtab
-wat_imp_cat
-san_imp_cat
-hyg_imp_cat
-EC_risk_H
-EC_risk_S
-
-```
 
 
 
