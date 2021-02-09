@@ -99,7 +99,20 @@ p_tmle_comp_diff_forest <- d %>% filter(Y=="HAZ", X %in% c("EC_H","EC_S"), binar
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
-#NEED to add a RE vs. FE comparison
+#RE vs. FE comparison
+p_FE_comp_RR <- d %>% filter(binary==1, adjusted==1, multinomial==0, analysis %in% c("primary","FE"), country %in% c("Pooled - RE","Pooled - FE")) %>% 
+  droplevels(.) %>%
+  # mutate(#X=factor(X, levels = rev(levels(X))), 
+  #   adjusted=factor(adjusted, levels=c("0","1"), labels = c("Unadjusted","Adjusted"))) %>%
+  ggplot(., aes(y=est, x=Xlab, group=country, color=country)) +
+  facet_grid(~Y) +
+  geom_point(position = position_dodge(0.6)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  coord_flip() +
+  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 #-------------------------------------------------------------
