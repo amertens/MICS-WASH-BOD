@@ -1,4 +1,5 @@
 
+rm(list=ls())
 source("0-config.R")
 
 d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(ci.lb))
@@ -108,6 +109,7 @@ p_tmle_comp_diff_forest <- d %>% filter(Y=="HAZ", X %in% c("EC_H","EC_S"), binar
 save(list = ls(pattern="p_"), file=here("figures/sensitivity_figure_objects.Rdata"))
 
 
+ls(pattern="p_")
 
 
  

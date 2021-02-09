@@ -50,6 +50,8 @@ p_rural_pooled_cont <- d %>% filter(adjusted==1, binary==0, analysis=="rural", c
 
 save(list = ls(pattern="p_"), file=here("figures/subgroup_figure_objects.Rdata"))
 
+ls(pattern="p_")
+
 
 
 

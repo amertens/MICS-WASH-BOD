@@ -4,9 +4,6 @@ source("0-config.R")
 
 df <- readRDS(here("results/pooled_raw_results.rds"))
 
-#Drop estimates from water improved cat
-df <- df %>% filter(!(X=="wat_imp_cat" & ref=="Basic"))
-
 
 #classify regions
 # East Asia and the Pacific EAP
@@ -42,8 +39,7 @@ WCA <- WCA[order(WCA)]
 #Add reference categories with ref label
 head(df)
 dref <- df %>% distinct(analysis, country, Y, X, ref, binary, adjusted, subgroup) %>%
-  mutate(contrast=ref, est=ifelse(binary==1,1,0), reflab="(ref.)") %>%
-  filter(!(X=="wat_imp_cat" & ref=="Basic"))
+  mutate(contrast=ref, est=ifelse(binary==1,1,0), reflab="(ref.)")
 df <- bind_rows(df, dref)
 
 unique(df$contrast)

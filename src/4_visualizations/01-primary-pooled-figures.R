@@ -1,4 +1,5 @@
 
+rm(list=ls())
 source("0-config.R")
 
 d <- readRDS(here("results/pooled_results.rds"))
@@ -186,7 +187,7 @@ p_multi_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis=="prim
 
 save(list = ls(pattern="p_"), file=here("figures/primary_figure_objects.Rdata"))
 
-
+ls(pattern="p_")
 
 
 

@@ -173,3 +173,4 @@ p_PAF <- dPAF %>%
 
 save(list = ls(pattern="p_"), file=here("figures/PAF_figure_objects.Rdata"))
 
+ls(pattern="p_")

@@ -2,9 +2,16 @@
 rm(list=ls())
 source("0-config.R")
 
-d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(ci.lb))
+d <- readRDS(here("results/pooled_results.rds")) %>% 
+   filter(!is.na(ci.lb),
+          analysis %in% c("primary-multi", "primary"))
 
 
+levels(d$Y)
+unique(d$X)
+d$X <- factor(d$X, levels =c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat","hyg_imp_cat",
+                             "EC_H","EC_S",  "wat_imp", "san_imp", "hyg_imp", "WASH", "safely_manH20", "WASH_noEC" ))
+levels(d$X)
 
 i=unique(d$Y)[1]
 j=unique(d$X)[1]
@@ -14,8 +21,8 @@ plist <- list()
 
 #Add pooled FE to multinomial...
 
-for(i in unique(d$Y)){
-  for(j in unique(d$X)){
+for(i in levels(d$Y)){
+  for(j in levels(d$X)){
    df <- d %>% filter(adjusted==1, analysis %in% c("primary","primary-multi","FE"), Y==i, X==j) %>% 
       droplevels(.) 
    
@@ -48,11 +55,18 @@ for(i in unique(d$Y)){
        xlab("") + ylab(paste0("Mean difference (ref=",reference,")"))  
    }
    
+   # if(df$multinomial[1]==1){
+   #   p <- p + facet_wrap(~contrast, scales="fixed") + 
+   #     ggtitle(paste0("Outcome: ",i, "\nExposure: ", Xlabel))
+   # }else{
+   #   p <- p + ggtitle(paste0("Outcome: ",i, "\nExposure: ", Xlabel))
+   # }
+   
    if(df$multinomial[1]==1){
-     p <- p + facet_wrap(~contrast, scales="fixed") + 
-       ggtitle(paste0("Outcome: ",i, "\nExposure: ", Xlabel))
+      p <- p + facet_wrap(~contrast, scales="fixed") + 
+         ggtitle(paste0("Exposure: ", Xlabel))
    }else{
-     p <- p + ggtitle(paste0("Outcome: ",i, "\nExposure: ", Xlabel))
+      p <- p + ggtitle(paste0("Exposure: ", Xlabel))
    }
    
     plist[[length(plist)+1]] <- p
@@ -60,13 +74,13 @@ for(i in unique(d$Y)){
    }
   } 
 }
-
-plist[[1]]
-names(plist)
-length(plist)
-
-plist$WHZ.san_imp_cat
-
+# 
+# plist[[1]]
+# names(plist)
+# length(plist)
+# 
+# plist$WHZ.san_imp_cat
+# 
 
 
 #-------------------------------------------------------------
@@ -74,6 +88,7 @@ plist$WHZ.san_imp_cat
 #-------------------------------------------------------------
 
 saveRDS(plist, file=here("figures/forest_figure_objects.rds"))
+
 
 
 

@@ -12,8 +12,8 @@ d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analy
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle", adjusted=1) %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", adjusted=1, subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
 d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary", adjusted=1) 
-d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi, adjusted=1") 
-
+d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi", adjusted=1) 
+d_RR_multi_adj_sens <- readRDS(here("results/adjusted_mult_RR_sens.rds")) %>% mutate(analysis="sens-multi", adjusted=1) #Load the sensitivity multinomial analyses using Basic as a reference level
 
 
 #only include countries with both subgroups
@@ -24,7 +24,7 @@ d_rural_adj <- d_rural_adj  %>% group_by(country, analysis, Y, X, ref, contrast)
 dim(d_rural_adj)
 
 #combine results
-d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort, d_mort_multi) %>%
+d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort, d_mort_multi,d_RR_multi_adj_sens) %>%
   filter(!is.na(coef))
 table(d$analysis, is.na(d$adjusted))
 
@@ -37,7 +37,7 @@ table(d$Y, d$analysis, d$adjusted)
 #Drop if country is missing reference category
 table(d$X, d$ref)
 d <- d %>% filter(!(
-  (X=="san_imp_cat" & ref=="Basic")  
+  ((X=="san_imp_cat"|X=="wat_imp_cat") & ref=="Basic" & analysis!="sens-multi")  
 )
 )
 

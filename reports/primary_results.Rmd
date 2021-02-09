@@ -47,62 +47,30 @@ panderOptions('table.split.table', Inf)
 panderOptions('big.mark', ",")
 panderOptions('keep.trailing.zeros', TRUE)
 
+
+#load figures
+load(here("figures/primary_figure_objects.Rdata"))
+
+# [1] ""        "p_multi_pooled_WQ"        "p_multi_Zscore_pooled_HH" "p_multi_Zscore_pooled_WQ"
+# [5] "p_prim_pooled_HH"         "p_prim_pooled_WQ"         "p_prim_Zscore_pooled_HH"  "p_prim_Zscore_pooled_WQ" 
+
+load(here("figures/PAF_figure_objects.Rdata"))
+#[1] "p_PAF"        "p_pooled_PAF"
+
+load(here("figures/subgroup_figure_objects.Rdata"))
+#"p_rural_pooled_bin"  "p_rural_pooled_cont"
+
+load(here("figures/sensitivity_figure_objects.Rdata"))
+# [5] "p_tmle_comp_diff"        "p_tmle_comp_diff_forest" "p_tmle_comp_RR"          "p_tmle_comp_RR_forest"  
+ # [9] "p_unadj_comp_diff"       "p_unadj_comp_RR"
+
+load(here("figures/mult_sensitivity_figure_objects.Rdata"))
+#[1] "p_basic"           "p_multi_pooled_HH_sens" "p_multi_pooled_WQ_sens"
+
+ec_conc_figure <- readRDS(here("figures/ec-conc-figure-object.RDS"))
+
+
 ```
-
-## Descriptive statistics
-
-
-
-
-
-## Covariate information
-
-need to better figure out how to show covariate values by country
-
-
-<!-- # ```{r, echo=F} -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- # #table1 -->
-<!-- # df <- dfull %>% filter(!is.na(haz) | !is.na(diarrhea)) %>% -->
-<!-- #   subset(., select = c("country", Wvars)) %>% -->
-<!-- #   rename( -->
-<!-- #           `Caregiver education`=educ, -->
-<!-- #           `Maternal age`=mage, -->
-<!-- #           `Child age (days)`=aged, -->
-<!-- #           `Child sex`=sex, -->
-<!-- #           `Birth order`=birthord, -->
-<!-- #           `Urban/rural`=rural, -->
-<!-- #           `Currently breastfeeding`=currbf, -->
-<!-- #           `Ever breastfed`=everbf, -->
-<!-- #           `Number of children under 5`=nchild5, -->
-<!-- #           `Household floor`=floor, -->
-<!-- #           `Cookstove`=cookstove, -->
-<!-- #           `Chimney`=chimney, -->
-<!-- #           `Cooking fuel`=fuel, -->
-<!-- #           `Roof construction`=roof, -->
-<!-- #           `Wall material`=wall, -->
-<!-- #           `Household size (people)`=nhh, -->
-<!-- #           `House size (rooms)`=nroom_sleeping, -->
-<!-- #           `Owns animals`=own_animals, -->
-<!-- #           `Quartile of asset-based wealth`=HHwealth_quart, -->
-<!-- #            -->
-<!-- #            -->
-<!-- #   ) -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- #  -->
-<!-- # tab1 <- table1(~. |country, data=df) -->
-<!-- #  -->
-<!-- # tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE)) -->
-<!-- # colnames(tab1) <- str_to_sentence(gsub("_", " ", colnames(tab1))) -->
-<!-- #  -->
-<!-- # pander(tab1, digits=2, caption = "Descriptive statistics of covariate by country") -->
-<!-- # ``` -->
-
 
 
 
@@ -110,13 +78,27 @@ need to better figure out how to show covariate values by country
 
 
 ```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
-load(here("figures/figure_objects.Rdata"))
-
-p_prim_pooled
-
+p_multi_pooled_HH
 ```
 
+#Update figure captions
+
 __Figure 1.__ Random-effects pooled relative risks, pooled over the Bangladesh, Zimbabwe, and Pakistan MICS-6 surveys, for the 4 outcomes. Panels are divided by outcome, with ARI standing for acute respiratory infection. The Y axis lists the reference (improved) level of contrast, with the relative risk estimates between the listed reference level and the higher-risk (unimproved) level. For example, households with any level of E. coli contamination were compares to houses with uncontaminated HH water. Among other significant estimates, unimproved hygiene (no water and soap at handwashing station), unimproved sanitation, and unimproved combined WASH was associated with a higher risk of stunting, and unimproved combined WASH was associated with a higher risk of diarrhea. Larger confidence intervals may represent associations estimated less precisely (e.g. for a rarer outcome like ARI) or represent heterogeneity between the country-specific estimates.
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_multi_pooled_WQ
+```
+
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_multi_pooled_WQ
+```
+
+```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 3.5}
+p_multi_pooled_HH
+```
+
 
 ```{r, echo=F, warning=F, message=F, fig.width = 10, fig.height = 6}
 p_multi_pooled

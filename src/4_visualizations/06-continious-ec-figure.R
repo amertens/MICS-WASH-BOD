@@ -1,16 +1,23 @@
 
 
 
-source(here::here("0-config.R"))
+rm(list=ls())
+source("0-config.R")
+# load(here("results/adjusted_gams.Rdata"))
+# 
+# p <- ggplot(simul_plot_df) + 
+#   geom_ribbon(aes(x = X, ymin = lwrS, ymax = uprS, group=Xvar , color=Xvar), alpha = 0.5) +
+#   geom_path(aes(x = X, y = lwrS, group=Xvar , color=Xvar), color = "blue") +
+#   geom_path(aes(x = X, y = uprS, group=Xvar , color=Xvar), color = "red") +
+#   geom_path(aes(x = X, y = fit, group=Xvar , color=Xvar), color = "black") + 
+#   facet_wrap(~Yvar, scales="free_y", ncol=1) 
+#   
+# print(p)
 
 d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
-head(d)
-colnames(d)
 
 d$EC_cfu_H[d$EC_cfu_H>101] <-NA
-d$EC_cfu_H[d$EC_cfu_H==101] <- 150
 d$EC_cfu_S[d$EC_cfu_S>101] <-NA
-d$EC_cfu_S[d$EC_cfu_S==101] <- 150
 
 
 # p<- ggplot(d, aes(x=EC_cfu_H, y=haz)) + geom_smooth(se=F) + geom_point(alpha=0.1) +
@@ -51,7 +58,7 @@ head(df)
 p4<- ggplot(df, aes(x=ec, y=Z, group=group, color=group)) + geom_smooth() +
   #coord_cartesian(ylim=c(-2,0)) +
   facet_wrap(~anthro, scales="free_y", ncol=1) +
-  scale_x_continuous(trans='log10') + theme(legend.position = "bottom") + 
+  scale_x_continuous(trans='log10') + theme(legend.position = "bottom", legend.title = element_blank()) + 
   ylab("Child Z-score") + xlab("Log E. coli concentrations")
 
 print(p4)

@@ -2,6 +2,11 @@
 rm(list=ls())
 source("0-config.R")
 
+#Load estimats with Basic as reference level
+basic <- readRDS(here("results/pooled_results.rds")) %>% 
+  filter(analysis=="sens-multi", country=="Pooled - RE", binary==1)
+
+#Load primary estimates, and repool only when all levels present
 prim <- readRDS(here("results/pooled_results.rds")) %>% 
   filter(analysis=="primary-multi", country=="Pooled - RE", binary==1) %>% mutate(analysis="All estimates")
 
@@ -14,10 +19,6 @@ d <- RR_multi_adj %>% filter(!is.na(ci.lb)) %>% group_by(country, analysis, Y, X
            X %in% c("hyg_imp_cat") & N==2 | 
            X %in% c("san_imp_cat", "wat_imp_cat") & N==4)
 table(d$N)
-
-
-
-
 
 
 
@@ -126,7 +127,7 @@ plotdf <- bind_rows(prim, df) %>%
 table(plotdf$analysis)
 
 
-p_multi_pooled_HH <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c("All estimates","Only estimates from\ncountries with all levels"), country=="Pooled - RE", exposure_type=="HH") %>% 
+p_multi_pooled_HH_sens <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c("All estimates","Only estimates from\ncountries with all levels"), country=="Pooled - RE", exposure_type=="HH") %>% 
   droplevels(.) %>%
   arrange(Xlab) %>%
   ggplot(., aes(y=est, x=contrast, group=analysis, color=analysis),color="black") +
@@ -148,9 +149,9 @@ p_multi_pooled_HH <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c(
         legend.box.background = element_rect(colour = "black"), 
         title = element_text(margin=margin(0,0,-10,0))) + 
   theme(legend.title = element_blank(), legend.position = "bottom")
-p_multi_pooled_HH
 
-p_multi_pooled_WQ <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c("All estimates","Only estimates from\ncountries with all levels"), country=="Pooled - RE", exposure_type=="WQ") %>%
+
+p_multi_pooled_WQ_sens <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c("All estimates","Only estimates from\ncountries with all levels"), country=="Pooled - RE", exposure_type=="WQ") %>%
   droplevels(.) %>%
   arrange(Xlab) %>%
   ggplot(., aes(y=est, x=contrast, group=analysis, color=analysis),color="black") +
@@ -172,14 +173,43 @@ p_multi_pooled_WQ <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c(
         legend.box.background = element_rect(colour = "black"),
         title = element_text(margin=margin(0,0,-10,0))) +
   theme(legend.title = element_blank(), legend.position = "bottom")
-p_multi_pooled_WQ
+
+
+
+
+
+
+
+#Need Basc reference category for water
+p_basic <- basic %>% 
+  droplevels(.) %>%
+  arrange(Xlab) %>%
+  ggplot(., aes(y=est, x=contrast),color="black") +
+  facet_grid(Xlab~Y, scale="free_y", switch = "y") +
+  geom_point(position = position_dodge(0.6)) + 
+  geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
+  geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
+  geom_hline(yintercept = 1) +
+  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
+  coord_flip() +
+  xlab("") + ylab("Relative Risk")+
+  theme(strip.background = element_blank(),
+        axis.text.y = element_text(size=8, hjust = 1),
+        strip.text.x = element_text(size=8, face = "bold"),
+        strip.text.y = element_text(size=8, angle = 180, face = "bold"),
+        strip.placement = "outside",
+        axis.text.x = element_text(size=10, vjust = 0.5),
+        legend.box.background = element_rect(colour = "black"), 
+        title = element_text(margin=margin(0,0,-10,0))) 
+p_basic
 
 #-------------------------------------------------------------
 # save figures
 #-------------------------------------------------------------
 
 save(list = ls(pattern="p_"), file=here("figures/mult_sensitivity_figure_objects.Rdata"))
-
+ls(pattern="p_")
 
 
 
