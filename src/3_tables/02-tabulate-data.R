@@ -34,14 +34,14 @@ tab_cat <- function(d, x){
 }
 
 
-dfull <- readRDS(here("data/compiled_clean_MICS_survey.rds"))%>%
+dfull_noMort <- readRDS(here("data/compiled_clean_MICS_survey.rds"))%>%
   subset(., select= - c(mort))
 mort <- readRDS(here("data/compiled_clean_MICS_mortality.rds")) %>%
   subset(., select=c(country,clust_num,HH_num,childLN, mort))
 
-dim(dfull)
+dim(dfull_noMort)
 dim(mort)
-dfull <- full_join(dfull, mort, by=c("country","clust_num","HH_num","childLN")) %>% rename(Country=country)
+dfull <- full_join(dfull_noMort, mort, by=c("country","clust_num","HH_num","childLN")) %>% rename(Country=country)
 dim(dfull)
 
 #Set up vector
@@ -161,7 +161,7 @@ tab1 <- table1(~. |Country, format_number = TRUE, data=df)
 tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
 
 #Drop Country tabs
-tab1 <- tab1[-c(1:27),]
+tab1 <- tab1[-c(1:30),]
 tab1$Var.1
 
 #put total column first
@@ -189,7 +189,7 @@ tab1 <- tab1 %>%
     Var.1== "fuel" ~ "Cooking fuel",
     Var.1== "chimney" ~ "Chimney in kitchen",
     Var.1== "nroom_sleeping" ~ "Number of bedrooms",
-    Var.1== Var.1 ~ Var.1
+    Var.1== Var.1 ~ paste0("   ",Var.1)
   ))
 
 tab1[tab1=="NA (NA)"] <- "0 (0%)"
@@ -204,7 +204,7 @@ colnames(tab1) <- gsub("  ","",colnames(tab1))
 saveRDS(tab1, file=here("tables/tab1.rds"))
 
 #child health data
-ch <- dfull %>% filter(!is.na(haz) | !is.na(waz) | !is.na(ari) | !is.na(diarrhea) | !is.na(mort)) %>%
+ch <- dfull %>% filter(!is.na(haz) | !is.na(whz) | !is.na(ari) | !is.na(diarrhea) | !is.na(mort)) %>%
   distinct(Country, clust_num, HH_num, childLN, .keep_all = T)
 
 
@@ -257,10 +257,31 @@ HH_tab <- left_join(HH_tab, child_tab, by="Country")
 
 #Make N (%) in the outcome tables and use   cattab[,1]<- prettyNum(cattab[,1],big.mark=",")
 
+# #Outcome missingness
+# #table1
+# Yvars = c("diarrhea", "ari", "mort", "haz","whz", "stunt", "wast")
+# Yvars = c("diarrhea", "ari", "haz","whz", "stunt", "wast")
+# 
+# df <- dfull_noMort %>%
+#   distinct(country, clust_num, HH_num, childLN, .keep_all = T) %>% subset(., select = c("country", Yvars)) %>% 
+#   filter(!is.na(haz) | !is.na(whz) | !is.na(ari) | !is.na(diarrhea)) 
+# df2 <- mort %>% 
+#   distinct(country, clust_num, HH_num, childLN, .keep_all = T) %>% subset(., select = c("country", "mort"))
+# 
+# 
+# miss_tab = df %>% 
+#   group_by(country) %>%
+#   summarise_each(funs(mean(is.na(.))*100))
+# miss_tab2 = df2 %>% 
+#   group_by(country) %>%
+#   summarise_each(funs(mean(is.na(.))*100))
+# 
+# colnames(miss_tab) <- c("Country", "Diarrhea", "ARI", "Mortality", "HAZ", "WHZ", "Stunting", "Wasting")
+# 
 
 #Save tables
 save(tab1, WASHtab, wat_imp_cat, san_imp_cat, hyg_imp_cat, EC_risk_H, EC_risk_S,
-     HH_tab, anthro_tab, infection_tab,
+     HH_tab, anthro_tab, infection_tab, 
      file=here("tables/table_objects.Rdata"))
 
             

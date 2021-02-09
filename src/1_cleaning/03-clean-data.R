@@ -355,8 +355,11 @@ d$ari[(d$diff_breath==8 | d$diff_breath==9) &
         (d$congestion==8 | d$congestion==9) &
         (d$cough==8 | d$cough==9)] <- NA
 d$ari[is.na(d$diff_breath) & is.na(d$congestion) & is.na(d$cough)]<- NA
-table(d$ari)
-table(d$country,d$ari)
+# table(d$ari)
+# table(is.na(d$ari))
+# table(1*is.na(d$ari),is.na(d$diarrhea))
+# 
+# table(d$country,is.na(d$ari),is.na(d$diarrhea))
 
 
 #Bangladesh disease prevalence should be 6.9% diarrhea, 2.0% ARI,  23.5% Fever
