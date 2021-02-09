@@ -4,7 +4,7 @@ source("0-config.R")
 
 d <- readRDS(here("results/pooled_results.rds")) %>% 
    filter(!is.na(ci.lb),
-          analysis %in% c("primary-multi", "primary"))
+          analysis %in% c("primary-multi", "primary", "FE"))
 
 
 levels(d$Y)
@@ -13,8 +13,8 @@ d$X <- factor(d$X, levels =c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_c
                              "EC_H","EC_S",  "wat_imp", "san_imp", "hyg_imp", "WASH", "safely_manH20", "WASH_noEC" ))
 levels(d$X)
 
-i=unique(d$Y)[1]
-j=unique(d$X)[1]
+i=levels(d$Y)[7]
+j=levels(d$X)[1]
 j="san_imp_cat"
 
 plist <- list()
@@ -39,8 +39,6 @@ for(i in levels(d$Y)){
       geom_hline(yintercept = 1) +
       geom_vline(xintercept = 2.5, linetype="dashed") +
       scale_y_continuous(trans='log10') +
-      #scale_x_discrete(labels= levels(df$countrylab)) +
-      #scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
       coord_flip() + 
       xlab("") + ylab(paste0("Relative Risk (ref=",reference,")"))
    }else{
