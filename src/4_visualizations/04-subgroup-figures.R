@@ -9,8 +9,9 @@ d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(ci.lb))
 #-------------------------------------------------------------
 # subgroup figure
 #-------------------------------------------------------------
-# Why only Urban?
-d %>% filter( analysis=="rural", country=="Pooled - RE") 
+
+#note no "improved WASH, no contamination" for rarer wasting/ARI outcomes
+d <- d %>% filter( analysis=="rural", country=="Pooled - RE", X!="WASH") %>% droplevels(.) 
 
 #binary
 p_rural_pooled_bin <- d %>% filter(adjusted==1, binary==1, analysis=="rural", country=="Pooled - RE") %>%
@@ -27,7 +28,6 @@ p_rural_pooled_bin <- d %>% filter(adjusted==1, binary==1, analysis=="rural", co
   xlab("WASH Characteristic reference level") + ylab("Relative Risk")  +
   theme(legend.title = element_blank(), legend.position = "right")
 
-#note no "improved WASH, no contamination" for rarer wasting/ARI outcomes
 
 
 p_rural_pooled_cont <- d %>% filter(adjusted==1, binary==0, analysis=="rural", country=="Pooled - RE") %>%
