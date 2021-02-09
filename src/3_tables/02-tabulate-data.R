@@ -64,16 +64,6 @@ WCA <- WCA[order(WCA)]
 #Clean data for figures
 dfull <- dfull %>% 
   mutate(
-    # Y=case_when(
-    #   Y=="stunt" ~ "Stunting",
-    #   Y=="wast" ~ "Wasting",
-    #   Y=="diarrhea" ~ "Diarrhea",
-    #   Y=="ari" ~ "ARI",
-    #   Y=="haz" ~ "HAZ",
-    #   Y=="whz" ~ "WHZ",
-    #   Y=="mort" ~ "Mortality"
-    # ),
-    # Y=factor(Y, levels=c("Diarrhea", "Stunting", "Wasting", "ARI", "HAZ", "WHZ","Mortality")),
     Country=case_when(
       Country=="PakistanPunjab" ~ "Pakistan",
       Country=="LaoPDR" ~ "Laos",
@@ -98,35 +88,6 @@ dfull <- dfull %>%
     arrange(region, Country) %>%
     mutate(Country=factor(Country, levels=unique(Country)))
 
-  #   Xlab2 = case_when(X=="EC_H" ~ "Contaminated HH water", 
-  #                     X=="EC_S" ~ "Contaminated source water", 
-  #                     X=="san_imp" ~ "Unimproved sanitation", 
-  #                     X=="wat_imp" ~ "Unimproved water supply", 
-  #                     X=="hyg_imp" ~ "Unimproved hygiene", 
-  #                     X=="WASH" ~ "Not improved WASH with no contamination",
-  #                     X=="WASH_noEC" ~ "Unimproved WASH",
-  #                     X=="safely_manH20" ~ "Unsafely managed drinking water",
-  #                     X=="EC_risk_H" ~ "HH water contamination", 
-  #                     X=="EC_risk_S" ~ "Source water contamination", 
-  #                     X=="san_imp_cat" ~ "Sanitation category", 
-  #                     X=="wat_imp_cat" ~ "Water supply category", 
-  #                     X=="hyg_imp_cat" ~ "Hygiene category"),
-  #   Xlab2=factor(Xlab2, levels = rev(c(
-  #     "Unimproved water supply", 
-  #     "Unimproved sanitation", 
-  #     "Unimproved hygiene", 
-  #     "Unimproved WASH",
-  #     "Contaminated HH water", 
-  #     "Contaminated source water", 
-  #     "Unsafely managed drinking water",
-  #     "Not improved WASH with no contamination",
-  #     "HH water contamination", 
-  #     "Source water contamination", 
-  #     "Sanitation category", 
-  #     "Water supply category", 
-  #     "Hygiene category"))),
-
-
 
 
 
@@ -150,12 +111,10 @@ Wvars <- c("educ",
            "HHwealth_quart",
            "nroom_sleeping")
 
-
-
-
 #table1
 Wvars[!(Wvars %in% colnames(dfull))]
-df <- dfull %>% subset(., select = c("Country", Wvars))
+df <- dfull %>% filter(!is.na(san_imp) | !is.na(wat_imp) | !is.na(hyg_imp) | !is.na(EC_S) | !is.na(EC_H)) %>%
+  subset(., select = c("Country", Wvars))
 tab1 <- table1(~. |Country, format_number = TRUE, data=df)
 
 tab1 <- as.data.frame(read_html(tab1) %>% html_table(fill=TRUE))
