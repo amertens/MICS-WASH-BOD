@@ -131,7 +131,7 @@ dpool  <- dpool  %>%
 
 
 
-p_pooled_PAF <- dpool %>%
+p_pooled_PAF <- dpool %>% filter( X!="Improved WASH,\nno contamination") %>% droplevels(.) %>%
   ggplot(., aes(y=PAF, x=X)) +
   facet_wrap(~Y) +
   geom_point() + 
@@ -150,7 +150,7 @@ p_pooled_PAF <- dpool %>%
         title = element_text(margin=margin(0,0,-10,0)))
 
 
-p_PAF <- dPAF %>%
+p_PAF <- dPAF %>% filter( X!="Improved WASH,\nno contamination") %>% droplevels(.) %>%
   ggplot(., aes(y=PAF, x=country, color=country)) +
   facet_grid(Y~X, switch = "y") +
   geom_point() + 
