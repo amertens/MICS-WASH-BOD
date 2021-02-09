@@ -67,7 +67,7 @@ p_tmle_comp_diff <- d %>% filter(Y=="HAZ", X %in% c("EC_H","EC_S"), binary==0, a
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 0) +
   coord_flip() +
-  xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
+  xlab("WASH Characteristic reference level") + ylab("Z-score difference") + theme(legend.title = element_blank(), legend.position = "right")
 
 
 #Forest plot
