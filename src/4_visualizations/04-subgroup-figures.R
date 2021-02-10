@@ -19,8 +19,9 @@ p_rural_pooled_bin <- d %>% filter(adjusted==1, binary==1, analysis=="rural", co
   mutate(subgroup =factor(subgroup , levels=c("Rural","Urban"))) %>% 
   ggplot(., aes(y=est, x=Xlab, group=subgroup , color=subgroup )) +
   facet_wrap(~Y, scales="free") +
-  geom_point(position = position_dodge(0.6)) + 
+  geom_point(aes(shape=sig), position = position_dodge(0.6)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
+  scale_shape_manual(values=c(19,13)) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
@@ -35,8 +36,9 @@ p_rural_pooled_cont <- d %>% filter(adjusted==1, binary==0, analysis=="rural", c
   mutate(subgroup =factor(subgroup , levels=c("Rural","Urban"))) %>% 
   ggplot(., aes(y=est, x=Xlab, group=subgroup , color=subgroup )) +
   facet_wrap(~Y, scales="free") +
-  geom_point(position = position_dodge(0.6)) + 
+  geom_point(aes(shape=sig), position = position_dodge(0.6)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
+  scale_shape_manual(values=c(19,13)) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 0) +
   coord_flip() +

@@ -33,19 +33,21 @@ for(i in levels(d$Y)){
    
    if(df$binary[1]==1){
     p <-  ggplot(df, aes(y=est, x=countrylab, color=region)) +
-      geom_point() + 
+      geom_point(aes(shape=sig)) + 
       geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
       scale_color_manual(values=tableau11[c(1, 8:2,9,10,11)]) +
       geom_hline(yintercept = 1) +
       geom_vline(xintercept = 2.5, linetype="dashed") +
       scale_y_continuous(trans='log10') +
+       scale_shape_manual(values=c(19,13)) +
       coord_flip() + 
       xlab("") + ylab(paste0("Relative Risk (ref=",reference,")"))
    }else{
      p <-  ggplot(df, aes(y=est, x=countrylab, color=region)) +
-       geom_point() + 
+       geom_point(aes(shape=sig)) + 
        geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
        scale_color_manual(values=tableau11[c(1, 8:2,9,10,11)]) +
+        scale_shape_manual(values=c(19,13)) +
        #scale_x_discrete(labels= levels(df$countrylab)) +
        geom_hline(yintercept = 0) +
        geom_vline(xintercept = 2.5, linetype="dashed") +

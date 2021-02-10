@@ -35,9 +35,9 @@ p_Region_prim_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binary==1, a
   droplevels(.) %>%
   ggplot(., aes(y=est, x=Xlab, group=Region, color=Region)) +
   facet_grid(~Y) +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.5, 0.7, 1,1.4, 2, 3, 4), trans='log10') +
   #scale_y_continuous(trans='log10') +
@@ -52,9 +52,9 @@ p_Region_prim_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binary==1, a
   #mutate(=factor(X, levels = rev(levels(X)))) %>%
   ggplot(., aes(y=est, x=Xlab, group=Region, color=Region)) +
   facet_grid(~Y) +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.5, 0.7, 1,1.4, 2, 3, 4, 6), trans='log10') +
   coord_flip(ylim=c(0.5, 6)) +
@@ -80,13 +80,13 @@ p_Region_multi_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="regi
   arrange(Xlab) %>%
   ggplot(., aes(y=est, x=contrast, group=Region, color=Region)) +
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_text(aes(label=reflab), nudge_y=.2, size = 3) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10') +
   coord_flip(ylim=c(0.25, 3.5)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
@@ -103,13 +103,13 @@ p_Region_multi_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="regi
   arrange(Xlab) %>%
   ggplot(., aes(y=est, x=contrast, group=Region, color=Region)) +
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_text(aes(label=reflab), nudge_y=.2, size = 3) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10') +
   coord_flip(ylim=c(0.4, 3)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
@@ -129,11 +129,11 @@ p_Region_prim_Zscore_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binar
   droplevels(.) %>%
   ggplot(., aes(y=est, x=Xlab, group=Region, color=Region)) +
   facet_grid(~Y) +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-0.5, 0.25)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")+ 
   theme(legend.position = "bottom") + guides(colour = guide_legend(reverse = TRUE, nrow = 1))
 
@@ -141,11 +141,11 @@ p_Region_prim_Zscore_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binar
   droplevels(.) %>%
   ggplot(., aes(y=est, x=Xlab, group=Region, color=Region)) +
   facet_grid(~Y) +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-1, 0.25)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")+ 
   theme(legend.position = "bottom") + guides(colour = guide_legend(reverse = TRUE, nrow = 1))
 
@@ -164,13 +164,13 @@ p_Region_multi_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis
   arrange(Xlab) %>%
   ggplot(., aes(y=est, x=contrast, group=Region, color=Region)) +
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-1, 0.75)) +
   xlab("") + ylab("Z-score difference")+
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
         strip.text.x = element_text(size=8, face = "bold"),
@@ -186,12 +186,12 @@ p_Region_multi_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis
   arrange(Xlab) %>%
   ggplot(., aes(y=est, x=contrast, group=Region, color=Region)) +
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
-  geom_point(position=position_dodge(0.5)) + 
+  geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_text(aes(label=reflab), nudge_y=.05, size = 3) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-0.5, 0.5)) +
-  scale_color_manual(values=dd.col) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
   xlab("") + ylab("Z-score difference")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
