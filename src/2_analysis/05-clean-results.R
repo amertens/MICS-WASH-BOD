@@ -5,33 +5,6 @@ source("0-config.R")
 df <- readRDS(here("results/pooled_raw_results.rds"))
 
 
-#classify regions
-# East Asia and the Pacific EAP
-# Eastern and Southern Africa ESA
-# Europe and Central Asia ECA
-# Latin America and Caribbean LAC
-# Middle East and North Africa MENA
-# South Asia SA
-# West and Central Africa WCA
-unique(df$country)
-
-#Set up vector
-EAP <- c("Mongolia", "Tonga",  "Kiribati", "Laos")
-ECA <- c("Georgia", "Kosovo")
-LAC <- c("Suriname","Paraguay" )
-MENA <- c("Algeria","Iraq","Tunisia" )
-SA <- c("Bangladesh", "Nepal", "Pakistan")
-ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
-
-EAP <- EAP[order(EAP)]
-ECA <- ECA[order(ECA)]
-LAC <- LAC[order(LAC)]
-MENA <- MENA[order(MENA)]
-SA <- SA[order(SA)]
-ESA <- ESA[order(ESA)]
-WCA <- WCA[order(WCA)]
-
 
 
 
@@ -50,6 +23,9 @@ table(df$X, df$contrast)
 #Clean data for figures
 df <- df %>% 
   mutate(
+    country = case_when(country=="pooled" & analysis=="FE" ~ "Pooled - FE",
+                        country=="pooled" & analysis!="FE" ~ "Pooled - RE",
+                        country==country ~ country),
     multinomial = ifelse(X %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat"),1,0),
     Y=case_when(
       Y=="stunt" ~ "Stunting",
@@ -61,27 +37,6 @@ df <- df %>%
       Y=="mort" ~ "Mortality"
     ),
     Y=factor(Y, levels=c("Diarrhea", "Stunting", "Wasting", "ARI", "HAZ", "WHZ","Mortality")),
-    country=case_when(
-      country=="pooled" & analysis=="FE" ~ "Pooled - FE",
-      country=="pooled" & analysis!="FE" ~ "Pooled - RE",
-      country=="PakistanPunjab" ~ "Pakistan",
-      country=="LaoPDR" ~ "Laos",
-      country=="SierraLeone" ~ "Sierra Leone",
-      country=="Sao Tome and Principe" ~ "Sao Tome+Prin.",
-      country==country ~ country
-    ),
-    region = case_when(
-      country %in% EAP ~ "EAP",
-      country %in% ECA ~ "ECA",
-      country %in% LAC ~ "LAC",
-      country %in% MENA ~ "MENA",
-      country %in% SA ~ "SA",
-      country %in% ESA ~ "ESA",
-      country %in% WCA ~ "WCA",
-      country %in% c("Pooled - FE","Pooled - RE") ~ "Pooled"
-    ),
-    region=factor(region, levels=rev(c("WCA", "ESA", "LAC", "SA","EAP","MENA","ECA","Pooled"))),
-    country=factor(country, levels=rev(c(WCA, ESA,LAC,SA,EAP,MENA,ECA, "Pooled - FE","Pooled - RE"))),
     Xlab = case_when(X=="EC_H" ~ "Contaminated\nHH water", 
                      X=="EC_S" ~ "Contaminated\nsource water", 
                      X=="san_imp" ~ "Unimproved\nsanitation", 

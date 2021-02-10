@@ -41,6 +41,63 @@ d <- d %>% filter(!(
 )
 )
 
+#---------------------------------------------
+#classify regions
+#---------------------------------------------
+
+# East Asia and the Pacific EAP
+# Eastern and Southern Africa ESA
+# Europe and Central Asia ECA
+# Latin America and Caribbean LAC
+# Middle East and North Africa MENA
+# South Asia SA
+# West and Central Africa WCA
+unique(d$country)
+
+#Set up vector
+EAP <- c("Mongolia", "Tonga",  "Kiribati", "Laos")
+ECA <- c("Georgia", "Kosovo")
+LAC <- c("Suriname","Paraguay" )
+MENA <- c("Algeria","Iraq","Tunisia" )
+SA <- c("Bangladesh", "Nepal", "Pakistan")
+ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
+WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
+
+EAP <- EAP[order(EAP)]
+ECA <- ECA[order(ECA)]
+LAC <- LAC[order(LAC)]
+MENA <- MENA[order(MENA)]
+SA <- SA[order(SA)]
+ESA <- ESA[order(ESA)]
+WCA <- WCA[order(WCA)]
+
+d <- d %>%
+  mutate(
+    country=case_when(
+      country=="PakistanPunjab" ~ "Pakistan",
+      country=="LaoPDR" ~ "Laos",
+      country=="SierraLeone" ~ "Sierra Leone",
+      country=="Sao Tome and Principe" ~ "Sao Tome+Prin.",
+      country==country ~ country
+    ),
+    region = case_when(
+      country %in% EAP ~ "EAP",
+      country %in% ECA ~ "ECA",
+      country %in% LAC ~ "LAC",
+      country %in% MENA ~ "MENA",
+      country %in% SA ~ "SA",
+      country %in% ESA ~ "ESA",
+      country %in% WCA ~ "WCA",
+      country %in% c("Pooled - FE","Pooled - RE") ~ "Pooled"
+    ),
+    region=factor(region, levels=rev(c("WCA", "ESA", "LAC", "SA","EAP","MENA","ECA","Pooled"))),
+    country=factor(country, levels=rev(c(WCA, ESA,LAC,SA,EAP,MENA,ECA, "Pooled - FE","Pooled - RE")))
+  )
+
+
+#---------------------------------------------
+# Pool
+#---------------------------------------------
 
 d$binary <- ifelse(d$Y %in% c("ari", "diarrhea", "stunt", "wast", "mort"), 1, 0)
 
@@ -50,7 +107,8 @@ RMAest_bin <- dbin %>% group_by(analysis, Y, X, ref, contrast, adjusted, subgrou
   do(poolRR(.)) %>% as.data.frame()
 RMAest_bin_FE <- dbin %>% group_by(analysis, Y, X, ref, contrast, adjusted, subgroup) %>%
   do(poolRR(., method="FE")) %>% as.data.frame()
-
+RMAest_bin_region <- dbin %>% group_by(region, analysis, Y, X, ref, contrast, adjusted, subgroup) %>%
+  do(poolRR(.)) %>% as.data.frame()
 
 
 dcont <- d %>% filter(binary==0) %>% mutate(est=coef, RR=NA, ci.lb=coef - 1.96*se, ci.ub=coef + 1.96*se )
@@ -59,37 +117,51 @@ RMAest_cont <- dcont %>% group_by(analysis, Y, X, ref, contrast, adjusted, subgr
   do(pool.cont(.)) %>% as.data.frame()
 RMAest_cont_FE <- dcont %>% group_by(analysis, Y, X, ref, contrast, adjusted, subgroup) %>%
   do(pool.cont(., method="FE")) %>% as.data.frame()
-
+RMAest_cont_region <- dcont %>% group_by(region,analysis, Y, X, ref, contrast, adjusted, subgroup) %>%
+  do(pool.cont(.)) %>% as.data.frame()
 
 
 
 #Combine pooled and country-level results
 ind_df <- bind_rows(dbin, dcont) %>%  
-  subset(., select =c(analysis, country, Y, X, ref, contrast, est,ci.lb, ci.ub, n,N, binary, adjusted, subgroup))
+  subset(., select =c(analysis, country, region, Y, X, ref, contrast, est,ci.lb, ci.ub, n,N, binary, adjusted, subgroup))
  
 
 RMAest_cont<-RMAest_cont %>%
   rename(est=ATE, ci.lb=CI1, ci.ub=CI2) %>%
   subset(., select =c(analysis, Y, X,  ref, contrast, est,  ci.lb, ci.ub, adjusted, subgroup)) %>%
-  mutate(country="pooled", binary=0)
+  mutate(country="pooled", region="pooled", binary=0)
 
 RMAest_bin<-RMAest_bin %>%
   rename(est=RR, ci.lb=RR.CI1, ci.ub=RR.CI2)  %>%
   subset(., select =c(analysis, Y, X, ref, contrast, est,  ci.lb, ci.ub, adjusted, subgroup)) %>%
-  mutate(country="pooled", binary=1)
+  mutate(country="pooled", region="pooled",binary=1)
 
 RMAest_cont_FE<-RMAest_cont_FE %>%
   rename(est=ATE, ci.lb=CI1, ci.ub=CI2) %>%
   subset(., select =c(analysis, Y, X,  ref, contrast, est,  ci.lb, ci.ub, adjusted, subgroup)) %>%
-  mutate(country="pooled", binary=0)
+  mutate(country="pooled",region="pooled", binary=0)
 
 RMAest_bin_FE<-RMAest_bin_FE %>%
   rename(est=RR, ci.lb=RR.CI1, ci.ub=RR.CI2)  %>%
   subset(., select =c(analysis, Y, X, ref, contrast, est,  ci.lb, ci.ub, adjusted, subgroup)) %>%
-  mutate(country="pooled", binary=1)
+  mutate(country="pooled", region="pooled",binary=1)
+
+RMAest_cont_region <- RMAest_cont_region %>%
+  rename(est=ATE, ci.lb=CI1, ci.ub=CI2) %>%
+  subset(., select =c(analysis, region, Y, X,  ref, contrast, est,  ci.lb, ci.ub, adjusted, subgroup)) %>%
+  mutate(country="pooled", binary=0)  %>% filter(analysis=="primary"|analysis=="primary-multi") %>%
+  mutate(analysis=case_when(analysis=="primary"~"region", analysis=="primary-multi"~"region-multi"))
+
+RMAest_bin_region <- RMAest_bin_region %>%
+  rename(est=RR, ci.lb=RR.CI1, ci.ub=RR.CI2)  %>%
+  subset(., select =c(analysis, region, Y, X, ref, contrast, est,  ci.lb, ci.ub, adjusted, subgroup)) %>%
+  mutate(country="pooled", binary=1)  %>% filter(analysis=="primary"|analysis=="primary-multi") %>%
+  mutate(analysis=case_when(analysis=="primary"~"region", analysis=="primary-multi"~"region-multi"))
+
 
 df_FE <- bind_rows(RMAest_cont_FE, RMAest_bin_FE) %>% filter(analysis=="primary"|analysis=="primary-multi") %>% mutate(analysis="FE")
-df <- bind_rows(ind_df, RMAest_cont, RMAest_bin, df_FE)
+df <- bind_rows(ind_df, RMAest_cont, RMAest_bin, df_FE, RMAest_cont_region, RMAest_bin_region)
 
 head(df)
 
