@@ -120,11 +120,24 @@ df <- RMAest_bin %>%
     )) %>%
   mutate(country="Pooled - RE", adjusted=1)
 
+
 plotdf <- bind_rows(prim, df) %>% 
   mutate(   contrast=factor(contrast, levels=rev(c("Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
             analysis= factor(analysis, levels=rev(c("All estimates","Only estimates from\ncountries with all levels"))))
 
 table(plotdf$analysis)
+
+
+#mark significant estimates
+plotdf <- plotdf %>% mutate(sig = factor(case_when(
+  Y %in% c("HAZ","WHZ") & ((ci.lb<0 & ci.ub<0) | (ci.lb>0 & ci.ub>0)) ~ 1,
+  Y %in% c("HAZ","WHZ") & ((ci.lb<0 & ci.ub>0)) ~ 0,
+  !(Y %in% c("HAZ","WHZ")) & ((ci.lb<1 & ci.ub<1) | (ci.lb>1 & ci.ub>1)) ~ 1,
+  !(Y %in% c("HAZ","WHZ")) & ((ci.lb<1 & ci.ub>1)) ~ 0), levels=c("0","1"), labels=c("Not sig.","Sig.")))
+plotdf$sig[is.na(plotdf$sig)] <- "Not sig."
+
+#Temp drop mortality
+plotdf <- plotdf %>% filter(Y!="Mortality")
 
 
 p_multi_pooled_HH_sens <- plotdf %>% filter(adjusted==1, binary ==1, analysis %in% c("All estimates","Only estimates from\ncountries with all levels"), country=="Pooled - RE", exposure_type=="HH") %>% 
