@@ -11,7 +11,7 @@ d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary",
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", adjusted=1)
 d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle", adjusted=1) %>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", adjusted=1, subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
-d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary", adjusted=1) 
+d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary") 
 d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi") 
 d_RR_multi_adj_sens <- readRDS(here("results/adjusted_mult_RR_sens.rds")) %>% mutate(analysis="sens-multi", adjusted=1) #Load the sensitivity multinomial analyses using Basic as a reference level
 

@@ -14,7 +14,7 @@ d$X <- factor(d$X, levels =c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_c
 levels(d$X)
 
 i=levels(d$Y)[7]
-j=levels(d$X)[1]
+j=levels(d$X)[6]
 j="san_imp_cat"
 
 plist <- list()
@@ -79,7 +79,7 @@ for(i in levels(d$Y)){
 # names(plist)
 # length(plist)
 # 
-# plist$WHZ.san_imp_cat
+ plist$Mortality.EC_H
 # 
 
 
