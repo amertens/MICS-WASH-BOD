@@ -121,10 +121,10 @@ df <- df %>%
 
 #mark significant estimates
 df <- df %>% mutate(sig = factor(case_when(
-  Y %in% c("haz","whz") & ((ci.lb<0 & ci.ub<0) | (ci.lb>0 & ci.ub>0)) ~ 1,
-  Y %in% c("haz","whz") & ((ci.lb<0 & ci.ub>0)) ~ 0,
-  !(Y %in% c("haz","whz")) & ((ci.lb<1 & ci.ub<1) | (ci.lb>1 & ci.ub>1)) ~ 1,
-  !(Y %in% c("haz","whz")) & ((ci.lb<1 & ci.ub>1)) ~ 0), levels=c("0","1")))
+  Y %in% c("HAZ","WHZ") & ((ci.lb<0 & ci.ub<0) | (ci.lb>0 & ci.ub>0)) ~ 1,
+  Y %in% c("HAZ","WHZ") & ((ci.lb<0 & ci.ub>0)) ~ 0,
+  !(Y %in% c("HAZ","WHZ")) & ((ci.lb<1 & ci.ub<1) | (ci.lb>1 & ci.ub>1)) ~ 1,
+  !(Y %in% c("HAZ","WHZ")) & ((ci.lb<1 & ci.ub>1)) ~ 0), levels=c("0","1")))
 df$sig[is.na(df$sig)] <- "0"
 table(df$sig)
 
