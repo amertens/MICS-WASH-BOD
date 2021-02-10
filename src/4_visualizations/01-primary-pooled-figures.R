@@ -71,7 +71,7 @@ p_multi_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="primary-mul
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point(aes(shape=sig), size=2) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  geom_text(aes(label=reflab), nudge_y=.2, size = 3) +
+  geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 1) +
   scale_shape_manual(values=c(19,13)) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
@@ -93,7 +93,7 @@ p_multi_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="primary-mul
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point(aes(shape=sig), size=2) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  geom_text(aes(label=reflab), nudge_y=.2, size = 3) +
+  geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 1) +
   scale_shape_manual(values=c(19,13)) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
