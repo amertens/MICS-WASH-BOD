@@ -543,7 +543,8 @@ clean_WASH <- function(d){
     san_cat_lab = case_when(
        WS11 %in% c("95") ~ "No facility",
        WS11 %in% c("14","18","23","51") ~ "Unimproved",
-       WS15 == "2" & WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
+       #WS15 == "2" & WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
+       WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
        WS11 %in% c("96","99") ~ NA_character_,
        is.na(san_cat_lab) ~ "Unimproved"
     ),
