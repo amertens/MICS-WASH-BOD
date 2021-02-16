@@ -1,236 +1,616 @@
 
-WS1_lab, #drinking water source
-|==                                                      |  4% ~2 m remaining     |====                                                    |  8% ~2 m remaining     |======                                                  | 12% ~1 m remaining     |========                                                | 16% ~54 s remaining    |===========                                             | 20% ~1 m remaining     |=============                                           | 24% ~58 s remaining    |===============                                         | 28% ~49 s remaining    |=================                                       | 32% ~44 s remaining    |====================                                    | 36% ~39 s remaining    |======================                                  | 40% ~34 s remaining    |========================                                | 44% ~33 s remaining    |==========================                              | 48% ~29 s remaining    |=============================                           | 52% ~26 s remaining    |===============================                         | 56% ~22 s remaining    |=================================                       | 60% ~19 s remaining    |===================================                     | 64% ~16 s remaining    |======================================                  | 68% ~14 s remaining    |========================================                | 72% ~12 s remaining    |============================================            | 80% ~9 s remaining     |===============================================         | 84% ~7 s remaining     |=================================================       | 88% ~5 s remaining     |===================================================     | 92% ~3 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "11: PIPED WATER: PIPED INTO DWELLING" 
-[2] "11: ROBINET: DANS LE LOGEMENT"        
-[3] "11: PIPED WATER : PIPED INTO DWELLING"
-[4] "11: PIPED WATER PIPED INTO DWELLING"  
-[5] "11: Piped into dwelling"              
-[6] "11: Tuber<ed>a dentro de la vivienda" 
-[7] "11: Robinet: dans le logement "       
-[8] "11: TORNEIRA: NO ALOJAMENTO"          
+> #To recode:
+> 
+> cat("\nWS11_lab, #sanitation type\n")
+
+WS11_lab, #sanitation type
+
+> res <- d %>% group_by(WS11) %>%
++   do(res=paste0(.$WS11[1],": ", unique(.$WS11_lab)))
+|====                                                                                   |  5% ~3 m remaining     |=========                                                                              | 11% ~2 m remaining     |=============                                                                          | 16% ~2 m remaining     |==================                                                                     | 21% ~1 m remaining     |======================                                                                 | 26% ~59 s remaining    |===========================                                                            | 32% ~46 s remaining    |================================                                                       | 37% ~37 s remaining    |====================================                                                   | 42% ~37 s remaining    |=========================================                                              | 47% ~34 s remaining    |=============================================                                          | 53% ~29 s remaining    |==================================================                                     | 58% ~23 s remaining    |======================================================                                 | 63% ~19 s remaining    |===========================================================                            | 68% ~15 s remaining    |================================================================                       | 74% ~12 s remaining    |=========================================================================              | 84% ~7 s remaining     |=============================================================================          | 89% ~5 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+ [1] "11: FLUSH / POUR FLUSH: FLUSH TO PIPED SEWER SYSTEM"   
+ [2] "11: Chasse connect<e9>e <e0> syst<e8>me d'<e9>gouts"   
+ [3] "11: CHASSE D?EAU: RELIEE A SYSTEME D?EGOUTS"           
+ [4] "11: CHASSE D?EAU: RELIEE A SYSTEME D'EGOUTS"           
+ [5] "11: CHASSE D’EAU RELIEE A SYSTEME D’EGOUTS"            
+ [6] "11: Conetado ao sistema de esgoto"                     
+ [7] "11: CHASSE D’EAU:RELIE A UN SYSTEME D'EGOUT"           
+ [8] "11: FLUSH / POUR FLUSH TO PIPED SEWER SYSTEM"          
+ [9] "11: Flush to piped sewer system"                       
+[10] "11: Red de alcantarillado sanitario(cloaca)"           
+[11] "11: Chasse d'eau: reli<e9>e au syst<e8>me d'<e9>gouts" 
+[12] "11: CHASSE D<U+0092>EAU: FLUSH TO PIPED SEWER SYSTEM"  
+[13] "11: RELIEE A SYSTEME D?EGOUTS"                         
+[14] "11: DESCARGA DE ÁGUA: RELACIONADO AO SISTEMA DE ESGOTO"
 
 [[2]]
-[1] "12: PIPED WATER: PIPED TO YARD / PLOT"               
-[2] "12: ROBINET: DANS LA CONCESSION/JARDIN/ PARCELLE"    
-[3] "12: PIPED WATER PIPED TO YARD / PLOT"                
-[4] "12: Piped into compound, yard or plot"               
-[5] "12: PIPED WATER: PIPED TO COMPOUND/YARD / PLOT"      
-[6] "12: Tuber<ed>a dentro del terreno,patio o lote"      
-[7] "12: Robinet: dans la concession / Jardin / Parcelle "
-[8] "12: ROBINET: DANS LA COUR/JARDIN/PARCELLE"           
-[9] "12: TORNEIRA: NO QUINTAL"                            
+ [1] "12: FLUSH / POUR FLUSH: FLUSH TO SEPTIC TANK"      "12: Connectée à fosse septique"                   
+ [3] "12: Chasse connect<e9>e <e0> fosse septique"       "12: CHASSE D?EAU: RELIEE A FOSSE SEPTIQUE"        
+ [5] "12: CHASSE D?EAU: RELIEE A FOSSE SCEPTIQUE"        "12: CHASSE D’EAU RELIEE A FOSSE SEPTIQUE"         
+ [7] "12: Conetado a fossa séptica"                      "12: CHASSE D’EAU: RELIE A FOSSE SCEPTIQUE"        
+ [9] "12: FLUSH / POUR FLUSH  TO SEPTIC TANK"            "12: Flush to septic tank"                         
+[11] "12: C<e1>mara s<e9>ptica y pozo ciego"             "12: Chasse d'eau: reli<e9>e au fosse septique "   
+[13] "12: CHASSE D<U+0092>EAU: FLUSH TO SEPTIC TANK"     "12: RELIEE A FOSSE SEPTIQUE"                      
+[15] "12: DESCARGA DE ÁGUA: RELACIONADO A FOSSA SÉPTICA"
 
 [[3]]
-[1] "13: PIPED WATER: PIPED TO NEIGHBOUR" "13: ROBINET: CHEZ LE VOISIN"        
-[3] "13: Piped to neighbour"              "13: Tuber<ed>a al vecino"           
-[5] "13: Robinet: chez le voisin"         "13: TORNEIRA: NO VIZINHO"           
+ [1] "13: FLUSH / POUR FLUSH: FLUSH TO PIT LATRINE"     "13: Reliée à des latrines"                       
+ [3] "13: Chasse reli<e9>e <e0> des latrines"           "13: CHASSE D?EAU: RELIEE AUX LATRINES"           
+ [5] "13: FLUSH / POUR FLUSH: FLUSH TO SEPTIC TANK"     "13: CHASSE D’EAU: RELIEE AUX LATRINES"           
+ [7] "13: Conetada as latrinas"                         "13: CHASSE D’EAU: RELIE AUX LATRINES"            
+ [9] "13: FLUSH / POUR FLUSH TO PIT LATRINE"            "13: Flush to pit (latrine)"                      
+[11] "13: Pozo ciego, sin c<e1>mara s<e9>ptica"         "13: Chasse d'eau: reli<e9>e aux latrines"        
+[13] "13: CHASSE D<U+0092>EAU: FLUSH TO PIT LATRINE"    "13:  RELIEE AUX LATRINES"                        
+[15] "13: DESCARGA DE ÁGUA: RELACIONADO A FOSSA ABERTA"
 
 [[4]]
-[1] "14: PIPED WATER: PUBLIC TAP / STANDPIPE"                         
-[2] "14: ROBINET: ROBIENT PUBLIC/BORNE FONTAINE"                      
-[3] "14: ROBINET: ROBINET PUBLIC/BORNE FONTAINE"                      
-[4] "14: Public tap / standpipe"                                      
-[5] "14: Canilla/llave/grifo p<fa>blico"                              
-[6] "14: Robinet: robinet publics / Borne fontaine / Kiosque <e0> eau"
-[7] "14: TORNEIRA: DO CHAFARIZ PÚBLICO"                               
+ [1] "14: FLUSH / POUR FLUSH: FLUSH TO OPEN DRAIN"         
+ [2] "14: Reliée à autre chose"                            
+ [3] "14: Chasse reli<e9>e <e0> autre chose"               
+ [4] "14: CHASSE D?EAU: RELIEE A L?AIR LIBRE"              
+ [5] "14: CHASSE D?EAU: RELIEE A L'AIR LIBRE"              
+ [6] "14: CHASSE D’EAU: RELIEE A L’AIR LIBRE"              
+ [7] "14: Conetado ao ar livre"                            
+ [8] "14: CHASSE D’EAU: RELIE A L'AIR LIBRE"               
+ [9] "14: Flush to somewhere else"                         
+[10] "14: La calle, patio/terreno o en alg<fa>n otro lugar"
+[11] "14: Chasse d'eau: reli<e9>e <e0> l'air libre"        
+[12] "14: CHASSE D<U+0092>EAU: FLUSH TO OPEN DRAIN"        
+[13] "14: RELIEE A L?AIR LIBRE"                            
+[14] "14: DESCARGA DE ÁGUA: RELACIONADO AO AR LIVRE"       
 
 [[5]]
-[1] "21: TUBE WELL / BOREHOLE"               
-[2] "21: PUITS A POMPE/FORAGE"               
-[3] "21: TUBE WELL / BOREHOLE PROTECTED WELL"
-[4] "21: Tube well, Borehole"                
-[5] "21: TUBE WELL"                          
-[6] "21: Pozo con tuber<ed>a"                
-[7] "21: Puits <e0> pompe / Forage"          
-[8] "21: BOMBA / PERFURAÇÃO"                 
+[1] "15: Reliée à endroit inconnu/pas sûr/ NSP où"                              
+[2] "15: Chasse reli<e9>e <e0> endroit inconnu / Pas s<fb>r / Ne sait pas o<f9>"
+[3] "15: Flush to unknown place / Not sure / DK where"                          
+[4] "15: No sabe d<f3>nde se depositan"                                         
+[5] "15: RELIEE A UN OUED"                                                      
 
 [[6]]
-[1] "22: TUBE WELL / BOREHOLE UNPROTECTED WELL"
-[2] "22: MOTORIZED PUMP"                       
+ [1] "18: FLUSH / POUR FLUSH: FLUSH TO DONT KNOW WHERE"           
+ [2] "18: RELIEE A LIEU INCONNU /PAS SUR"                         
+ [3] "18: CHASSE D?EAU: RELIEE A LIEU INCONNU"                    
+ [4] "18: FLUSH / POUR FLUSH: FLUSH TO DK WHERE"                  
+ [5] "18: CHASSE D’EAU: RELIEE A UN LIEU INCONNU"                 
+ [6] "18: Conetado a um lugar o desconhecido"                     
+ [7] "18: CHASSE D’EAU: RELIE A LIEU INCONNU"                     
+ [8] "18: FLUSH / POUR FLUSH TO DK WHERE"                         
+ [9] "18: Chasse d'eau: reli<e9>e <e0> un lieu inconnu"           
+[10] "18: CHASSE D<U+0092>EAU: FLUSH TO DK WHERE"                 
+[11] "18: RELIEE A AUTRE CHOSE"                                   
+[12] "18: DESCARGA DE ÁGUA: RELACIONADO A UM LUGAR O DESCONHECIDO"
+
+[[7]]
+ [1] "21: PIT LATRINE: VENTILATED IMPROVED PIT LATRINE"                                                        
+ [2] "21: Latrines améliorées ventilées (LAV)"                                                                 
+ [3] "21: Latrines am<e9>lior<e9>es ventil<e9>es (LAV)"                                                        
+ [4] "21: LATRINE A FOSSE: LATRINE A FOSSE AMELIOREE VENTILEE"                                                 
+ [5] "21: LATRINE A FOSSE: AMELIOREE VENTILEE"                                                                 
+ [6] "21: VENTILATED IMPROVED PIT LATRINE"                                                                     
+ [7] "21: Latrinas melhoradas com tampa ligada a fossa e ventilada"                                            
+ [8] "21: LATRINE A FOSSE:AMELIORE VENTILE"                                                                    
+ [9] "21: PIT LATRINE VENTILATED IMPROVED PIT LATRINE"                                                         
+[10] "21: Ventilated Improved Pit latrine (VIP)"                                                               
+[11] "21: Letrina ventilada de hoyo seco(com<fa>n con tubo de ventilaci<f3>n)"                                 
+[12] "21: Latrine <e0> fosse: am<e9>lior<e9>e ventill<e9>e"                                                    
+[13] "21: LATRINE A FOSSE AMELIOREE VENTILEE"                                                                  
+[14] "21: LATRINE A FOSLATRINA COM FOSSA: LATRINA MELHORADA (COM SANITA E FOSSA COBERTA)SE: AMELIOREE VENTILEE"
+
+[[8]]
+ [1] "22: PIT LATRINE: PIT LATRINE WITH SLAB"                                                     
+ [2] "22: Latrines à fosses avec dalle"                                                           
+ [3] "22: Latrines <e0> fosse avec dalle"                                                         
+ [4] "22: LATRINE A FOSSE: LATRINE A FOSSE AVEC  DALLE"                                           
+ [5] "22: LATRINE A FOSSE: AVEC DALLE"                                                            
+ [6] "22: Latrinas melhoradas coberta"                                                            
+ [7] "22: PIT LATRINE: PIT LATRINE WITH SLAB / SEAT"                                              
+ [8] "22: LATRINE A FOSSE:  LATRINE A FOSSE AVEC DALLE LAVABLE"                                   
+ [9] "22: PIT LATRINE PIT LATRINE WITH SLAB"                                                      
+[10] "22: Pit latrine with slab"                                                                  
+[11] "22: Letrina com<fa>n de hoyo seco(con losa,techo,paredes y puertas)"                        
+[12] "22: Latrine <e0> fosse: avec dalle"                                                         
+[13] "22: LATRINE A FOSSE: PIT LATRINE WITH SLAB"                                                 
+[14] "22: LATRINE A FOSSE AVEC DALLE"                                                             
+[15] "22: LATRINA COM FOSSA: LATRINA COM FOSSA SEPTICA (COM FOSSA SEPTICA COBERTA, MAS SEM SANITA"
+
+[[9]]
+ [1] "23: PIT LATRINE: PIT LATRINE WITHOUT SLAB / OPEN PIT"                             
+ [2] "23: Latrines à fosses sans dalle/trou ouvert"                                     
+ [3] "23: Latrines <e0> fosse sans dalle / trou ouvert"                                 
+ [4] "23: LATRINE A FOSSE OU SANS FOSSE OUVERTE: LATRINE A FOSSE OU SANS FOSSE  OUVERTE"
+ [5] "23: LATRINE A FOSSE: SANS DALLE/FOSSE OUVERTE"                                    
+ [6] "23: LATRINE A FOSSE: SANS DALLE/ FOSSE OUVERTE"                                   
+ [7] "23: Latrinas tradicionais/retrete"                                                
+ [8] "23: LATRINE A FOSSE SANS DALLE/FOSSE OUVERTE"                                     
+ [9] "23: PIT LATRINE PIT LATRINE WITHOUT SLAB / OPEN PIT"                              
+[10] "23: Pit latrine without slab / Open pit"                                          
+[11] "23: Letrina com<fa>n  de hoyo seco con losa (sin techo, paredes y puertas)"       
+[12] "23: Latrine <e0> fosse: sans dalle / fosse ouverte"                               
+[13] "23: LATRINE A FOSSE: PIT LATRINE WITHOUT SLAB / OPEN PIT"                         
+[14] "23: LATRINE A FOSSE SANS DALLE/ FOSSE OUVERTE"                                    
+[15] "23: LATRINA COM FOSSA: LATRINA COM FOSSA SECA/ FOSSA ABERTA"                      
+
+[[10]]
+[1] "24: PIT LATRINE WITH SEAT"                                  
+[2] "24: LATRINE A FOSSE: LATRINE A FOSSE AVEC DALLE NON LAVABLE"
+[3] "24: Letrina com<fa>n sin losa pero con techo o puerta"      
+
+[[11]]
+[1] "25: Letrina com<fa>n  sin losa , sin techo o puerta"
+
+[[12]]
+[1] "31: COMPOSTING TOILET"                  "31: Toilettes à compostage"            
+[3] "31: Toilettes <e0> compostage / EcoSan" "31: TOILETTE A COMPOSTAGE"             
+[5] "31: Casa de banho a compostagem"        "31: Composting toilet"                 
+[7] "31: Toilette <e0> compostage"          
+
+[[13]]
+[1] "41: Seaux"                                                  
+[2] "41: SEAU"                                                   
+[3] "41: BUCKET"                                                 
+[4] "41: Balde/Bacia"                                            
+[5] "41: Bucket"                                                 
+[6] "41: Ba<f1>o de silla/basin para adultos/ni<f1>os o enfermos"
+[7] "41: BALDE/BACIO"                                            
+
+[[14]]
+[1] "51: HANGING TOILET / HANGING LATRINE"           "51: Toilettes / latrines suspendues"           
+[3] "51: Toilettes / Latrines suspendues"            "51: TOILETTES SUSPENDUES/LATRINES SUSPENDUES"  
+[5] "51: Casa de banho suspenso/latrina suspensa"    "51: Hanging toilet, Hanging latrine"           
+[7] "51: Toilettes suspendues / latrines suspendues"
+
+[[15]]
+[1] "61: MOBILE TOILET"
+
+[[16]]
+ [1] "95: NO FACILITY / BUSH / FIELD"                          
+ [2] "95: Pas de toilettes, nature"                            
+ [3] "95: Pas de toilettes,nature"                             
+ [4] "95: PAS DE TOILETTES/ NATURE/CHAMPS"                     
+ [5] "95: NO FACILITY / BUSH / FIELD / BEACH"                  
+ [6] "95: Não tem casa de banho/mato"                          
+ [7] "95: No facility, Bush, Field"                            
+ [8] "95: No hay instalaci<f3>n sanitaria, va al monte o campo"
+ [9] "95: Pas de toilettes / nature / champ "                  
+[10] "95: PAS DE TOILETTES /NATURE/PLEIN AIR"                  
+[11] "95: NÃO TEM CASA DE BANHO/ MATO/ PRAIA"                  
+
+[[17]]
+[1] "96: OTHER"            "96: Autre"            "96: AUTRE"            "96: Outro"           
+[5] "96: OTHER (specify)"  "96: Other"            "96: Otro"             "96: AUTRE (pr?ciser)"
+[9] "96: OUTRO"           
+
+[[18]]
+[1] "99: NO RESPONSE"                         "99: Non Déclarée"                       
+[3] "99: Non d<e9>clar<e9>/Pas de r<e9>ponse" "99: NON REPONSE"                        
+[5] "99: Missing"                             "99: No responde"                        
+[7] "99: SEM RESPOSTA"                       
+
+[[19]]
+[1] "NA: NA"
+
+
+> cat("\nWS12_lab, #Pit latrine or septic tank ever been emptied\n")
+
+WS12_lab, #Pit latrine or septic tank ever been emptied
+
+> res <- d %>% group_by(WS12) %>%
++   do(res=paste0(.$WS12[1],": ", unique(.$WS12_lab)))
+|=====================                                                                  | 25% ~7 s remaining     |================================                                                       | 38% ~4 s remaining     |===========================================                                            | 50% ~9 s remaining     |======================================================                                 | 62% ~6 s remaining     |=================================================================                      | 75% ~3 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: YES, EMPTIED: WITHIN THE LAST 5 YEARS"             "1: OUI, VIDEES: DANS LES 5 DERNIERES ANNEES"         
+[3] "1: YES, EMPTIED"                                      "1: Sim, nos últimos 5 anos"                          
+[5] "1: YES, EMPTIED WITHIN THE LAST 5 YEARS"              "1: Oui, vid<e9>es: dans les 5 derni<e8>res ann<e9>es"
+[7] "1: SIM, JÁ FOI ESVAZIADA NOS ÚLTIMOS 5 ANOS"         
+
+[[2]]
+[1] "2: YES, EMPTIED: MORE THAN 5 YEARS AGO"   "2: OUI, VIDEES: IL Y A PLUS DE 5 ANS"    
+[3] "2: Sim, há mais de 5 anos"                "2: YES, EMPTIED MORE THAN 5 YEARS AGO"   
+[5] "2: Oui, vid<e9>es: il y a plus de 5 ans " "2: MAIS DE 5 ANOS"                       
+
+[[3]]
+[1] "3: YES, EMPTIED: DK WHEN"              "3: OUI, VIDEES: NSP QUAND"            
+[3] "3: YES, EMPTIED: DON?T KNOW WHEN"      "3: YES, EMPTIED: DON<U+0092>T KNOW WHEN"
+[5] "3: Sim, NS quando"                     "3: YES, EMPTIED DK WHEN"              
+[7] "3: Oui, vid<e9>es: ne sait pas quand"  "3: SIM,  NS QUANDO"                   
+
+[[4]]
+[1] "4: NO, NEVER EMPTIED"        "4: NON, JAMAIS VIDEES"       "4: Não, nunca foi esvaziada"
+[4] "4: NEVER REQUIRED EMPTYING"  "4: Non, jamais vid<e9>es"    "4: 4"                       
+[7] "4: NÃO, NUNCA FOI ESVAZIADA"
+
+[[5]]
+[1] "5: REPLACED WHEN FULL"           "5: ENTERRE/CHANGEMENT D?ENDROIT"
+
+[[6]]
+[1] "8: DK"  "8: NSP" "8: NS"  "8: 8"  
+
+[[7]]
+[1] "9: NO RESPONSE" "9: NON REPONSE" "9: SEM REPOSTA"
+
+[[8]]
+[1] "NA: NA"
+
+
+> cat("\nWS13_lab, #Place the contents were emptied\n")
+
+WS13_lab, #Place the contents were emptied
+
+> res <- d %>% group_by(WS13) %>%
++   do(res=paste0(.$WS13[1],": ", unique(.$WS13_lab)))
+|======================                                                                 | 26% ~8 s remaining     |================================                                                       | 37% ~10 s remaining    |=========================================                                              | 47% ~7 s remaining     |======================================================                                 | 63% ~4 s remaining     |================================================================                       | 74% ~2 s remaining     |=============================================================================          | 89% ~1 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: REMOVED BY SERVICE PROVIDER: TO A TREATMENT PLANT"                    
+[2] "1: ENLEVE PAR UN PRESTATAIRE DE SERVICE: DANS UNE USINE DE TRAITEMENT"   
+[3] "1: Removido por um prestador de serviço para um local de tratamento"     
+[4] "1: REMOVED BY SERVICE PROVIDER TO A TREATMENT PLANT"                     
+[5] "1: Enlever par un prestataire de service: dans une usine de traitement"  
+[6] "1: ESVAZIADO POR UM FORNECEDOR DE SERVIÇOS: EM UMA ESTAÇÃO DE TRATAMENTO"
+
+[[2]]
+[1] "11: REMOVED BY SERVICE PROVIDER: TO A TREATMENT PLANT"
+
+[[3]]
+[1] "2: REMOVED BY SERVICE PROVIDER: BURIED IN A COVERED PIT"                     
+[2] "2: ENLEVE PAR UN PRESTATAIRE DE SERVICE: ENTERRE DANS UNE FOSSE COUVERTE"    
+[3] "2: Removido por um prestador de serviço enterado numa fosa coberta"          
+[4] "2: REMOVED BY SERVICE PROVIDER BURIED IN A COVERED PIT"                      
+[5] "2: Enlever par un prestataire de service: enterr<e9> dans une fosse couverte"
+[6] "2: ESVAZIADO POR UM FORNECEDOR DE SERVIÇOS: ENTERRADO NUMA FOSSA COBERTA"    
+
+[[4]]
+[1] "21: REMOVED BY SERVICE PROVIDER: BURIED IN A COVERED PIT"
+
+[[5]]
+[1] "3: REMOVED BY SERVICE PROVIDER: TO DONT KNOW WHERE"                          
+[2] "3: ENLEVE PAR UN PRESTATAIRE DE SERVICE: NE SAIT PAS OU"                     
+[3] "3: REMOVED BY SERVICE PROVIDER: TO DON?T KNOW WHERE"                         
+[4] "3: REMOVED BY SERVICE PROVIDER: TO DON<U+0092>T KNOW WHERE"                  
+[5] "3: REMOVED BY SERVICE PROVIDER: TO DK WHERE"                                 
+[6] "3: Não sei para onde"                                                        
+[7] "3: REMOVED BY SERVICE PROVIDER TO DON<U+0092>T KNOW WHERE"                   
+[8] "3: Enlever par un prestataire de service: dans la nature / ne sait pas o<f9>"
+[9] "3: ESVAZIADO POR UM FORNECEDOR DE SERVIÇOS: NÃO SABE ONDE"                   
+
+[[6]]
+[1] "31: REMOVED BY SERVICE PROVIDER: TO DK WHERE"
+
+[[7]]
+[1] "4: EMPTIED BY HOUSEHOLD: BURIED IN A COVERED PIT"                 
+[2] "4: VIDEES PAR LE MENAGE: ENTERRE DANS UNE FOSSE COUVERTE"         
+[3] "4: Removido pelo Agregado familiar enterado numa fossa coberta"   
+[4] "4: EMPTIED BY HOUSEHOLD BURIED IN A COVERED PIT"                  
+[5] "4: EMPTIED BY HOUSEHOLD: BURIED IN A  COVERED PIT"                
+[6] "4: Vid<e9>es par le m<e9>nage: enterr<e9> dans une fosse couverte"
+[7] "4: ESVAZIADO POR AGREGADO: ENTERRADO NUMA FOSSA COBERTA"          
+
+[[8]]
+[1] "41: EMPTIED BY HOUSEHOLD: BURIED IN A COVERED PIT"
+
+[[9]]
+[1] "5: EMPTIED BY HOUSEHOLD: TO UNCOVERED PIT, OPEN GROUND, WATER BODY OR ELSEWHERE"                               
+[2] "5: VIDEES PAR LE MENAGE: DANS UNE FOSSE NON COUVERTE/ A L?AIR LIBRE/ JETE A L?EAU OU AILLEURS"                 
+[3] "5: VIDEES PAR LE MENAGE: DANS UNE FOSSE NON COUVERTE/ A L’AIR LIBRE/ JETE A L’EAU OU AILLEURS"                 
+[4] "5: Removido pelo Agregado familiar enterado numa fossa não coberta / Ar livre etc.."                           
+[5] "5: EMPTIED BY HOUSEHOLD TO UNCOVERED PIT, OPEN GROUND, WATER BODY OR ELSEWHERE"                                
+[6] "5: Vid<e9>es par le m<e9>nage: dans une fosse non couverte / <e0> l'air libre / jet<e9> <e0> l'eau ou ailleurs"
+[7] "5: VIDEES PAR LE MENAGE: DANS UNE FOSSE NON COUVERTE/ A L<U+0092>AIR LIBRE/ JETE A L<U+0092>EAU OU AILLEURS"   
+[8] "5: ESVAZIADO POR AGREGADO: NUMA FOSSA NÃO COBERTA/ AR LIVRE OU EM OUTRA PARTE"                                 
+
+[[10]]
+[1] "51: EMPTIED BY HOUSEHOLD: TO AGRICULTURAL LAND"
+
+[[11]]
+[1] "52: EMPTIED BY HOUSEHOLD: TO WATER BODY"
+
+[[12]]
+[1] "53: EMPTIED BY HOUSEHOLD: TO ELSEWHERE (UNCOVERED PIT, OTHER)"
+
+[[13]]
+[1] "6: OTHER"                                                                                       
+[2] "6: AUTRES"                                                                                      
+[3] "6: Outros"                                                                                      
+[4] "6: OTHERS (specify)"                                                                            
+[5] "6: REMOVED BY SERVICE PROVIDER: BURIED IN A UNCOVERED PIT, OPEN GROUND, WATER BODY OR ELSEWHERE"
+[6] "6: Autres"                                                                                      
+[7] "6: AUTRE (pr?ciser)"                                                                            
+[8] "6: OUTRO"                                                                                       
+
+[[14]]
+[1] "8: DK"          "8: NPS"         "8: NSP"         "8: NS"          "8: Ne sait pas"
+
+[[15]]
+[1] "9: NO RESPONSE" "9: NON REPONSE"
+
+[[16]]
+[1] "96: OTHER"           "96: OTHERS(SPECIFY)"
+
+[[17]]
+[1] "98: DK"
+
+[[18]]
+[1] "99: NO RESPONSE"
+
+[[19]]
+[1] "NA: NA"
+
+
+> cat("\nWS14_lab, #Location of the toilet faciltity\n")
+
+WS14_lab, #Location of the toilet faciltity
+
+> res <- d %>% group_by(WS14) %>%
++   do(res=paste0(.$WS14[1],": ", unique(.$WS14_lab)))
+|=================                                                                      | 20% ~53 s remaining    |==================================                                                     | 40% ~36 s remaining    |====================================================                                   | 60% ~18 s remaining    |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: IN OWN DWELLING"              "1: DANS LEURS PROPRE LOGEMENT"   "1: DANS LEUR PROPRE LOGEMENT"   
+[4] "1: DANS LE LOGEMENT MEME"        "1: Dentro do proprio alojamento" "1: DANS LEUR LOGEMENT"          
+[7] "1: Dans leur propre logement"    "1: DANS VOTRE LOGEMENT"          "1: NO PROPRIO ALOJAMENTO"       
+
+[[2]]
+[1] "2: IN OWN YARD / PLOT"              "2: DANS LEUR JARDIN/PARCELLE"      
+[3] "2: No quintal/Parcela"              "2: Dans leur jardin / Parcelle "   
+[5] "2: DANS VOTRE COUR/JARDIN/PARCELLE" "2: NO JARDIM/QUINTAL"              
+
+[[3]]
+[1] "3: ELSEWHERE"      "3: AILLEURS"       "3: Algures"        "3: Ailleurs"       "3: EM OUTRO LUGAR"
+
+[[4]]
+[1] "9: NO RESPONSE"  "9: NON REPONSE"  "9: SEM RESPOSTA"
+
+[[5]]
+[1] "NA: NA"
+
+
+> cat("\nWS1_lab, #drinking water source\n")
+
+WS1_lab, #drinking water source
+
+> res <- d %>% group_by(WS1) %>%
++   do(res=paste0(.$WS1[1],": ", unique(.$WS1_lab)))
+|===                                                                                    |  4% ~3 m remaining     |======                                                                                 |  7% ~2 m remaining     |=========                                                                              | 11% ~2 m remaining     |============                                                                           | 14% ~1 m remaining     |===============                                                                        | 18% ~1 m remaining     |==================                                                                     | 21% ~1 m remaining     |=====================                                                                  | 25% ~1 m remaining     |========================                                                               | 29% ~57 s remaining    |===========================                                                            | 32% ~53 s remaining    |===============================                                                        | 36% ~49 s remaining    |==================================                                                     | 39% ~44 s remaining    |=====================================                                                  | 43% ~38 s remaining    |========================================                                               | 46% ~33 s remaining    |==============================================                                         | 54% ~25 s remaining    |=================================================                                      | 57% ~22 s remaining    |=======================================================                                | 64% ~16 s remaining    |===========================================================                            | 68% ~14 s remaining    |==============================================================                         | 71% ~12 s remaining    |=================================================================                      | 75% ~10 s remaining    |=======================================================================                | 82% ~7 s remaining     |==========================================================================             | 86% ~5 s remaining     |=============================================================================          | 89% ~4 s remaining     |================================================================================       | 93% ~3 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+ [1] "11: PIPED WATER: PIPED INTO DWELLING"  "11: Robinet dans le logement"         
+ [3] "11: ROBINET: DANS LE LOGEMENT"         "11: PIPED WATER : PIPED INTO DWELLING"
+ [5] "11: PIPED INTO DWELLING"               "11: No interior da casa"              
+ [7] "11: PIPED WATER PIPED INTO DWELLING"   "11: Piped into dwelling"              
+ [9] "11: Tuber<ed>a dentro de la vivienda"  "11: Robinet: dans le logement "       
+[11] "11: TORNEIRA: NO ALOJAMENTO"          
+
+[[2]]
+ [1] "12: PIPED WATER: PIPED TO YARD / PLOT"               
+ [2] "12: Robinet dans la concession, cour ou parcelle"    
+ [3] "12: Robinet dans quartier, cour ou parcelle"         
+ [4] "12: ROBINET: DANS LA CONCESSION/JARDIN/ PARCELLE"    
+ [5] "12: PIPED TO YARD / PLOT"                            
+ [6] "12: No quintal/jardim, parcela"                      
+ [7] "12: PIPED WATER PIPED TO YARD / PLOT"                
+ [8] "12: Piped into compound, yard or plot"               
+ [9] "12: PIPED WATER: PIPED TO COMPOUND/YARD / PLOT"      
+[10] "12: Tuber<ed>a dentro del terreno,patio o lote"      
+[11] "12: Robinet: dans la concession / Jardin / Parcelle "
+[12] "12: ROBINET: DANS LA COUR/JARDIN/PARCELLE"           
+[13] "12: TORNEIRA: NO QUINTAL"                            
+
+[[3]]
+[1] "13: PIPED WATER: PIPED TO NEIGHBOUR" "13: Robinet du voisin"              
+[3] "13: ROBINET: CHEZ LE VOISIN"         "13: PIPED TO NEIGHBOUR"             
+[5] "13: Na casa do vizinho"              "13: Piped to neighbour"             
+[7] "13: Tuber<ed>a al vecino"            "13: Robinet: chez le voisin"        
+[9] "13: TORNEIRA: NO VIZINHO"           
+
+[[4]]
+ [1] "14: PIPED WATER: PUBLIC TAP / STANDPIPE"                         
+ [2] "14: Robinet public / Borne fontaine"                             
+ [3] "14: Robinet public / borne fontaine"                             
+ [4] "14: ROBINET: ROBIENT PUBLIC/BORNE FONTAINE"                      
+ [5] "14: PUBLIC TAP / STANDPIPE"                                      
+ [6] "14: Fontenário público/boca do incendio"                         
+ [7] "14: ROBINET: ROBINET PUBLIC/BORNE FONTAINE"                      
+ [8] "14: Public tap / standpipe"                                      
+ [9] "14: Canilla/llave/grifo p<fa>blico"                              
+[10] "14: Robinet: robinet publics / Borne fontaine / Kiosque <e0> eau"
+[11] "14: TORNEIRA: DO CHAFARIZ PÚBLICO"                               
+
+[[5]]
+ [1] "21: TUBE WELL / BOREHOLE"                "21: Puits à pompe / Forage"             
+ [3] "21: Puits <e0> pompe, forage"            "21: PUITS A POMPE/FORAGE"               
+ [5] "21: Furo"                                "21: TUBE WELL / BOREHOLE PROTECTED WELL"
+ [7] "21: Tube well, Borehole"                 "21: TUBE WELL"                          
+ [9] "21: Pozo con tuber<ed>a"                 "21: Puits <e0> pompe / Forage"          
+[11] "21: BOMBA / PERFURAÇÃO"                 
+
+[[6]]
+[1] "22: TUBE WELL / BOREHOLE UNPROTECTED WELL" "22: MOTORIZED PUMP"                       
 
 [[7]]
 [1] "23: HAND PUMP (Machincal)"
 
 [[8]]
-[1] "31: DUG WELL: PROTECTED WELL"       "31: PUITS CREUSE: PROTEGE"         
-[3] "31: DUG WELL PROTECTED WELL"        "31: Protected well"                
-[5] "31: Pozo protegido"                 "31: Puits creus<e9>: prot<e8>g<e9>"
-[7] "31: AGUA PERFURADA: PROTEGIDA"     
+ [1] "31: DUG WELL: PROTECTED WELL"       "31: Puits protégé"                 
+ [3] "31: Puits prot<e9>g<e9>"            "31: PUITS CREUSE: PROTEGE"         
+ [5] "31: PROTECTED WELL"                 "31: Poço protegido"                
+ [7] "31: DUG WELL PROTECTED WELL"        "31: Protected well"                
+ [9] "31: Pozo protegido"                 "31: Puits creus<e9>: prot<e8>g<e9>"
+[11] "31: AGUA PERFURADA: PROTEGIDA"     
 
 [[9]]
-[1] "32: DUG WELL: UNPROTECTED WELL"        
-[2] "32: PUITS CREUSE: NON PROTEGE"         
-[3] "32: PUITS CREUSE: PAS PROTEGE"         
-[4] "32: DUG WELL UNPROTECTED WELL"         
-[5] "32: Unprotected well"                  
-[6] "32: Pozo no protegido"                 
-[7] "32: Puits creus<e9>: pas prot<e8>g<e9>"
-[8] "32: AGUA PERFURADA: DESPROTEGIDA"      
+ [1] "32: DUG WELL: UNPROTECTED WELL"         "32: Puits non protégé"                 
+ [3] "32: Puits non prot<e9>g<e9>"            "32: PUITS CREUSE: PAS PROTEGE"         
+ [5] "32: PUITS CREUSE: NON PROTEGE"          "32: Poço não protegido"                
+ [7] "32: DUG WELL UNPROTECTED WELL"          "32: Unprotected well"                  
+ [9] "32: Pozo no protegido"                  "32: Puits creus<e9>: pas prot<e8>g<e9>"
+[11] "32: AGUA PERFURADA: DESPROTEGIDA"      
 
 [[10]]
-[1] "41: SPRING: PROTECTED SPRING"            
-[2] "41: SOURCE: SOURCE PROTEGEE"             
-[3] "41: SPRINGS PROTECTED SPRINGS"           
-[4] "41: Protected spring"                    
-[5] "41: Manantial protegido"                 
-[6] "41: Source: source prot<e8>g<e9>e"       
-[7] "41: SOURCE: PROTEGEE"                    
-[8] "41: AGUA DA NASCENTE: NASCENTE PROTEGIDA"
+ [1] "41: SPRING: PROTECTED SPRING"             "41: Source protégée"                     
+ [3] "41: Source prot<e9>g<e9>e"                "41: SOURCE: SOURCE PROTEGEE"             
+ [5] "41: Nascente protegida"                   "41: SPRINGS PROTECTED SPRINGS"           
+ [7] "41: Protected spring"                     "41: Manantial protegido"                 
+ [9] "41: Source: source prot<e8>g<e9>e"        "41: SOURCE: PROTEGEE"                    
+[11] "41: AGUA DA NASCENTE: NASCENTE PROTEGIDA"
 
 [[11]]
-[1] "42: SPRING: UNPROTECTED SPRING"             
-[2] "42: SOURCE: SOURCE NON PROTEGEE"            
-[3] "42: SPRINGS UNPROTECTED SPRINGS"            
-[4] "42: Unprotected spring"                     
-[5] "42: Manantial no protegido"                 
-[6] "42: Source: source non prot<e8>g<e9>e"      
-[7] "42: SOURCE:  NON PROTEGEE"                  
-[8] "42: AGUA DA NASCENTE: NASCENTE DESPROTEGIDA"
+ [1] "42: SPRING: UNPROTECTED SPRING"              "42: Source non protégée"                    
+ [3] "42: Source non prot<e9>g<e9>e"               "42: SOURCE: SOURCE NON PROTEGEE"            
+ [5] "42: Nascente desprotegida"                   "42: SPRINGS UNPROTECTED SPRINGS"            
+ [7] "42: Unprotected spring"                      "42: Manantial no protegido"                 
+ [9] "42: Source: source non prot<e8>g<e9>e"       "42: SOURCE:  NON PROTEGEE"                  
+[11] "42: AGUA DA NASCENTE: NASCENTE DESPROTEGIDA"
 
 [[12]]
-[1] "51: RAINWATER"              "51: EAU DE PLUIE"          
-[3] "51: RAIN, SNOW WATER"       "51: Rainwater collection"  
-[5] "51: Recogen agua de lluvia" "51: Eau de pluie"          
-[7] "51: ÁGUA DA CHUVA"         
+[1] "51: RAINWATER"              "51: Eau de pluie"           "51: EAU DE PLUIE"          
+[4] "51: Agua da chuva"          "51: RAIN, SNOW WATER"       "51: Rainwater collection"  
+[7] "51: Recogen agua de lluvia" "51: ÁGUA DA CHUVA"         
 
 [[13]]
-[1] "61: CAMION CITERNE"                  "61: TANKER-TRUCK"                   
-[3] "61: TANKER TRUCK"                    "61: Tanker-truck"                   
-[5] "61: Carro-tanque/cami<f3>n cisterna" "61: Camion citerne "                
-[7] "61: CAMINHÃO CISTERNA"              
+[1] "52: OWN CEMENT OR OTHER TANK"
 
 [[14]]
-[1] "62: BIDON, BASSIN,SEAU LIVRE A DOMICILE"
+[1] "53: NEIGHBOUR?S CEMENT OR OTHER TANK"
 
 [[15]]
-[1] "71: CART WITH SMALL TANK"                
-[2] "71: CHARRETTE AVEC PETITE CITERNE"       
-[3] "71: ANIMAL DRAWN WATER CART"             
-[4] "71: Cart with small tank / drum"         
-[5] "71: CART WITH SMALL TANK /DRUM/CANE"     
-[6] "71: Carreta con tanque/tambor peque<f1>o"
-[7] "71: Charrette avec petite citerne "      
+[1] "54: COMMUNITY CEMENT OR OTHER TANK"
 
 [[16]]
-[1] "72: WATER KIOSK (WATER SELLING PLANT)"     
-[2] "72: KIOSQUE A EAU"                         
-[3] "72: WATER KIOSK"                           
-[4] "72: WATER KIOSK CONNECTED WITH PIPED WATER"
+[1] "61: Camion-citerne"                  "61: CAMION CITERNE"                 
+[3] "61: TANKER-TRUCK"                    "61: TANKER TRUCK"                   
+[5] "61: Tanker-truck"                    "61: Carro-tanque/cami<f3>n cisterna"
+[7] "61: Camion citerne "                 "61: CAMINHÃO CISTERNA"              
 
 [[17]]
-[1] "73: WATER KIOSK NOT CONNECTED WITH PIPED WATER"
+[1] "62: BIDON, BASSIN,SEAU LIVRE A DOMICILE"
 
 [[18]]
-[1] "81: SURFACE WATER (RIVER, DAM, LAKE, POND, STREAM, CANAL, IRRIGATION CHANNEL)"                
-[2] "81: EAU DE SURFACE (RIVIERE, BARRAGE, LAC, MARE, COURANT, CANAL, SYSTEME D’IRRIGATION)"       
-[3] "81: Surface water (river, stream, dam, lake, pond, canal, irrigation channel)"                
-[4] "81: Agua de superficie (r<ed>o, arroyo,represa,lago,estanque,canal de irrigaci<f3>n)"         
-[5] "81: Eau de surface (Rivi<e8>re, Barrage, Lac, Mare, Courant, Canal, syst<e8>me d'irrigation) "
-[6] "81: EAU DE SURFACE (RIVIERE, BARRAGE, LAC, MARE, COURANT, CANAL, SYSTEME D<U+0092>IRRIGATION)"
-[7] "81: EAU DE SURFACE (OUED,LAC, BARRAGE)"                                                       
-[8] "81: ÁGUA SUPERFICIAL (RIO, BARRAGEM, LAGO, LAGOA, CORRENTE, CANAL, SISTEMA DE IRRIGAÇÃO)"     
+[1] "71: CART WITH SMALL TANK"                    "71: Charrette avec petite citerne / tonneau"
+[3] "71: CHARRETTE AVEC PETITE CITERNE"           "71: Agua com pequena cisterna"              
+[5] "71: ANIMAL DRAWN WATER CART"                 "71: Cart with small tank / drum"            
+[7] "71: CART WITH SMALL TANK /DRUM/CANE"         "71: Carreta con tanque/tambor peque<f1>o"   
+[9] "71: Charrette avec petite citerne "         
 
 [[19]]
-[1] "82: DISALINATION PLANT WATER"
+[1] "72: WATER KIOSK (WATER SELLING PLANT)"      "72: KIOSQUE A EAU"                         
+[3] "72: WATER KIOSK"                            "72: Quiosque de agua"                      
+[5] "72: WATER KIOSK CONNECTED WITH PIPED WATER"
 
 [[20]]
-[1] "91: PACKAGED WATER: BOTTLED WATER"        
-[2] "91: EAU CONDITIONNEE: EAU EN BOUTEILLE"   
-[3] "91: BOTTLED WATER"                        
-[4] "91: Bottled water"                        
-[5] "91: Agua embotellada/envasada"            
-[6] "91: Eau conditionn<e9>e: Eau en bouteille"
-[7] "91: ÁGUA CONDICIONADA: ÁGUA ENGARRAFADA"  
+[1] "73: WATER KIOSK NOT CONNECTED WITH PIPED WATER"
 
 [[21]]
-[1] "92: PACKAGED WATER: SACHET WATER"                   
-[2] "92: EAU CONDITIONNEE: EAU EN SACHET"                
-[3] "92: Sachet (pure) water"                            
-[4] "92: Eau conditionn<e9>e: Eau en sachet (pure water)"
-[5] "92: ÁGUA CONDICIONADA: ÁGUA EM SAQUETA OU SACO"     
+ [1] "81: SURFACE WATER (RIVER, DAM, LAKE, POND, STREAM, CANAL, IRRIGATION CHANNEL)"                
+ [2] "81: Eau de surface (rivière, fleuve, barrage, lac, mare, canal, canal d?irrigation)"          
+ [3] "81: Eau de surface (rivi<e8>re, fleuve, barrage, lac, mare, canal, canal d'irrigation)"       
+ [4] "81: EAU DE SURFACE (RIVIERE, BARRAGE, LAC, MARE, COURANT, CANAL, SYSTEME D?IRRIGATION)"       
+ [5] "81: EAU DE SURFACE (RIVIERE, BARRAGE, LAC, MARE, COURANT, CANAL, SYSTEME D’IRRIGATION)"       
+ [6] "81: Água de Superfície (Rio, Barragem, Lago, Mar, Corrente, Canal, Sistema de irrigação)"     
+ [7] "81: Surface water (river, stream, dam, lake, pond, canal, irrigation channel)"                
+ [8] "81: Agua de superficie (r<ed>o, arroyo,represa,lago,estanque,canal de irrigaci<f3>n)"         
+ [9] "81: Eau de surface (Rivi<e8>re, Barrage, Lac, Mare, Courant, Canal, syst<e8>me d'irrigation) "
+[10] "81: EAU DE SURFACE (RIVIERE, BARRAGE, LAC, MARE, COURANT, CANAL, SYSTEME D<U+0092>IRRIGATION)"
+[11] "81: EAU DE SURFACE (OUED,LAC, BARRAGE)"                                                       
+[12] "81: ÁGUA SUPERFICIAL (RIO, BARRAGEM, LAGO, LAGOA, CORRENTE, CANAL, SISTEMA DE IRRIGAÇÃO)"     
 
 [[22]]
-[1] "93: PACKAGED WATER: JAR WATER"
+[1] "82: DISALINATION PLANT WATER"
 
 [[23]]
-[1] "96: OTHER"              "96: AUTRE"              "96: OTHER (specify)"   
-[4] "96: Other specify"      "96: Otra"               "96: Autre"             
-[7] "96: AUTRE (? pr?ciser)" "96: OUTRO"             
+[1] "91: PACKAGED WATER: BOTTLED WATER"         "91: Eau en bouteille"                     
+[3] "91: EAU CONDITIONNEE: EAU EN BOUTEILLE"    "91: BOTTLED WATER"                        
+[5] "91: Agua engarrafada"                      "91: Bottled water"                        
+[7] "91: Agua embotellada/envasada"             "91: Eau conditionn<e9>e: Eau en bouteille"
+[9] "91: ÁGUA CONDICIONADA: ÁGUA ENGARRAFADA"  
 
 [[24]]
-[1] "99: NO RESPONSE" "99: NON REPONSE" "99: Missing"    
+[1] "92: PACKAGED WATER: SACHET WATER"                    "92: Eau en sachet"                                  
+[3] "92: EAU CONDITIONNEE: EAU EN SACHET"                 "92: Agua empacotada"                                
+[5] "92: Sachet (pure) water"                             "92: Eau conditionn<e9>e: Eau en sachet (pure water)"
+[7] "92: ÁGUA CONDICIONADA: ÁGUA EM SAQUETA OU SACO"     
 
 [[25]]
+[1] "93: PACKAGED WATER: DESALINIZED & STERILIZED WATER" "93: PACKAGED WATER: JAR WATER"                     
+
+[[26]]
+[1] "96: OTHER"              "96: Autre"              "96: AUTRE"              "96: OTHER (specify)"   
+[5] "96: Outra(Especificar)" "96: Other specify"      "96: Otra"               "96: AUTRE (? pr?ciser)"
+[9] "96: OUTRO"             
+
+[[27]]
+[1] "99: Non Déclarée" "99: NON REPONSE"  "99: NO RESPONSE"  "99: Missing"     
+
+[[28]]
 [1] "NA: NA"
 
 
+> cat("\nhelevel_lab, #education level\n")
+
 helevel_lab, #education level
-|=====                                                   | 10% ~21 s remaining    |===========                                             | 20% ~28 s remaining    |================                                        | 30% ~26 s remaining    |======================                                  | 40% ~19 s remaining    |============================                            | 50% ~14 s remaining    |=================================                       | 60% ~10 s remaining    |=======================================                 | 70% ~6 s remaining     |============================================            | 80% ~4 s remaining     |========================================================|100% ~0 s remaining     [[1]]
- [1] "0: Pre-primary or none"                 
- [2] "0: Preprimaire/aucun"                   
- [3] "0: Kindergarten or none"                
- [4] "0: Pre-primary/none- Primary incomplete"
- [5] "0: None or ECE"                         
- [6] "0: Préscolaire ou sans instruction"     
- [7] "0: None/Preschool"                      
- [8] "0: ECE, Pre-primary and None"           
- [9] "0: Aucun/Pr<e9>scolaire"                
-[10] "0: Préscolaire ou Aucun"                
-[11] "0: None"                                
-[12] "0: Pré escolar / Nenhum"                
+
+> res <- d %>% group_by(helevel) %>%
++   do(res=paste0(.$helevel[1],": ", unique(.$helevel_lab)))
+|========                                                                               | 10% ~47 s remaining    |=================                                                                      | 20% ~41 s remaining    |==========================                                                             | 30% ~57 s remaining    |==================================                                                     | 40% ~45 s remaining    |===========================================                                            | 50% ~31 s remaining    |====================================================                                   | 60% ~22 s remaining    |============================================================                           | 70% ~14 s remaining    |=====================================================================                  | 80% ~8 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+ [1] "0: Pre-primary or none"                  "0: Pré-Scolaire/Aucun"                  
+ [3] "0: Préscolaire ou aucun"                 "0: Kindergarten or none"                
+ [5] "0: Pre-primary/none- Primary incomplete" "0: None or ECE"                         
+ [7] "0: Preprimaire/aucun"                    "0: Pré-escolar ou Nenhum"               
+ [9] "0: Préscolaire ou sans instruction"      "0: None/Preschool"                      
+[11] "0: ECE, Pre-primary and None"            "0: Aucun/Pr<e9>scolaire"                
+[13] "0: Préscolaire ou Aucun"                 "0: None"                                
+[15] "0: Pré escolar / Nenhum"                
 
 [[2]]
-[1] "1: Primary"                                       
-[2] "1: Primaire"                                      
-[3] "1: Primary or Lower Secondary"                    
-[4] "1: Primary complete - Junior secondary incomplete"
-[5] "1: Primary or none"                               
-[6] "1: Pre-primary or none"                           
-[7] "1: None"                                          
-[8] "1: Ninguno"                                       
-[9] "1: Básico"                                        
+ [1] "1: Primary"                                        "1: Aucun"                                         
+ [3] "1: Primaire"                                       "1: Fondamental 1"                                 
+ [5] "1: Primary or Lower Secondary"                     "1: Primary complete - Junior secondary incomplete"
+ [7] "1: Up to primary"                                  "1: Básico"                                        
+ [9] "1: Primary or none"                                "1: Pre-primary or none"                           
+[11] "1: None"                                           "1: Ninguno"                                       
 
 [[3]]
  [1] "2: Secondary"                                               
- [2] "2: Secondaire 1"                                            
- [3] "2: Upper Secondary"                                         
- [4] "2: Secondary +"                                             
- [5] "2: JSS/JHS/Middle"                                          
- [6] "2: Junior secondary complete, below Sr. secondary 2nd level"
+ [2] "2: Primaire"                                                
+ [3] "2: Secondaire"                                              
+ [4] "2: Fondamental 2"                                           
+ [5] "2: Upper Secondary"                                         
+ [6] "2: Secondary +"                                             
  [7] "2: Lower secondary"                                         
- [8] "2: Secondaire + "                                           
- [9] "2: Primary"                                                 
-[10] "2: Middle"                                                  
-[11] "2: EEB (1o. y 2do. ciclo)"                                  
-[12] "2: Lower Secondary"                                         
-[13] "2: Secondaire et plus"                                      
-[14] "2: Secondary "                                              
-[15] "2: Moyen"                                                   
-[16] "2: Secundário"                                              
+ [8] "2: JSS/JHS/Middle"                                          
+ [9] "2: Junior secondary complete, below Sr. secondary 2nd level"
+[10] "2: Secondaire 1"                                            
+[11] "2: Secundário"                                              
+[12] "2: Secondaire + "                                           
+[13] "2: Primary"                                                 
+[14] "2: Middle"                                                  
+[15] "2: EEB (1o. y 2do. ciclo)"                                  
+[16] "2: Lower Secondary"                                         
+[17] "2: Secondaire et plus"                                      
+[18] "2: Secondary "                                              
+[19] "2: Moyen"                                                   
 
 [[4]]
- [1] "3: Higher+"                             
- [2] "3: Secondaire 2"                        
- [3] "3: Vocational Education"                
- [4] "3: SSS/SHS/ Secondary"                  
- [5] "3: Senior secondary 2nd level and above"
- [6] "3: Upper secondary"                     
- [7] "3: Higher"                              
- [8] "3: Lower secondary (basic)"             
- [9] "3: Secondary / Secondary-technical"     
-[10] "3: Secondary"                           
-[11] "3: EEB (3er ciclo)/Ex sec.b<e1>sica"    
-[12] "3: Upper secondary+"                    
-[13] "3: Upper Secondary"                     
-[14] "3: Higher "                             
-[15] "3: Secondaire"                          
-[16] "3: Superior"                            
+ [1] "3: Higher+"                              "3: Secondare1"                          
+ [3] "3: Secondaire et plus"                   "3: Supérieur"                           
+ [5] "3: Secondaire ou plus"                   "3: Vocational Education"                
+ [7] "3: Upper secondary +"                    "3: SSS/SHS/ Secondary"                  
+ [9] "3: Senior secondary 2nd level and above" "3: Upper secondary"                     
+[11] "3: Secondaire 2"                         "3: Médio / Técnico Profissional"        
+[13] "3: Higher"                               "3: Lower secondary (basic)"             
+[15] "3: Secondary / Secondary-technical"      "3: Secondary"                           
+[17] "3: EEB (3er ciclo)/Ex sec.b<e1>sica"     "3: Upper secondary+"                    
+[19] "3: Upper Secondary"                      "3: Higher "                             
+[21] "3: Secondaire"                           "3: Superior"                            
 
 [[5]]
-[1] "4: Supérieur"                     "4: Higher"                       
-[3] "4: Post secondary / Non tertiary" "4: Upper secondary"              
-[5] "4: Educ. Media/Ex bachillerato"   "4: Superieur"                    
+[1] "4: Secondaire2 ou plus"           "4: Higher"                        "4: Post secondary / Non tertiary"
+[4] "4: Supérieur"                     "4: Superior"                      "4: Upper secondary"              
+[7] "4: Educ. Media/Ex bachillerato"   "4: Superieur"                    
 
 [[6]]
 [1] "5: Higher"     "5: Vocational" "5: Non-formal" "5: Superior"  
@@ -239,9 +619,10 @@ helevel_lab, #education level
 [1] "6: College, university"
 
 [[8]]
-[1] "9: Missing/DK"           "9: NSP/Manquant"         "9: DK/Missing"          
-[4] "9: DK / Missing"         "9: Manquant/NSP"         "9: No reportado/No sabe"
-[7] "9: Não sabe/Em falta"   
+ [1] "9: Missing/DK"                    "9: Non déclaré"                   "9: Pas de r<e9>ponse/Ne sait pas"
+ [4] "9: NSP/Manquant"                  "9: NSP"                           "9: DK/Missing"                   
+ [7] "9: ND/NS"                         "9: DK / Missing"                  "9: Manquant/NSP"                 
+[10] "9: No reportado/No sabe"          "9: Não sabe/Em falta"            
 
 [[9]]
 [1] "99: Missing/DK"
@@ -250,111 +631,118 @@ helevel_lab, #education level
 [1] "NA: NA"
 
 
+> cat("\narea_type_lab, #urban/rural\n")
+
 area_type_lab, #urban/rural
-|============================                            | 50% ~3 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "1: URBAN"  "1: URBAIN" "1: Urban"  "1: Urbana" "1: Urbain" "1: URBANO"
+
+> res <- d %>% group_by(area_type) %>%
++   do(res=paste0(.$area_type[1],": ", unique(.$area_type_lab)))
+|=============================                                                          | 33% ~35 s remaining    |==========================================================                             | 67% ~33 s remaining    |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: URBAN"  "1: Urbain" "1: URBAIN" "1: Urban"  "1: Urbano" "1: Urbana" "1: URBANO"
 
 [[2]]
 [1] "2: RURAL" "2: Rural"
 
+[[3]]
+[1] "NA: NA"
+
+
+> cat("\nHC4_lab, #main material of floor\n")
 
 HC4_lab, #main material of floor
-|==                                                      |  5% ~2 m remaining     |=====                                                   | 10% ~1 m remaining     |==========                                              | 19% ~39 s remaining    |=============                                           | 24% ~30 s remaining    |================                                        | 29% ~24 s remaining    |=====================                                   | 38% ~16 s remaining    |========================                                | 43% ~13 s remaining    |==========================                              | 48% ~12 s remaining    |=============================                           | 52% ~10 s remaining    |================================                        | 57% ~10 s remaining    |==================================                      | 62% ~12 s remaining    |=====================================                   | 67% ~10 s remaining    |========================================                | 71% ~8 s remaining     |=============================================           | 81% ~5 s remaining     |================================================        | 86% ~4 s remaining     |========================================================|100% ~0 s remaining     [[1]]
- [1] "11: EARTH / SAND"               "11: TERRE / NATURE"            
- [3] "11: EARTH"                      "11: EARTH/MUD"                 
- [5] "11: TERRE / SABLE"              "11: NATURAL FLOOR EARTH / SAND"
- [7] "11: Earth / Sand"               "11: Tierra/arena(piso natural)"
- [9] "11: TERRE BATTUE/SABLE"         "11: TERRA BATIDA"              
+
+> res <- d %>% group_by(HC4) %>%
++   do(res=paste0(.$HC4[1],": ", unique(.$HC4_lab)))
+|====                                                                                   |  5% ~5 m remaining     |========                                                                               | 10% ~3 m remaining     |============                                                                           | 14% ~2 m remaining     |================                                                                       | 19% ~1 m remaining     |====================                                                                   | 24% ~55 s remaining    |========================                                                               | 29% ~44 s remaining    |=====================================                                                  | 43% ~24 s remaining    |=========================================                                              | 48% ~22 s remaining    |=============================================                                          | 52% ~19 s remaining    |=================================================                                      | 57% ~18 s remaining    |=====================================================                                  | 62% ~19 s remaining    |==========================================================                             | 67% ~16 s remaining    |==============================================================                         | 71% ~13 s remaining    |==================================================================                     | 76% ~10 s remaining    |==========================================================================             | 86% ~5 s remaining     |==================================================================================     | 95% ~2 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+ [1] "11: EARTH / SAND"               "11: Pas de toit"                "11: TERRE / NATURE"            
+ [4] "11: EARTH"                      "11: Terra batida / arreia"      "11: EARTH/MUD"                 
+ [7] "11: TERRE / SABLE"              "11: NATURAL FLOOR EARTH / SAND" "11: Earth / Sand"              
+[10] "11: Tierra/arena(piso natural)" "11: TERRE BATTUE/SABLE"         "11: TERRA BATIDA"              
 
 [[2]]
-[1] "12: DUNG"               "12: BOUSE"              "12:  DUNG"             
-[4] "12: GRAVEL"             "12: NATURAL FLOOR DUNG" "12: Dung"              
+ [1] "12: DUNG"                        "12: Chaume / feuille de palmier" "12: Chaume / Feuille de palmier"
+ [4] "12: BOUSE"                       "12:  DUNG"                       "12: MUD / ROCK"                 
+ [7] "12: GRAVEL"                      "12: Bosta de vaca"               "12: NATURAL FLOOR DUNG"         
+[10] "12: Dung"                       
 
 [[3]]
-[1] "13: AREIA"
+[1] "13: Pailles / Herbes" "13: Herbes"           "13: AREIA"           
 
 [[4]]
-[1] "21: WOOD PLANKS"                          
-[2] "21: PLANCHES DE BOIS"                     
-[3] "21: RUDIMENTARY MATERIAL WOOD, TIMBER"    
-[4] "21: Wood planks"                          
-[5] "21: WOOD PLANK"                           
-[6] "21: Tablones de madera(Piso rudimentario)"
-[7] "21: TABUA"                                
+[1] "21: WOOD PLANKS"                           "21: Natte"                                
+[3] "21: PLANCHES DE BOIS"                      "21: Tábuas"                               
+[5] "21: RUDIMENTARY MATERIAL WOOD, TIMBER"     "21: Wood planks"                          
+[7] "21: WOOD PLANK"                            "21: Tablones de madera(Piso rudimentario)"
+[9] "21: TABUA"                                
 
 [[5]]
-[1] "22: PALM / BAMBOO/ BETEL NUT" "22: PALME / BAMBOU"          
-[3] "22: PALM / BAMBOO"            "22: Palm / Bamboo"           
-[5] "22: PALM/BAMBOO"             
+[1] "22: PALM / BAMBOO/ BETEL NUT" "22: Palmes / Bambou"          "22: PALME / BAMBOU"          
+[4] "22: PALM / BAMBOO"            "22: Palm / Bamboo"            "22: PALM/BAMBOO"             
 
 [[6]]
-[1] "23: STONE"              "23: COCONUT WEAVED MAT" "23: NATTE"             
-[4] "23: PEDRA (CALÇADA)"   
+[1] "23: Planches en bois"   "23: REED / MAT"         "23: STONE"              "23: COCONUT WEAVED MAT"
+[5] "23: NATTE"              "23: PEDRA (CALÇADA)"   
 
 [[7]]
-[1] "24: PANDANUS WEAVVED MAT"
+[1] "24: Carton"               "24: PANDANUS WEAVVED MAT"
 
 [[8]]
-[1] "25: PLYWOOD"
+[1] "25: Bâches"  "25: PLYWOOD"
 
 [[9]]
 [1] "26: TEBAA (COCONUT LEAF STRIPS)"
 
 [[10]]
-[1] "31: PARQUET OR POLISHED WOOD"                     
-[2] "31: PARQUET EN BOIS OU BOIS POLI"                 
-[3] "31: PARQUET"                                      
-[4] "31: FINISHED MATERIAL WOOD PARQUET, POLISHED WOOD"
-[5] "31: Parquet or polished wood"                     
-[6] "31: Parquet o madera lustrada (Piso terminado)"   
-[7] "31: BOIS CIRE/PARQUET"                            
-[8] "31: SOALHO OU MADEIRA POLIDA"                     
+ [1] "31: PARQUET OR POLISHED WOOD"                      "31: Tôles"                                        
+ [3] "31: M<e9>tal / T<f4>le"                            "31: PARQUET EN BOIS OU BOIS POLI"                 
+ [5] "31: PARQUET"                                       "31: Soalho em madeira polida"                     
+ [7] "31: FINISHED MATERIAL WOOD PARQUET, POLISHED WOOD" "31: Parquet or polished wood"                     
+ [9] "31: Parquet o madera lustrada (Piso terminado)"    "31: BOIS CIRE/PARQUET"                            
+[11] "31: SOALHO OU MADEIRA POLIDA"                     
 
 [[11]]
- [1] "32: VINYL OR ASPHALT STRIPS"                  
- [2] "32: VINYL OU BANDES D’ALSPHATE"               
- [3] "32: VINYL STRIPS"                             
- [4] "32: LINOLEUM  (Tapeh)"                        
- [5] "32: BANDES DE VINYLE OU D’ASPHALTE"           
- [6] "32: FINISHED MATERIAL LAMINATE PANELS"        
- [7] "32: Vinyl carpet"                             
- [8] "32: VINYL OR ASPHALT STRIP"                   
- [9] "32: Tiras de vinilo o asfalto(Piso terminado)"
-[10] "32: VINYLE OU BANDES D'ASPHALTE"              
-[11] "32: VINYLE/ASPHALTE"                          
+ [1] "32: VINYL OR ASPHALT STRIPS"                   "32: Bois"                                     
+ [3] "32: VINYL OU BANDES D?ALSPHATE"                "32: VINYL STRIPS"                             
+ [5] "32: LINOLEUM  (Tapeh)"                         "32: VINYL OU BANDES D’ALSPHATE"               
+ [7] "32: BANDES DE VINYLE OU D’ASPHALTE"            "32: FINISHED MATERIAL LAMINATE PANELS"        
+ [9] "32: Vinyl carpet"                              "32: VINYL OR ASPHALT STRIP"                   
+[11] "32: Tiras de vinilo o asfalto(Piso terminado)" "32: VINYLE OU BANDES D'ASPHALTE"              
+[13] "32: VINYLE/ASPHALTE"                          
 
 [[12]]
-[1] "33: CERAMIC TILES"                                          
-[2] "33: CARREAUX"                                               
-[3] "33: CARRELAGE EN CERAMIQUE"                                 
-[4] "33: FINISHED MATERIAL TILE"                                 
-[5] "33: Ceramic tiles"                                          
-[6] "33: CERAMIC TILES/MARBLE/CHIPS"                             
-[7] "33: Cer<e1>micos,baldosa com<fa>n, mosaico (Piso terminado)"
-[8] "33: CARRELAGE"                                              
-[9] "33: MOSAICO"                                                
+ [1] "33: CERAMIC TILES"                                          
+ [2] "33: CARREAUX"                                               
+ [3] "33: CARRELAGE EN CERAMIQUE"                                 
+ [4] "33: Mosaicos"                                               
+ [5] "33: FINISHED MATERIAL TILE"                                 
+ [6] "33: Ceramic tiles"                                          
+ [7] "33: CERAMIC TILES/MARBLE/CHIPS"                             
+ [8] "33: Cer<e1>micos,baldosa com<fa>n, mosaico (Piso terminado)"
+ [9] "33: CARRELAGE"                                              
+[10] "33: MOSAICO"                                                
 
 [[13]]
-[1] "34: CEMENT"                            
-[2] "34: CIMENT"                            
-[3] "34: FINISHED MATERIAL CONCRETE/ CEMENT"
-[4] "34: Cement"                            
-[5] "34: Cemento/lecherada (Piso terminado)"
-[6] "34: CIMENTO"                           
+[1] "34: CEMENT"                             "34: Tuiles"                            
+[3] "34: CIMENT"                             "34: CEMENT/CONCRETE/BRICKS"            
+[5] "34: Cimento"                            "34: FINISHED MATERIAL CONCRETE/ CEMENT"
+[7] "34: Cement"                             "34: Cemento/lecherada (Piso terminado)"
+[9] "34: CIMENTO"                           
 
 [[14]]
-[1] "35: CARPET"                   "35: MOQUETTE / TAPIS"        
-[3] "35: CARPET / FITTED CARPET"   "35: Rug (wall to wall)"      
-[5] "35: Alfombra(Piso terminado)" "35: MOQUETTE/TAPIS"          
-[7] "35: MOQUETTE"                 "35: TAPETE (DE PLÁSTICO)"    
+ [1] "35: CARPET"                   "35: Béton"                    "35: Ciment"                  
+ [4] "35: MOQUETTE / TAPIS"         "35: CARPET / FITTED CARPET"   "35: Tapete"                  
+ [7] "35: Rug (wall to wall)"       "35: Alfombra(Piso terminado)" "35: MOQUETTE/TAPIS"          
+[10] "35: MOQUETTE"                 "35: TAPETE (DE PLÁSTICO)"    
 
 [[15]]
-[1] "36: TERRAZZO"                                      
-[2] "36: Vinyl tiles"                                   
-[3] "36: BRICKS FLOOR"                                  
-[4] "36: Porcelanato,m<e1>rmol, granito(Piso terminado)"
-[5] "36: DALLE DE SOL"                                  
-[6] "36: CARPETE (DE TECIDO)"                           
+[1] "36: Shingles"                                       "36: PLASTIC PIECES"                                
+[3] "36: TERRAZZO"                                       "36: Vinyl tiles"                                   
+[5] "36: BRICKS FLOOR"                                   "36: Porcelanato,m<e1>rmol, granito(Piso terminado)"
+[7] "36: DALLE DE SOL"                                   "36: CARPETE (DE TECIDO)"                           
 
 [[16]]
 [1] "37: Ladrillo(Piso terminado)" "37: GERFLEX"                 
@@ -363,88 +751,94 @@ HC4_lab, #main material of floor
 [1] "38: MARBRE"
 
 [[18]]
-[1] "96: OTHER"            "96: AUTRE"            "96: OTHER (specify)" 
-[4] "96: Other"            "96: Otro"             "96: AUTRE (pr?ciser)"
-[7] "96: OUTRO"           
+[1] "96: OTHER"            "96: Autre"            "96: AUTRE"            "96: OTHER (specify)" 
+[5] "96: Outro"            "96: Other"            "96: Otro"             "96: AUTRE (pr?ciser)"
+[9] "96: OUTRO"           
 
 [[19]]
 [1] "98: DK"
 
 [[20]]
-[1] "99: NO RESPONSE" "99: Missing"     "99: NON REPONSE"
+[1] "99: Non Déclarée" "99: NO RESPONSE"  "99: Missing"      "99: NON REPONSE" 
 
 [[21]]
 [1] "NA: NA"
 
 
+> cat("\nEU1_lab, #type of cookstove used\n")
+
 EU1_lab, #type of cookstove used
-|================                                        | 29% ~5 s remaining     |====================                                    | 36% ~8 s remaining     |========================                                | 43% ~6 s remaining     |============================                            | 50% ~5 s remaining     |================================                        | 57% ~5 s remaining     |====================================                    | 64% ~6 s remaining     |========================================                | 71% ~28 s remaining    |============================================            | 79% ~19 s remaining    |================================================        | 86% ~12 s remaining    |========================================================|100% ~0 s remaining     [[1]]
-[1] "1: ELECTRIC STOVE"              "1: CUISINIERE ELECTRIQUE"      
-[3] "1: ELECTRIC STOVE/ COOKER"      "1: Cuisini<e8>re <e9>lectrique"
-[5] "1: FOGÃO ELECTRICO"            
+
+> res <- d %>% group_by(EU1) %>%
++   do(res=paste0(.$EU1[1],": ", unique(.$EU1_lab)))
+|========================                                                               | 29% ~20 s remaining    |===============================                                                        | 36% ~17 s remaining    |=====================================                                                  | 43% ~13 s remaining    |===========================================                                            | 50% ~10 s remaining    |=================================================                                      | 57% ~8 s remaining     |=======================================================                                | 64% ~9 s remaining     |==============================================================                         | 71% ~9 s remaining     |====================================================================                   | 79% ~6 s remaining     |==========================================================================             | 86% ~4 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: ELECTRIC STOVE"              "1: CUISINIERE ELECTRIQUE"       "1: Fogão eletrico"             
+[4] "1: ELECTRIC STOVE/ COOKER"      "1: Cuisini<e8>re <e9>lectrique" "1: FOGÃO ELECTRICO"            
 
 [[2]]
 [1] "10: KEROSENE"
 
 [[3]]
-[1] "2: CUISINIERE SOLAIRE" "2: SOLAR COOKER"      
+[1] "2: CUISINIERE SOLAIRE"  "2: SOLAR COOKER"        "2: SOLAR POWERED STOVE" "2: Fogão solar"        
 
 [[4]]
 [1] "3: LIQUEFIED PETROLEUM GAS (LPG) / COOKING GAS STOVE"      
 [2] "3: CUIINIERE A GAZ LIQUIDE (GPL)"                          
-[3] "3: LIQUEFIED PETROLEUM GAS (LPG)/ COOKING GAS STOVE"       
-[4] "3: Cuisini<e8>ree <e0> gaz de p<e9>trole liquefi<e9> (GPL)"
-[5] "3: CUISINIERE A GAZ LIQUIDE (GPL)"                         
-[6] "3: LIQUEFIED PETROLEUM GAS (LPG)/COOKING GAS STOVE"        
-[7] "3: CUISINERE A GAZ BUTANE"                                 
-[8] "3: FOGÃO A GAZ (GPL)"                                      
+[3] "3: Fogão a gás liquido (FGL/BOTIJA)"                       
+[4] "3: LIQUEFIED PETROLEUM GAS (LPG)/ COOKING GAS STOVE"       
+[5] "3: Cuisini<e8>ree <e0> gaz de p<e9>trole liquefi<e9> (GPL)"
+[6] "3: CUISINIERE A GAZ LIQUIDE (GPL)"                         
+[7] "3: LIQUEFIED PETROLEUM GAS (LPG)/COOKING GAS STOVE"        
+[8] "3: CUISINERE A GAZ BUTANE"                                 
+[9] "3: FOGÃO A GAZ (GPL)"                                      
 
 [[5]]
-[1] "4: PIPED NATURAL GAS STOVE"        "4: CUIINIERE A GAZ NATUREL"       
-[3] "4: Cuisini<e8>re <e0> gaz naturel" "4: CUISINIERE A GAZ NATUREL"      
+[1] "4: PIPED NATURAL GAS STOVE"        "4: CUIINIERE A GAZ NATUREL"        "4: Fogão a gás natural"           
+[4] "4: Cuisini<e8>re <e0> gaz naturel" "4: CUISINIERE A GAZ NATUREL"      
 
 [[6]]
-[1] "5: BIOGAS STOVE"              "5: CUISINERE A BIOGAZ"       
-[3] "5: Cuisini<e8>re <e0> Boigaz" "5: FOGÃO A BIOGAZ"           
+[1] "5: BIOGAS STOVE"              "5: CUISINERE A BIOGAZ"        "5: Fogão a biogás"           
+[4] "5: Cuisini<e8>re <e0> Boigaz" "5: FOGÃO A BIOGAZ"           
 
 [[7]]
-[1] "6: LIQUID FUEL STOVE"                      
-[2] "6: CUISINIERE A COMBUSTIBLE LIQUIDE"       
-[3] "6: Cuisini<e8>re <e0> combustible liquide "
-[4] "6: FOGÃO DE PETRÓLEO"                      
+[1] "6: LIQUID FUEL STOVE"                       "6: CUISINIERE A COMBUSTIBLE LIQUIDE"       
+[3] "6: Fogão a combustivel liquido (PRIMO)"     "6: Cuisini<e8>re <e0> combustible liquide "
+[5] "6: FOGÃO DE PETRÓLEO"                      
 
 [[8]]
-[1] "7: CUISINIERE A COMBUSTIBLE SOLIDE"       
-[2] "7: MANUFACTURED SOLID FUEL STOVE"         
-[3] "7: MANUFACTURED SOLID FUEL STOVE/COAL POT"
-[4] "7: Cuisini<e8>re <e0> combustible solide" 
-[5] "7: FOGAREIRO"                             
+[1] "7: CUISINIERE A COMBUSTIBLE SOLIDE"        "7: MANUFACTURED SOLID FUEL STOVE"         
+[3] "7: MANUFACTURED SOLID FUEL STOVE/COAL POT" "7: Fogão a combustivel solido (FOGAREIRO)"
+[5] "7: Cuisini<e8>re <e0> combustible solide"  "7: FOGAREIRO"                             
 
 [[9]]
 [1] "8: TRADITIONAL SOLID FUEL STOVE"                           
 [2] "8: CUISINIERE TRADITIONNELLE A COMBUSTIBLE SOLIDE"         
-[3] "8: Cuisini<e8>re locale <e0> combustible solide"           
-[4] "8: FOGÃO TRADICIONAL A COMBUSTIVEL SOLIDO (FOGÃO DE LENHA)"
+[3] "8: TRADITIONAL SOLID FUEL (COAL OR WOOD) STOVE"            
+[4] "8: Fogão tradicional a combustivel solido"                 
+[5] "8: Cuisini<e8>re locale <e0> combustible solide"           
+[6] "8: FOGÃO TRADICIONAL A COMBUSTIVEL SOLIDO (FOGÃO DE LENHA)"
 
 [[10]]
-[1] "9: THREE STONE STOVE / OPEN FIRE"         
-[2] "9: CUSINIERE SUR 3 PIERRES/FEU OUVERT"    
-[3] "9: TWO STONE STOVE / OPEN FIRE"           
-[4] "9: FEU SUR 3 PIERRES/FEU OUVERT"          
-[5] "9: Feu sur trois pi<e8>rres / Feu ouvert "
-[6] "9: FOGÃO EM TRES PEDRAS/FOGÃO AR LIVRE"   
+[1] "9: THREE STONE STOVE / OPEN FIRE"          "9: CUSINIERE SUR 3 PIERRES/FEU OUVERT"    
+[3] "9: TWO STONE STOVE / OPEN FIRE"            "9: Fogão de três/Fogão aberto"            
+[5] "9: FEU SUR 3 PIERRES/FEU OUVERT"           "9: Feu sur trois pi<e8>rres / Feu ouvert "
+[7] "9: FOGÃO EM TRES PEDRAS/FOGÃO AR LIVRE"   
 
 [[11]]
-[1] "96: OTHER"              "96: AUTRE"              "96: OTHER (specify)"   
-[4] "96: Autre"              "96: AUTRE (à préciser)" "96: OUTRO"             
+[1] "96: OTHER"              "96: AUTRE"              "96: Outro"              "96: OTHER (specify)"   
+[5] "96: Autre"              "96: AUTRE (à préciser)" "96: OUTRO"             
 
 [[12]]
-[1] "97: NO FOOD COOKED IN HOUSEHOLD"              
-[2] "97: PAS DE REPAS PRÉPARÉ DANS MENAGE"         
-[3] "97: Pas de repas prepar<e9> dans le m<e9>nage"
-[4] "97: PAS DE REPAS PR<c9>PAR<c9> DANS MENAGE"   
-[5] "97: PAS DE REPAS PREPARE DANS MENAGE"         
-[6] "97: NENHUMA REFEIÇÃO PREPARADA NO ALOJAMENTO" 
+[1] "97: NO FOOD COOKED IN HOUSEHOLD"                            
+[2] "97: PAS DE REPAS PR?PAR? DANS MENAGE"                       
+[3] "97: PAS DE REPAS PRÉPARÉ DANS MENAGE"                       
+[4] "97: Não se prepara nenhuma refeição neste agregado familiar"
+[5] "97: Pas de repas prepar<e9> dans le m<e9>nage"              
+[6] "97: PAS DE REPAS PR<c9>PAR<c9> DANS MENAGE"                 
+[7] "97: PAS DE REPAS PREPARE DANS MENAGE"                       
+[8] "97: NENHUMA REFEIÇÃO PREPARADA NO ALOJAMENTO"               
 
 [[13]]
 [1] "99: NON REPONSE"  "99: NO RESPONSE"  "99: SEM RESPOSTA"
@@ -453,15 +847,22 @@ EU1_lab, #type of cookstove used
 [1] "NA: NA"
 
 
+> cat("\nEU2_lab, #cookstove have chimney\n")
+
 EU2_lab, #cookstove have chimney
-|======================                                  | 40% ~10 s remaining    |=================================                       | 60% ~5 s remaining     |============================================            | 80% ~2 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "1: YES" "1: OUI" "1: SIM"
+
+> res <- d %>% group_by(EU2) %>%
++   do(res=paste0(.$EU2[1],": ", unique(.$EU2_lab)))
+|==================================                                                     | 40% ~10 s remaining    |====================================================                                   | 60% ~5 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: YES" "1: OUI" "1: Sim" "1: SIM"
 
 [[2]]
-[1] "2: NO"  "2: NON" "2: NÃO"
+[1] "2: NO"  "2: NON" "2: Não" "2: NÃO"
 
 [[3]]
-[1] "8: DK"         "8: NSP"        "8: DON?T KNOW" "8: NS"        
+[1] "8: DK"         "8: NSP"        "8: NS"         "8: DON?T KNOW"
 
 [[4]]
 [1] "9: NO RESPONSE" "9: NON REPONSE"
@@ -470,15 +871,22 @@ EU2_lab, #cookstove have chimney
 [1] "NA: NA"
 
 
+> cat("\nEU3_lab, #cookstove have a fan - too sparse\n")
+
 EU3_lab, #cookstove have a fan - too sparse
-|======================                                  | 40% ~38 s remaining    |=================================                       | 60% ~17 s remaining    |============================================            | 80% ~6 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "1: YES" "1: OUI" "1: SIM"
+
+> res <- d %>% group_by(EU3) %>%
++   do(res=paste0(.$EU3[1],": ", unique(.$EU3_lab)))
+|==================================                                                     | 40% ~12 s remaining    |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: YES" "1: OUI" "1: Sim" "1: SIM"
 
 [[2]]
-[1] "2: NO"  "2: NON" "2: NÃO"
+[1] "2: NO"  "2: NON" "2: Não" "2: NÃO"
 
 [[3]]
-[1] "8: DK"         "8: NSP"        "8: DON?T KNOW" "8: NS"        
+[1] "8: DK"         "8: NSP"        "8: NS"         "8: DON?T KNOW"
 
 [[4]]
 [1] "9: NON REPONSE" "9: NO RESPONSE"
@@ -487,131 +895,161 @@ EU3_lab, #cookstove have a fan - too sparse
 [1] "NA: NA"
 
 
+> cat("\nEU4_lab, #type of energy source of cookstove\n")
+
 EU4_lab, #type of energy source of cookstove
-|=====                                                   | 10% ~10 m remaining    |========                                                | 14% ~8 m remaining     |==========                                              | 19% ~6 m remaining     |=============                                           | 24% ~4 m remaining     |================                                        | 29% ~3 m remaining     |==================                                      | 33% ~3 m remaining     |=====================                                   | 38% ~2 m remaining     |========================                                | 43% ~2 m remaining     |==========================                              | 48% ~2 m remaining     |=============================                           | 52% ~2 m remaining     |================================                        | 57% ~1 m remaining     |==================================                      | 62% ~1 m remaining     |=====================================                   | 67% ~56 s remaining    |========================================                | 71% ~46 s remaining    |==========================================              | 76% ~36 s remaining    |=============================================           | 81% ~27 s remaining    |==================================================      | 90% ~12 s remaining    |========================================================|100% ~0 s remaining     [[1]]
-[1] "11: NO ROOF"     "11: PAS DE TOIT" "11: No Roof"     "11: SEM TECTO"  
+
+> res <- d %>% group_by(HC5) %>%
++   do(res=paste0(.$HC5[1],": ", unique(.$HC5_lab)))
+|=======                                                                                |  9% ~51 s remaining    |===========                                                                            | 13% ~1 m remaining     |===============                                                                        | 17% ~60 s remaining    |==================                                                                     | 22% ~46 s remaining    |======================                                                                 | 26% ~37 s remaining    |==========================                                                             | 30% ~31 s remaining    |==================================                                                     | 39% ~21 s remaining    |=====================================                                                  | 43% ~18 s remaining    |=============================================                                          | 52% ~13 s remaining    |=================================================                                      | 57% ~17 s remaining    |====================================================                                   | 61% ~14 s remaining    |========================================================                               | 65% ~13 s remaining    |============================================================                           | 70% ~11 s remaining    |================================================================                       | 74% ~10 s remaining    |====================================================================                   | 78% ~8 s remaining     |=======================================================================                | 83% ~6 s remaining     |===============================================================================        | 91% ~3 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "11: NO ROOF"           "11: Pas de murs"       "11: PAS DE TOIT"       "11: Não tem cobertura"
+[5] "11: No Roof"           "11: SEM TECTO"        
 
 [[2]]
-[1] "12: THATCH / PALM LEAF/ NIPA PALM"                  
-[2] "12: CHAUME / FEUILLE DE PALME"                      
-[3] "12: THATCH / PALM LEAF"                             
-[4] "12: THATCH / PALM LEAF/RAFIA"                       
-[5] "12: Thatch/Palm leaf/Sod"                           
-[6] "12: Paja/Hojas de palmera sin tejer (Techo natural)"
+ [1] "12: THATCH / PALM LEAF/ NIPA PALM"                   "12: Canne / Palmes / troncs"                        
+ [3] "12: Canne / Palmes / Troncs"                         "12: CHAUME / FEUILLE DE PALME"                      
+ [5] "12: THATCH / PALM LEAF"                              "12: MUD STRAW/PALM LEAFT"                           
+ [7] "12: THATCH / PALM LEAF/RAFIA"                        "12: Folha de cibe"                                  
+ [9] "12: Thatch/Palm leaf/Sod"                            "12: Paja/Hojas de palmera sin tejer (Techo natural)"
 
 [[3]]
-[1] "13: SOD"             "13: HERBES"          "13: MOTTES D'HERBES"
+[1] "13: SOD"                  "13: Mottes de terre"      "13: HERBES"               "13: BRANCHES/ROOTS/GRASS"
+[5] "13: Palhas"               "13: MOTTES D'HERBES"     
 
 [[4]]
-[1] "14: DIRT/ STONE WITH MUD"
+[1] "14: Murs en pailles"      "14: DIRT/ STONE WITH MUD"
 
 [[5]]
-[1] "21: RUSTIC MAT" "21: NATTE"      "21: Rustic mat"
+[1] "21: RUSTIC MAT"       "21: Bambou avec boue" "21: NATTE"            "21: Esteira"         
+[5] "21: Rustic mat"      
 
 [[6]]
 [1] "22: PALM / BAMBOO"                                          
-[2] "22: PALMIER / BAMBOU"                                       
-[3] "22: PALMIER / BAMBOU / ZOZORO"                              
-[4] "22: Palm / Bamboo"                                          
-[5] "22: Tronco de palmera/Bamb<fa> takuara (Techo rudimentario)"
-[6] "22: BAMBU"                                                  
+[2] "22: Pierre avec boue"                                       
+[3] "22: PALMIER / BAMBOU"                                       
+[4] "22: Folha de palmeira/bambu"                                
+[5] "22: PALMIER / BAMBOU / ZOZORO"                              
+[6] "22: Palm / Bamboo"                                          
+[7] "22: Tronco de palmera/Bamb<fa> takuara (Techo rudimentario)"
+[8] "22: BAMBU"                                                  
 
 [[7]]
-[1] "23: PLANCHES EN BOIS"                               
-[2] "23: WOOD PLANKS"                                    
-[3] "23: Wood planks"                                    
-[4] "23: Tablones/tablilla de madera(Techo rudimentario)"
+[1] "23: Adobe non recouvert/Briques de terre"            "23: PLANCHES EN BOIS"                               
+[3] "23: WOOD PLANKS"                                     "23: Pedaço de tabua/madeira"                        
+[5] "23: Wood planks"                                     "23: Tablones/tablilla de madera(Techo rudimentario)"
 
 [[8]]
-[1] "24: CARTON"                                                  
-[2] "24: CARDBOARD"                                               
-[3] "24: CARDBOARD/POLYTHENE SHEET"                               
-[4] "24: Cardboard / Plastic sheeting"                            
-[5] "24: Cart<f3>n, hule, madera de embalaje (Techo rudimentario)"
+[1] "24: Contre-plaqué"                                           
+[2] "24: Contre-plaqu<e9>"                                        
+[3] "24: CARTON"                                                  
+[4] "24: CARDBOARD"                                               
+[5] "24: CARDBOARD/POLYTHENE SHEET"                               
+[6] "24: Cardboard / Plastic sheeting"                            
+[7] "24: Cart<f3>n, hule, madera de embalaje (Techo rudimentario)"
 
 [[9]]
-[1] "25: MUD/MUD BRICK/EARTH" "25: PLÁSTICO"           
+[1] "25: Carton"              "25: BACHE EN CAOUTCHOUC" "25: Reed/Mat"            "25: MUD/MUD BRICK/EARTH"
+[5] "25: PLÁSTICO"           
 
 [[10]]
-[1] "26: TENT MATERIAL"
+[1] "26: Bois de récupération"         "26: Bois de r<e9>cup<e9>ration"   "26: BACHE EN MATIERE SYNTHETIQUE"
+[4] "26: TENT MATERIAL"               
 
 [[11]]
- [1] "31: METAL / TIN"                                
- [2] "31: METAL / ALUMINIUM/ TOLE"                    
- [3] "31: METAL / TIN / CORRUGATED  IRON SHEET"       
- [4] "31: METAL / TIN/ALLUMINIUM"                     
- [5] "31: METAL / CORRUGATED (ZINC SHEETS)"           
- [6] "31: TOLE / METAL / ALUMINIUM"                   
- [7] "31: METAL/ IRON"                                
- [8] "31: Metal / Tin / Zinc / Iron sheets"           
- [9] "31: METAL / TIN / T-IRON / GIRDERS"             
-[10] "31: Metal/lata/ chapa de zinc (Techo terminado)"
-[11] "31: METAL / TIN / CORRUGATED IRON SHEETS (ZINC)"
-[12] "31: METAL / ALUMINIUM"                          
-[13] "31: CHAPAS DE ZINCO"                            
+[1] "27: Briques en terre non cuite"
 
 [[12]]
-[1] "32: WOOD"                "32: BOIS"                "32: Wood"               
-[4] "32: WOOD / WOODEN BEAMS"
+[1] "28: Toles"
 
 [[13]]
-[1] "33: CALAMINE / CEMENT FIBRE"                            
-[2] "33: CALAMINE / FIBRE DE CIMENT"                         
-[3] "33: CALAMINE / CEMENT FIBRE  (I.E. METAL TILE, SCHIST)" 
-[4] "33: ASBESTOS / CEMENT FIBRE"                            
-[5] "33: WAVE STEEL ROOF TILE"                               
-[6] "33: Calamine / Cement fibre"                            
-[7] "33: Calamina/Fibra de cemento/eternit (Techo terminado)"
-[8] "33: ZINC/ETERNIT (FIBRE DE CIMENT)"                     
-[9] "33: LUSALITE / FIBRA DE CIMENTO"                        
+ [1] "31: METAL / TIN"                                 "31: Ciment"                                     
+ [3] "31: METAL / ALUMINIUM/TOLE"                      "31: METAL / ALUMINIUM"                          
+ [5] "31: METAL / TIN / CORRUGATED  IRON SHEET"        "31: METAL / TIN/ALLUMINIUM"                     
+ [7] "31: METAL / ALUMINIUM/ TOLE"                     "31: Metal/aluminium"                            
+ [9] "31: METAL / CORRUGATED (ZINC SHEETS)"            "31: TOLE / METAL / ALUMINIUM"                   
+[11] "31: METAL/ IRON"                                 "31: Metal / Tin / Zinc / Iron sheets"           
+[13] "31: METAL / TIN / T-IRON / GIRDERS"              "31: Metal/lata/ chapa de zinc (Techo terminado)"
+[15] "31: METAL / TIN / CORRUGATED IRON SHEETS (ZINC)" "31: CHAPAS DE ZINCO"                            
 
 [[14]]
-[1] "34: CERAMIC TILES"                      
-[2] "34: TUILES"                             
-[3] "34: CERAMIC / CLAY TILES"               
-[4] "34: TUILES EN CERAMIQUE"                
-[5] "34: Ceramic tiles"                      
-[6] "34: CERAMIC TILES/KHAPADA"              
-[7] "34: Cer<e1>micos, Teja(Techo terminado)"
+[1] "32: WOOD"                       "32: Pierre avec chaux / ciment" "32: Pierre avec chaux/ciment"  
+[4] "32: BOIS"                       "32: Madeira"                    "32: Wood"                      
+[7] "32: WOOD / WOODEN BEAMS"       
 
 [[15]]
-[1] "35: CEMENT"                                                    
-[2] "35: CIMENT"                                                    
-[3] "35: Cement"                                                    
-[4] "35: Cemento-Hormigon armado,loza o bovedilla (Techo terminado)"
-[5] "35: CIMENT /DALLE"                                             
-[6] "35: CIMENT/BETON ARME"                                         
-[7] "35: CIMENTO / BETÃO ARMADO"                                    
+ [1] "33: CALAMINE / CEMENT FIBRE"                            
+ [2] "33: Briques de ciment"                                  
+ [3] "33: Briques"                                            
+ [4] "33: CALAMINE / FIBRE DE CIMENT"                         
+ [5] "33: CALAMINE / CEMENT FIBRE  (I.E. METAL TILE, SCHIST)" 
+ [6] "33: CORREEGATED SHEETS / ASBESTOS"                      
+ [7] "33: Zinco / Fibra de cimento"                           
+ [8] "33: ASBESTOS / CEMENT FIBRE"                            
+ [9] "33: WAVE STEEL ROOF TILE"                               
+[10] "33: Calamine / Cement fibre"                            
+[11] "33: Calamina/Fibra de cemento/eternit (Techo terminado)"
+[12] "33: ZINC/ETERNIT (FIBRE DE CIMENT)"                     
+[13] "33: LUSALITE / FIBRA DE CIMENTO"                        
 
 [[16]]
-[1] "36: ROOFING SHINGLES"            "36: TOIT DE BARDEAUX (SHINGLES)"
-[3] "36: Roofing shingles"            "36: TELHA"                      
+[1] "34: CERAMIC TILES"                       "34: Blocs de ciment"                    
+[3] "34: TUILES"                              "34: TUILES EN CERAMIQUE"                
+[5] "34: Telhas"                              "34: CERAMIC / CLAY TILES"               
+[7] "34: Ceramic tiles"                       "34: CERAMIC TILES/KHAPADA"              
+[9] "34: Cer<e1>micos, Teja(Techo terminado)"
 
 [[17]]
-[1] "37: SLATE/ASBESTOS"    "37: LEAD SHEET/ PITCH" "37: ASBESTOS"         
-[4] "37: CLAY TILES"       
+ [1] "35: CEMENT"                                                    
+ [2] "35: Briques en terre non cuite mais recouvertes"               
+ [3] "35: Adobe recouvert/G<e9>o-b<e9>ton recouvert"                 
+ [4] "35: CIMENT"                                                    
+ [5] "35: CEMENT / REINFORCED CONCRETE WITH METAL"                   
+ [6] "35: Cimento"                                                   
+ [7] "35: Cement"                                                    
+ [8] "35: Cemento-Hormigon armado,loza o bovedilla (Techo terminado)"
+ [9] "35: CIMENT /DALLE"                                             
+[10] "35: CIMENT/BETON ARME"                                         
+[11] "35: CIMENTO / BETÃO ARMADO"                                    
 
 [[18]]
-[1] "38: ASBESTOS SHEETING"
+[1] "36: ROOFING SHINGLES"            "36: Planches de bois"            "36: TOIT DE BARDEAUX (SHINGLES)"
+[4] "36: Roofing shingles"            "36: TELHA"                      
 
 [[19]]
-[1] "96: OTHER"            "96: AUTRE"            "96: OTHER (specify)" 
-[4] "96: Other"            "96: Otro"             "96: AUTRE (pr?ciser)"
-[7] "96: OUTRO"           
+[1] "37: Briques en terre cuite"        "37: Carreaux"                      "37: H SECTION IRON RODS (ARCHING)"
+[4] "37: SLATE/ASBESTOS"                "37: LEAD SHEET/ PITCH"             "37: ASBESTOS"                     
+[7] "37: CLAY TILES"                   
 
 [[20]]
-[1] "99: NO RESPONSE" "99: Missing"     "99: NON REPONSE"
+[1] "38: ASBESTOS SHEETING"
 
 [[21]]
+[1] "96: OTHER"               "96: Autre"               "96: Autre (pr<e9>ciser)" "96: AUTRE"              
+[5] "96: OTHER (specify)"     "96: Other"               "96: Otro"                "96: AUTRE (pr?ciser)"   
+[9] "96: OUTRO"              
+
+[[22]]
+[1] "99: Non Déclarée" "99: NON REPONSE"  "99: NO RESPONSE"  "99: Missing"     
+
+[[23]]
 [1] "NA: NA"
 
 
+> cat("\nHC17, #any animals, \n")
+
 HC17, #any animals, 
-|==============                                          | 25% ~21 s remaining    |============================                            | 50% ~13 s remaining    |==========================================              | 75% ~4 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "1: YES" "1: OUI" "1: SIM"
+
+> res <- d %>% group_by(HC17) %>%
++   do(res=paste0(.$HC17[1],": ", unique(.$HC17_lab)))
+|=====================                                                                  | 25% ~19 s remaining    |===========================================                                            | 50% ~25 s remaining    |=================================================================                      | 75% ~8 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: YES" "1: OUI" "1: Sim" "1: SIM"
 
 [[2]]
-[1] "2: NO"  "2: NON" "2: NÃO"
+[1] "2: NO"  "2: NON" "2: Não" "2: NÃO"
 
 [[3]]
 [1] "9: NO RESPONSE"  "9: NON REPONSE"  "9: SEM RESPOSTA"
@@ -620,345 +1058,398 @@ HC17, #any animals,
 [1] "NA: NA"
 
 
+> cat("\nHC5_lab, #roof material\n")
+
 HC5_lab, #roof material
-|================                                        | 29% ~5 s remaining     |==================                                      | 33% ~5 s remaining     |=====================                                   | 38% ~4 s remaining     |=============================                           | 52% ~7 s remaining     |================================                        | 57% ~6 s remaining     |==================================                      | 62% ~5 s remaining     |=====================================                   | 67% ~4 s remaining     |========================================                | 71% ~4 s remaining     |==========================================              | 76% ~3 s remaining     |=============================================           | 81% ~3 s remaining     |==================================================      | 90% ~1 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "11: NO ROOF"     "11: PAS DE TOIT" "11: No Roof"     "11: SEM TECTO"  
+
+> res <- d %>% group_by(HC5) %>%
++   do(res=paste0(.$HC5[1],": ", unique(.$HC5_lab)))
+|=======                                                                                |  9% ~36 s remaining    |===========                                                                            | 13% ~29 s remaining    |===============                                                                        | 17% ~21 s remaining    |==================                                                                     | 22% ~17 s remaining    |======================                                                                 | 26% ~14 s remaining    |==========================                                                             | 30% ~12 s remaining    |==============================                                                         | 35% ~10 s remaining    |==================================                                                     | 39% ~9 s remaining     |=====================================                                                  | 43% ~7 s remaining     |=========================================                                              | 48% ~6 s remaining     |=================================================                                      | 57% ~17 s remaining    |====================================================                                   | 61% ~15 s remaining    |========================================================                               | 65% ~13 s remaining    |============================================================                           | 70% ~10 s remaining    |================================================================                       | 74% ~10 s remaining    |====================================================================                   | 78% ~8 s remaining     |=======================================================================                | 83% ~6 s remaining     |===============================================================================        | 91% ~3 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "11: NO ROOF"           "11: Pas de murs"       "11: PAS DE TOIT"       "11: Não tem cobertura"
+[5] "11: No Roof"           "11: SEM TECTO"        
 
 [[2]]
-[1] "12: THATCH / PALM LEAF/ NIPA PALM"                  
-[2] "12: CHAUME / FEUILLE DE PALME"                      
-[3] "12: THATCH / PALM LEAF"                             
-[4] "12: THATCH / PALM LEAF/RAFIA"                       
-[5] "12: Thatch/Palm leaf/Sod"                           
-[6] "12: Paja/Hojas de palmera sin tejer (Techo natural)"
+ [1] "12: THATCH / PALM LEAF/ NIPA PALM"                   "12: Canne / Palmes / troncs"                        
+ [3] "12: Canne / Palmes / Troncs"                         "12: CHAUME / FEUILLE DE PALME"                      
+ [5] "12: THATCH / PALM LEAF"                              "12: MUD STRAW/PALM LEAFT"                           
+ [7] "12: THATCH / PALM LEAF/RAFIA"                        "12: Folha de cibe"                                  
+ [9] "12: Thatch/Palm leaf/Sod"                            "12: Paja/Hojas de palmera sin tejer (Techo natural)"
 
 [[3]]
-[1] "13: SOD"             "13: HERBES"          "13: MOTTES D'HERBES"
+[1] "13: SOD"                  "13: Mottes de terre"      "13: HERBES"               "13: BRANCHES/ROOTS/GRASS"
+[5] "13: Palhas"               "13: MOTTES D'HERBES"     
 
 [[4]]
-[1] "14: DIRT/ STONE WITH MUD"
+[1] "14: Murs en pailles"      "14: DIRT/ STONE WITH MUD"
 
 [[5]]
-[1] "21: RUSTIC MAT" "21: NATTE"      "21: Rustic mat"
+[1] "21: RUSTIC MAT"       "21: Bambou avec boue" "21: NATTE"            "21: Esteira"         
+[5] "21: Rustic mat"      
 
 [[6]]
 [1] "22: PALM / BAMBOO"                                          
-[2] "22: PALMIER / BAMBOU"                                       
-[3] "22: PALMIER / BAMBOU / ZOZORO"                              
-[4] "22: Palm / Bamboo"                                          
-[5] "22: Tronco de palmera/Bamb<fa> takuara (Techo rudimentario)"
-[6] "22: BAMBU"                                                  
+[2] "22: Pierre avec boue"                                       
+[3] "22: PALMIER / BAMBOU"                                       
+[4] "22: Folha de palmeira/bambu"                                
+[5] "22: PALMIER / BAMBOU / ZOZORO"                              
+[6] "22: Palm / Bamboo"                                          
+[7] "22: Tronco de palmera/Bamb<fa> takuara (Techo rudimentario)"
+[8] "22: BAMBU"                                                  
 
 [[7]]
-[1] "23: PLANCHES EN BOIS"                               
-[2] "23: WOOD PLANKS"                                    
-[3] "23: Wood planks"                                    
-[4] "23: Tablones/tablilla de madera(Techo rudimentario)"
+[1] "23: Adobe non recouvert/Briques de terre"            "23: PLANCHES EN BOIS"                               
+[3] "23: WOOD PLANKS"                                     "23: Pedaço de tabua/madeira"                        
+[5] "23: Wood planks"                                     "23: Tablones/tablilla de madera(Techo rudimentario)"
 
 [[8]]
-[1] "24: CARTON"                                                  
-[2] "24: CARDBOARD"                                               
-[3] "24: CARDBOARD/POLYTHENE SHEET"                               
-[4] "24: Cardboard / Plastic sheeting"                            
-[5] "24: Cart<f3>n, hule, madera de embalaje (Techo rudimentario)"
+[1] "24: Contre-plaqué"                                           
+[2] "24: Contre-plaqu<e9>"                                        
+[3] "24: CARTON"                                                  
+[4] "24: CARDBOARD"                                               
+[5] "24: CARDBOARD/POLYTHENE SHEET"                               
+[6] "24: Cardboard / Plastic sheeting"                            
+[7] "24: Cart<f3>n, hule, madera de embalaje (Techo rudimentario)"
 
 [[9]]
-[1] "25: MUD/MUD BRICK/EARTH" "25: PLÁSTICO"           
+[1] "25: Carton"              "25: BACHE EN CAOUTCHOUC" "25: Reed/Mat"            "25: MUD/MUD BRICK/EARTH"
+[5] "25: PLÁSTICO"           
 
 [[10]]
-[1] "26: TENT MATERIAL"
+[1] "26: Bois de récupération"         "26: Bois de r<e9>cup<e9>ration"   "26: BACHE EN MATIERE SYNTHETIQUE"
+[4] "26: TENT MATERIAL"               
 
 [[11]]
- [1] "31: METAL / TIN"                                
- [2] "31: METAL / ALUMINIUM/ TOLE"                    
- [3] "31: METAL / TIN / CORRUGATED  IRON SHEET"       
- [4] "31: METAL / TIN/ALLUMINIUM"                     
- [5] "31: METAL / CORRUGATED (ZINC SHEETS)"           
- [6] "31: TOLE / METAL / ALUMINIUM"                   
- [7] "31: METAL/ IRON"                                
- [8] "31: Metal / Tin / Zinc / Iron sheets"           
- [9] "31: METAL / TIN / T-IRON / GIRDERS"             
-[10] "31: Metal/lata/ chapa de zinc (Techo terminado)"
-[11] "31: METAL / TIN / CORRUGATED IRON SHEETS (ZINC)"
-[12] "31: METAL / ALUMINIUM"                          
-[13] "31: CHAPAS DE ZINCO"                            
+[1] "27: Briques en terre non cuite"
 
 [[12]]
-[1] "32: WOOD"                "32: BOIS"                "32: Wood"               
-[4] "32: WOOD / WOODEN BEAMS"
+[1] "28: Toles"
 
 [[13]]
-[1] "33: CALAMINE / CEMENT FIBRE"                            
-[2] "33: CALAMINE / FIBRE DE CIMENT"                         
-[3] "33: CALAMINE / CEMENT FIBRE  (I.E. METAL TILE, SCHIST)" 
-[4] "33: ASBESTOS / CEMENT FIBRE"                            
-[5] "33: WAVE STEEL ROOF TILE"                               
-[6] "33: Calamine / Cement fibre"                            
-[7] "33: Calamina/Fibra de cemento/eternit (Techo terminado)"
-[8] "33: ZINC/ETERNIT (FIBRE DE CIMENT)"                     
-[9] "33: LUSALITE / FIBRA DE CIMENTO"                        
+ [1] "31: METAL / TIN"                                 "31: Ciment"                                     
+ [3] "31: METAL / ALUMINIUM/TOLE"                      "31: METAL / ALUMINIUM"                          
+ [5] "31: METAL / TIN / CORRUGATED  IRON SHEET"        "31: METAL / TIN/ALLUMINIUM"                     
+ [7] "31: METAL / ALUMINIUM/ TOLE"                     "31: Metal/aluminium"                            
+ [9] "31: METAL / CORRUGATED (ZINC SHEETS)"            "31: TOLE / METAL / ALUMINIUM"                   
+[11] "31: METAL/ IRON"                                 "31: Metal / Tin / Zinc / Iron sheets"           
+[13] "31: METAL / TIN / T-IRON / GIRDERS"              "31: Metal/lata/ chapa de zinc (Techo terminado)"
+[15] "31: METAL / TIN / CORRUGATED IRON SHEETS (ZINC)" "31: CHAPAS DE ZINCO"                            
 
 [[14]]
-[1] "34: CERAMIC TILES"                      
-[2] "34: TUILES"                             
-[3] "34: CERAMIC / CLAY TILES"               
-[4] "34: TUILES EN CERAMIQUE"                
-[5] "34: Ceramic tiles"                      
-[6] "34: CERAMIC TILES/KHAPADA"              
-[7] "34: Cer<e1>micos, Teja(Techo terminado)"
+[1] "32: WOOD"                       "32: Pierre avec chaux / ciment" "32: Pierre avec chaux/ciment"  
+[4] "32: BOIS"                       "32: Madeira"                    "32: Wood"                      
+[7] "32: WOOD / WOODEN BEAMS"       
 
 [[15]]
-[1] "35: CEMENT"                                                    
-[2] "35: CIMENT"                                                    
-[3] "35: Cement"                                                    
-[4] "35: Cemento-Hormigon armado,loza o bovedilla (Techo terminado)"
-[5] "35: CIMENT /DALLE"                                             
-[6] "35: CIMENT/BETON ARME"                                         
-[7] "35: CIMENTO / BETÃO ARMADO"                                    
+ [1] "33: CALAMINE / CEMENT FIBRE"                            
+ [2] "33: Briques de ciment"                                  
+ [3] "33: Briques"                                            
+ [4] "33: CALAMINE / FIBRE DE CIMENT"                         
+ [5] "33: CALAMINE / CEMENT FIBRE  (I.E. METAL TILE, SCHIST)" 
+ [6] "33: CORREEGATED SHEETS / ASBESTOS"                      
+ [7] "33: Zinco / Fibra de cimento"                           
+ [8] "33: ASBESTOS / CEMENT FIBRE"                            
+ [9] "33: WAVE STEEL ROOF TILE"                               
+[10] "33: Calamine / Cement fibre"                            
+[11] "33: Calamina/Fibra de cemento/eternit (Techo terminado)"
+[12] "33: ZINC/ETERNIT (FIBRE DE CIMENT)"                     
+[13] "33: LUSALITE / FIBRA DE CIMENTO"                        
 
 [[16]]
-[1] "36: ROOFING SHINGLES"            "36: TOIT DE BARDEAUX (SHINGLES)"
-[3] "36: Roofing shingles"            "36: TELHA"                      
+[1] "34: CERAMIC TILES"                       "34: Blocs de ciment"                    
+[3] "34: TUILES"                              "34: TUILES EN CERAMIQUE"                
+[5] "34: Telhas"                              "34: CERAMIC / CLAY TILES"               
+[7] "34: Ceramic tiles"                       "34: CERAMIC TILES/KHAPADA"              
+[9] "34: Cer<e1>micos, Teja(Techo terminado)"
 
 [[17]]
-[1] "37: SLATE/ASBESTOS"    "37: LEAD SHEET/ PITCH" "37: ASBESTOS"         
-[4] "37: CLAY TILES"       
+ [1] "35: CEMENT"                                                    
+ [2] "35: Briques en terre non cuite mais recouvertes"               
+ [3] "35: Adobe recouvert/G<e9>o-b<e9>ton recouvert"                 
+ [4] "35: CIMENT"                                                    
+ [5] "35: CEMENT / REINFORCED CONCRETE WITH METAL"                   
+ [6] "35: Cimento"                                                   
+ [7] "35: Cement"                                                    
+ [8] "35: Cemento-Hormigon armado,loza o bovedilla (Techo terminado)"
+ [9] "35: CIMENT /DALLE"                                             
+[10] "35: CIMENT/BETON ARME"                                         
+[11] "35: CIMENTO / BETÃO ARMADO"                                    
 
 [[18]]
+[1] "36: ROOFING SHINGLES"            "36: Planches de bois"            "36: TOIT DE BARDEAUX (SHINGLES)"
+[4] "36: Roofing shingles"            "36: TELHA"                      
+
+[[19]]
+[1] "37: Briques en terre cuite"        "37: Carreaux"                      "37: H SECTION IRON RODS (ARCHING)"
+[4] "37: SLATE/ASBESTOS"                "37: LEAD SHEET/ PITCH"             "37: ASBESTOS"                     
+[7] "37: CLAY TILES"                   
+
+[[20]]
 [1] "38: ASBESTOS SHEETING"
 
-[[19]]
-[1] "96: OTHER"            "96: AUTRE"            "96: OTHER (specify)" 
-[4] "96: Other"            "96: Otro"             "96: AUTRE (pr?ciser)"
-[7] "96: OUTRO"           
-
-[[20]]
-[1] "99: NO RESPONSE" "99: Missing"     "99: NON REPONSE"
-
 [[21]]
-[1] "NA: NA"
-
-
-HC6_lab, #wall material
-|===========                                             | 21% ~8 s remaining     |=============                                           | 24% ~24 s remaining    |===============                                         | 28% ~21 s remaining    |=================                                       | 31% ~19 s remaining    |===================                                     | 34% ~17 s remaining    |=======================                                 | 41% ~13 s remaining    |=========================                               | 45% ~12 s remaining    |============================                            | 52% ~9 s remaining     |==============================                          | 55% ~17 s remaining    |================================                        | 59% ~16 s remaining    |==================================                      | 62% ~15 s remaining    |====================================                    | 66% ~13 s remaining    |======================================                  | 69% ~12 s remaining    |========================================                | 72% ~11 s remaining    |==========================================              | 76% ~10 s remaining    |============================================            | 79% ~8 s remaining     |================================================        | 86% ~5 s remaining     |==================================================      | 90% ~4 s remaining     |====================================================    | 93% ~2 s remaining     |======================================================  | 97% ~1 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "11: NO WALLS"                          
-[2] "11: PAS DE MURS"                       
-[3] "11: No walls"                          
-[4] "11: No tiene pared (Paredes naturales)"
-
-[[2]]
-[1] "12: CANE / PALM / TRUNKS"                                   
-[2] "12: CANE / PALME / TRONCS"                                  
-[3] "12: CANE / TREE TRUNKS"                                     
-[4] "12: CANE / PALME / TRONCS / ZOZORO"                         
-[5] "12: Cane / Palm / Trunks / Thatch"                          
-[6] "12: Tronco de Palmera/Bamb<fa> - takuara(Paredes naturales)"
-[7] "12: CANE / PALME / TRONCS /CLAIE"                           
-[8] "12: CANE / TRUNKS"                                          
-
-[[3]]
-[1] "13: DIRT"                         "13: BOUE"                        
-[3] "13: EARTH/MUD/MUD BRICKS"         "13: SOD / MUD / DUNG"            
-[5] "13: Dirt / Earth"                 "13: DIRT / MUD ( POLE AND DAGGA)"
-[7] "13: MOTTE DE TERRE"              
-
-[[4]]
-[1] "14: BAMBOO WITH POLITHINE" "14: THATCH"               
-[3] "14: TOUB OU TERRE SECHEE" 
-
-[[5]]
-[1] "15: PANDANUS ROOT"
-
-[[6]]
-[1] "16: COCONUT MIDRIP(TEBAA)"
-
-[[7]]
-[1] "21: BAMBOO WITH MUD"                                              
-[2] "21: BAMBOU AVEC BOUE"                                             
-[3] "21: Bamboo with mud"                                              
-[4] "21: Bamb<fa> / takuara  con barro-Estaqueo(Paredes rudimentarias)"
-[5] "21: ROSEAUX AVEC BOUE"                                            
-[6] "21: BAMBÚ"                                                        
-
-[[8]]
-[1] "22: STONE WITH MUD"                   "22: PIERRE AVEC BOUE"                
-[3] "22: RUDIMENTARY WALLS STONE WITH MUD" "22: Stone with mud"                  
-
-[[9]]
-[1] "23: UNCOVERED ADOBE"                        
-[2] "23: ADOBE NON RECOUVERT/BANCO"              
-[3] "23: Uncovered adobe/Mud brick"              
-[4] "23: Adobe a la vista(Paredes rudimentarias)"
-
-[[10]]
-[1] "24: PLYWOOD"       "24: CONTRE PLAQUE" "24: Plywood"      
-
-[[11]]
-[1] "25: CARDBOARD"                                                
-[2] "25: CARTON"                                                   
-[3] "25: Cardboard"                                                
-[4] "25: Cart<f3>n,hule, madera de embalaje(Paredes rudimentarias)"
-[5] "25: CARDBOARD/CARTON"                                         
-
-[[12]]
-[1] "26: REUSED WOOD"                              
-[2] "26: BOIS RECYCLE"                             
-[3] "26: Reused wood"                              
-[4] "26: Madera reutilizada(Paredes rudimentarias)"
-[5] "26: MADEIRA RECUPERADA"                       
-
-[[13]]
-[1] "27: TIN"                                         
-[2] "27: TOLE"                                        
-[3] "27: MUD/ MUD BRICKS"                             
-[4] "27: METAL / TIN / ALLUMINIUM"                    
-[5] "27: BAMBOO MAT"                                  
-[6] "27: CORRUGATED IRON SHEETS (ZINC)"               
-[7] "27: TOLES"                                       
-[8] "27: ANDALA/PAVO (FOLHAS DE PALMEIRA OU COQUEIRO)"
-
-[[14]]
-[1] "28: BAMBOO / BAMBOO WITH DRY LEAF" "28: WOOD WITH MUD"                
-
-[[15]]
-[1] "29: BAMBOO LATTICE"
-
-[[16]]
-[1] "31: CEMENT"                   "31: CIMENT"                  
-[3] "31: FINISHED MATERIAL CEMENT" "31: Cement"                  
-[5] "31: CIMENTO"                 
-
-[[17]]
-[1] "32: STONE WITH LIME / CEMENT"   "32: PIERRE AVEC CHAUX / CIMENT"
-[3] "32: Stone with lime / cement"   "32: PEDRA COM CIMENTO"         
-
-[[18]]
-[1] "33: BRICKS"                       "33: BRIQUES"                     
-[3] "33: Bricks"                       "33: Ladrillo(Paredes terminadas)"
-[5] "33: TIJOLOS"                     
-
-[[19]]
-[1] "34: CEMENT BLOCKS"                         
-[2] "34: BLOCS DE CIMENT"                       
-[3] "34: FINISHED MATERIAL BLOCK"               
-[4] "34: Cement blocks"                         
-[5] "34: Bloques de cemento(Paredes terminadas)"
-[6] "34: PARPAING"                              
-[7] "34: BLOCOS DE CIMENTO"                     
-
-[[20]]
-[1] "35: COVERED ADOBE"                              
-[2] "35: ADOBE/BANCO RECOUVERT"                      
-[3] "35: Covered adobe"                              
-[4] "35: Adobe cubierto-revocado(Paredes terminadas)"
-
-[[21]]
-[1] "36: WOOD PLANKS / SHINGLES"        "36: PLANCHES DE BOIS/BARDEAUX"    
-[3] "36: FINISHED MATERIAL WOOD TIMBER" "36: Wood planks / shingles"       
-[5] "36: WOOD PLANK/SHINGLES"           "36: Tablones de madera"           
-[7] "36: PLANCHES DE BOIS"              "36: TABUA"                        
+[1] "96: OTHER"               "96: Autre"               "96: Autre (pr<e9>ciser)" "96: AUTRE"              
+[5] "96: OTHER (specify)"     "96: Other"               "96: Otro"                "96: AUTRE (pr?ciser)"   
+[9] "96: OUTRO"              
 
 [[22]]
-[1] "37: BAMBOO WITH CEMENT"               "37: SLATES/ABESTOS"                  
-[3] "37: METAL / CORRUGATED (ZINC SHEETS)" "37: BRICK POLISHING"                 
-[5] "37: MUR EN BETON"                     "37: PLASTER"                         
-[7] "37: MOSAICOS"                        
+[1] "99: Non Déclarée" "99: NON REPONSE"  "99: NO RESPONSE"  "99: Missing"     
 
 [[23]]
-[1] "38: BRICK REGULAR"   "38: CHAPAS DE ZINCO"
-
-[[24]]
-[1] "39: METAL COATING"
-
-[[25]]
-[1] "40: PVC SHEETS"
-
-[[26]]
-[1] "41: PLASTERING"
-
-[[27]]
-[1] "96: OTHER"            "96: AUTRE"            "96: OTHER (specify)" 
-[4] "96: Other"            "96: Otro"             "96: AUTRE (pr?ciser)"
-[7] "96: OUTROS"          
-
-[[28]]
-[1] "99: NO RESPONSE" "99: Missing"     "99: NON REPONSE"
-
-[[29]]
 [1] "NA: NA"
 
 
-EU4, #fuel
-|============================                            | 50% ~6 s remaining     |===============================                         | 56% ~23 s remaining    |===================================                     | 62% ~24 s remaining    |======================================                  | 69% ~23 s remaining    |==========================================              | 75% ~17 s remaining    |=============================================           | 81% ~12 s remaining    |=================================================       | 88% ~7 s remaining     |====================================================    | 94% ~3 s remaining     |========================================================|100% ~0 s remaining     [[1]]
-[1] "1: ALCOHOL / ETHANOL" "1: ALCOOL / ETHANOL"  "1: Electricity"      
-[4] "1: ALCOHOL/ ETHANOL"  "1: Electricidad"      "1: Alcool / Ethanol" 
+> cat("\nHC6_lab, #wall material\n")
+
+HC6_lab, #wall material
+
+> res <- d %>% group_by(HC6) %>%
++   do(res=paste0(.$HC6[1],": ", unique(.$HC6_lab)))
+|===========                                                                            | 13% ~17 s remaining    |================                                                                       | 18% ~12 s remaining    |====================                                                                   | 24% ~9 s remaining     |======================                                                                 | 26% ~9 s remaining     |=========================                                                              | 29% ~9 s remaining     |===========================                                                            | 32% ~9 s remaining     |=============================                                                          | 34% ~8 s remaining     |==================================                                                     | 39% ~7 s remaining     |====================================                                                   | 42% ~7 s remaining     |=========================================                                              | 47% ~6 s remaining     |===========================================                                            | 50% ~12 s remaining    |=============================================                                          | 53% ~12 s remaining    |================================================                                       | 55% ~13 s remaining    |==================================================                                     | 58% ~13 s remaining    |====================================================                                   | 61% ~12 s remaining    |======================================================                                 | 63% ~11 s remaining    |=========================================================                              | 66% ~10 s remaining    |===========================================================                            | 68% ~9 s remaining     |==================================================================                     | 76% ~6 s remaining     |====================================================================                   | 79% ~6 s remaining     |======================================================================                 | 82% ~5 s remaining     |=========================================================================              | 84% ~4 s remaining     |===========================================================================            | 87% ~3 s remaining     |================================================================================       | 92% ~2 s remaining     |==================================================================================     | 95% ~1 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: Electricité"    "1: Electricit<e9>"
 
 [[2]]
-[1] "10: GARBAGE / PLASTIC"   "10: ORDURES / PLASTIQUE" "10: Animal dung"        
-[4] "10: LIXO / PLÁSTICO"    
+[1] "10: Bouse"
 
 [[3]]
-[1] "11: SAWDUST"                   "11: SCIURE"                   
-[3] "11: Agricultural crop residue"
+[1] "11: NO WALLS"                           "11: PAS DE MURS"                       
+[3] "11: Sem paredes"                        "11: No walls"                          
+[5] "11: No tiene pared (Paredes naturales)"
+
+[[4]]
+ [1] "12: CANE / PALM / TRUNKS"                                   
+ [2] "12: Sciure / copeaux de bois"                               
+ [3] "12: CANE / PALME / TRONCS"                                  
+ [4] "12: Kirintim / Troncos / Palmas"                            
+ [5] "12: CANE / TREE TRUNKS"                                     
+ [6] "12: CANE / PALME / TRONCS / ZOZORO"                         
+ [7] "12: Cane / Palm / Trunks / Thatch"                          
+ [8] "12: Tronco de Palmera/Bamb<fa> - takuara(Paredes naturales)"
+ [9] "12: CANE / PALME / TRONCS /CLAIE"                           
+[10] "12: CANE / TRUNKS"                                          
+
+[[5]]
+[1] "13: DIRT"                         "13: BOUE"                         "13: EARTH/MUD/MUD BRICKS"        
+[4] "13: Lama / Taipe"                 "13: SOD / MUD / DUNG"             "13: Dirt / Earth"                
+[7] "13: DIRT / MUD ( POLE AND DAGGA)" "13: MOTTE DE TERRE"              
+
+[[6]]
+[1] "14: BAMBOO WITH POLITHINE" "14: THATCH"                "14: TOUB OU TERRE SECHEE" 
+
+[[7]]
+[1] "15: PANDANUS ROOT"
+
+[[8]]
+[1] "16: COCONUT MIDRIP(TEBAA)"
+
+[[9]]
+[1] "2: Gaz butane (GPL)" "2: Gaz butane"      
+
+[[10]]
+[1] "21: BAMBOO WITH MUD"                                              
+[2] "21: BAMBOU AVEC BOUE"                                             
+[3] "21: Kirintim com lama"                                            
+[4] "21: Bamboo with mud"                                              
+[5] "21: Bamb<fa> / takuara  con barro-Estaqueo(Paredes rudimentarias)"
+[6] "21: ROSEAUX AVEC BOUE"                                            
+[7] "21: BAMBÚ"                                                        
+
+[[11]]
+[1] "22: STONE WITH MUD"                   "22: PIERRE AVEC BOUE"                
+[3] "22: Pedras com lama"                  "22: RUDIMENTARY WALLS STONE WITH MUD"
+[5] "22: Stone with mud"                  
+
+[[12]]
+[1] "23: UNCOVERED ADOBE"                         "23: ADOBE NON RECOUVERT/BANCO"              
+[3] "23: Adobe"                                   "23: Uncovered adobe/Mud brick"              
+[5] "23: Adobe a la vista(Paredes rudimentarias)"
+
+[[13]]
+[1] "24: PLYWOOD"       "24: CONTRE PLAQUE" "24: Contraplacado" "24: Plywood"      
+
+[[14]]
+[1] "25: CARDBOARD"                                                
+[2] "25: CARTON"                                                   
+[3] "25: Cartão"                                                   
+[4] "25: Cardboard"                                                
+[5] "25: Cart<f3>n,hule, madera de embalaje(Paredes rudimentarias)"
+[6] "25: CARDBOARD/CARTON"                                         
+
+[[15]]
+[1] "26: REUSED WOOD"                               "26: BOIS RECYCLE"                             
+[3] "26: Reused wood"                               "26: Madera reutilizada(Paredes rudimentarias)"
+[5] "26: MADEIRA RECUPERADA"                       
+
+[[16]]
+ [1] "27: TIN"                                          "27: PAGNES/TISSUS"                               
+ [3] "27: MUD/ MUD BRICKS"                              "27: METAL / TIN / ALLUMINIUM"                    
+ [5] "27: BAMBOO MAT"                                   "27: TOLE"                                        
+ [7] "27: METAL/TIN"                                    "27: CORRUGATED IRON SHEETS (ZINC)"               
+ [9] "27: TOLES"                                        "27: ANDALA/PAVO (FOLHAS DE PALMEIRA OU COQUEIRO)"
+
+[[17]]
+[1] "28: BACHE EN CAOUTCHOUC"           "28: BAMBOO / BAMBOO WITH DRY LEAF" "28: WOOD WITH MUD"                
+
+[[18]]
+[1] "29: BACHE EN MATIERE SYNTHETIQUE" "29: BAMBOO LATTICE"              
+
+[[19]]
+[1] "31: CEMENT"                   "31: CIMENT"                   "31: Betão armado"            
+[4] "31: FINISHED MATERIAL CEMENT" "31: Cement"                   "31: CIMENTO"                 
+
+[[20]]
+[1] "32: STONE WITH LIME / CEMENT"   "32: PIERRE AVEC CHAUX / CIMENT" "32: STONE WITH LIME/ CEMENT"   
+[4] "32: Pedra com cimento"          "32: Stone with lime / cement"   "32: PEDRA COM CIMENTO"         
+
+[[21]]
+[1] "33: BRICKS"                       "33: BRIQUES"                      "33: RED TILES"                   
+[4] "33: Tijolos"                      "33: Bricks"                       "33: Ladrillo(Paredes terminadas)"
+[7] "33: TIJOLOS"                     
+
+[[22]]
+[1] "34: CEMENT BLOCKS"                          "34: BLOCS DE CIMENT"                       
+[3] "34: Blocos de cimento"                      "34: FINISHED MATERIAL BLOCK"               
+[5] "34: Cement blocks"                          "34: Bloques de cemento(Paredes terminadas)"
+[7] "34: PARPAING"                               "34: BLOCOS DE CIMENTO"                     
+
+[[23]]
+[1] "35: COVERED ADOBE"                               "35: ADOBE/BANCO RECOUVERT"                      
+[3] "35: Adobe reforçado"                             "35: Covered adobe"                              
+[5] "35: Adobe cubierto-revocado(Paredes terminadas)"
+
+[[24]]
+[1] "36: WOOD PLANKS / SHINGLES"        "36: PLANCHES DE BOIS/BARDEAUX"     "36: FINISHED MATERIAL WOOD TIMBER"
+[4] "36: Wood planks / shingles"        "36: WOOD PLANK/SHINGLES"           "36: Tablones de madera"           
+[7] "36: PLANCHES DE BOIS"              "36: TABUA"                        
+
+[[25]]
+[1] "37: BRIQUES CUITES"                   "37: BAMBOO WITH CEMENT"              
+[3] "37: CORREGATED METAL SHEETS"          "37: SLATES/ABESTOS"                  
+[5] "37: METAL / CORRUGATED (ZINC SHEETS)" "37: BRICK POLISHING"                 
+[7] "37: MUR EN BETON"                     "37: PLASTER"                         
+[9] "37: MOSAICOS"                        
+
+[[26]]
+[1] "38: BRICKS"          "38: BRICK REGULAR"   "38: CHAPAS DE ZINCO"
+
+[[27]]
+[1] "39: METAL COATING"
+
+[[28]]
+[1] "40: PVC SHEETS"
+
+[[29]]
+[1] "41: PLASTERING"
+
+[[30]]
+[1] "5: Pétrole lampant"
+
+[[31]]
+[1] "6: Charbon / Lignite"
+
+[[32]]
+[1] "7: Charbon de bois"
+
+[[33]]
+[1] "8: Bois"
+
+[[34]]
+[1] "9: Paille / branchages / herbes"
+
+[[35]]
+[1] "95: Pas de repas préparé dans le ménage"          "95: Pas de repas pr<e9>par<e9> dans le m<e9>nage"
+
+[[36]]
+ [1] "96: OTHER"               "96: Autre"               "96: Autre (pr<e9>ciser)" "96: AUTRE"              
+ [5] "96: Outro"               "96: OTHER (specify)"     "96: Other"               "96: Otro"               
+ [9] "96: AUTRE (pr?ciser)"    "96: OUTROS"             
+
+[[37]]
+[1] "99: Non Déclarée" "99: NON REPONSE"  "99: NO RESPONSE"  "99: Missing"     
+
+[[38]]
+[1] "NA: NA"
+
+
+> cat("\nEU4, #fuel\n")
+
+EU4, #fuel
+
+> res <- d %>% group_by(EU4) %>%
++   do(res=paste0(.$EU4[1],": ", unique(.$EU4_lab)))
+|===========================================                                            | 50% ~2 s remaining     |================================================                                       | 56% ~9 s remaining     |======================================================                                 | 62% ~8 s remaining     |===========================================================                            | 69% ~7 s remaining     |=================================================================                      | 75% ~5 s remaining     |============================================================================           | 88% ~2 s remaining     |=======================================================================================|100% ~0 s remaining     
+> res[[2]]
+[[1]]
+[1] "1: ALCOOL / ETHANOL"  "1: ALCOHOL / ETHANOL" "1: Alcool / Ethanol"  "1: Electricity"      
+[5] "1: ALCOHOL/ ETHANOL"  "1: Electricidad"     
+
+[[2]]
+[1] "10: GARBAGE / PLASTIC"   "10: ORDURES / PLASTIQUE" "10: Animal dung"         "10: LIXO / PLÁSTICO"    
+
+[[3]]
+[1] "11: SAWDUST"                   "11: SCIURE"                    "11: Serragem (Aparo)"         
+[4] "11: Agricultural crop residue"
 
 [[4]]
 [1] "12: COPRA CAKE"    "12: IMPROVED FUEL"
 
 [[5]]
-[1] "2: GASOLINE / DIESEL"                         
-[2] "2: ESSENCE / DIESEL"                          
-[3] "2: Liquefied Petroleum Gas (LPG)?? / cylinder"
-[4] "2: Gas de petr<f3>leo licuado(GPL)"           
-[5] "2: Essence / Diesel "                         
-[6] "2: ESSENCE / MAZOUT"                          
-[7] "2: GASOLINA / GASÓLEO"                        
+[1] "2: GASOLINE / DIESEL"                          "2: ESSENCE / DIESEL"                          
+[3] "2: Gasolina / Gasóleo"                         "2: Liquefied Petroleum Gas (LPG)?? / cylinder"
+[5] "2: Gas de petr<f3>leo licuado(GPL)"            "2: Essence / Diesel "                         
+[7] "2: ESSENCE / MAZOUT"                           "2: GASOLINA / GASÓLEO"                        
 
 [[6]]
-[1] "3: KEROSENE / PARAFFIN"         "3: PETROLE / PARAFFINE"        
-[3] "3: P<e9>trole / Parafine (Gaz)" "3: PETRÓLEO / PARAFINA"        
+[1] "3: KEROSENE / PARAFFIN"         "3: PETROLE / PARAFFINE"         "3: P<e9>trole / Parafine (Gaz)"
+[4] "3: PETRÓLEO / PARAFINA"        
 
 [[7]]
-[1] "4: COAL / LIGNITE"    "4: CHARBON / LIGNITE" "4: COAL"             
-[4] "4: COAL/ LIGNITE"     "4: Biogas"            "4: Charbon / Lignite"
-[7] "4: CARVÃO"           
+[1] "4: COAL / LIGNITE"           "4: CHARBON / LIGNITE"        "4: COAL"                    
+[4] "4: Carvão mineral / Linhote" "4: COAL/ LIGNITE"            "4: Biogas"                  
+[7] "4: Charbon / Lignite"        "4: CARVÃO"                  
 
 [[8]]
-[1] "5: CHARCOAL"          "5: CHARBON DE BOIS"   "5: Kerosene"         
-[4] "5: Kerosene, alcohol" "5: Charbon de bois"   "5: CARVÃO VEGETAL"   
+[1] "5: CHARCOAL"          "5: CHARBON DE BOIS"   "5: Carvão de madeira" "5: Kerosene"         
+[5] "5: Kerosene, alcohol" "5: Charbon de bois"   "5: CARVÃO VEGETAL"   
 
 [[9]]
-[1] "6: WOOD"           "6: BOIS"           "6: Coal / Lignite"
-[4] "6: Bois "          "6: LENHA"         
+[1] "6: WOOD"           "6: BOIS"           "6: Lenha"          "6: Coal / Lignite" "6: Bois "         
+[6] "6: LENHA"         
 
 [[10]]
 [1] "7: CROP RESIDUE / GRASS / STRAW / SHRUBS"               
 [2] "7: RESIDUS DE CULTURE/ HERBES/ PAILLES/ ARBUSTES"       
-[3] "7: RESIDUS AGRICOLES / HERBES/ PAILLES/ ARBUSTES"       
-[4] "7: CROP RESIDUE/ GRASS/ STRAW/ SHRUBS"                  
-[5] "7: Charcoal"                                            
-[6] "7: Carb<f3>n"                                           
-[7] "7: R<e9>sidus de culture / Herbes / Pailles / Arbustes "
-[8] "7: RESÍDUOS AGRÍCOLAS / ERVAS/PALHAS/ ARBUSTOS"         
+[3] "7: Residos Agrícolas/Ervas/Palhas"                      
+[4] "7: RESIDUS AGRICOLES / HERBES/ PAILLES/ ARBUSTES"       
+[5] "7: CROP RESIDUE/ GRASS/ STRAW/ SHRUBS"                  
+[6] "7: Charcoal"                                            
+[7] "7: Carb<f3>n"                                           
+[8] "7: R<e9>sidus de culture / Herbes / Pailles / Arbustes "
+[9] "7: RESÍDUOS AGRÍCOLAS / ERVAS/PALHAS/ ARBUSTOS"         
 
 [[11]]
-[1] "8: ANIMAL DUNG / WASTE"       "8: BOUSE D’ANIMAUX / DECHETS"
-[3] "8: Wood"                      "8: Madera (le<f1>a)"         
+[1] "8: ANIMAL DUNG / WASTE"       "8: BOUSE D?ANIMAUX / DECHETS" "8: BOUSE D’ANIMAUX / DECHETS"
+[4] "8: Wood"                      "8: Madera (le<f1>a)"         
 
 [[12]]
-[1] "9: PROCESSED BIOMASS (PELLETS) OR WOODCHIPS"              
-[2] "9: BIOMASS MANUFACTUREE (PELLETS) OU COPEAUX DE BOIS"     
-[3] "9: WOODCHIPS"                                             
-[4] "9: BIOMASS MANUFACTUREE (GRANULES) OU COPEAUX DE BOIS"    
-[5] "9: Straw / Shrubs / Grass"                                
-[6] "9: Biomasse manufactur<e9>e (Pellets ou copeaux de bois) "
+[1] "9: PROCESSED BIOMASS (PELLETS) OR WOODCHIPS"               
+[2] "9: BIOMASS MANUFACTUREE (PELLETS) OU COPEAUX DE BOIS"      
+[3] "9: WOODCHIPS"                                              
+[4] "9: Biomassa manufaturada (Granulados) ou lascas de madeira"
+[5] "9: BIOMASS MANUFACTUREE (GRANULES) OU COPEAUX DE BOIS"     
+[6] "9: Straw / Shrubs / Grass"                                 
+[7] "9: Biomasse manufactur<e9>e (Pellets ou copeaux de bois) " 
 
 [[13]]
 [1] "95: No food cooked in household" "95: Ninguno, no cocina"         
 
 [[14]]
-[1] "96: OTHER"              "96: AUTRE"              "96: OTHER (specify)"   
-[4] "96: Other"              "96: Otro"               "96: Autre"             
-[7] "96: AUTRE (? pr?ciser)" "96: OUTRO"             
+[1] "96: OTHER"              "96: AUTRE"              "96: Outro"              "96: OTHER (specify)"   
+[5] "96: Other"              "96: Otro"               "96: Autre"              "96: AUTRE (? pr?ciser)"
+[9] "96: OUTRO"             
 
 [[15]]
 [1] "99: NON REPONSE"  "99: NO RESPONSE"  "99: Missing"      "99: SEM RESPOSTA"
@@ -966,3 +1457,5 @@ EU4, #fuel
 [[16]]
 [1] "NA: NA"
 
+
+> sink()

@@ -150,6 +150,12 @@ table(d$wat_imp)
 table(d$country, d$wat_imp)
 
 
+#Code piped versus non-piped sanination category
+d$piped_san <- factor(ifelse(d$WS11=="11","Piped","Not piped"), levels=c("Piped","Not piped"))
+d$piped_san[d$WS11 %in% c("95","96","99")|is.na(d$WS11)] <- NA
+table(d$piped_san)
+
+
 #Recode categorical sanitation and water
 # 1.	Open defecation (no service)
 # 2.	Unimproved - use of pit latrines without a slab or platform, hanging latrines or bucket latrines
@@ -200,6 +206,22 @@ table(d$san_imp_cat)
 table(d$country, d$san_imp_cat)
 table(d$san_imp, d$san_imp_cat)
 
+
+#Make 2nd category with Safely Managed as the highest level of service
+#https://washdata.org/monitoring/sanitation
+d <- d %>% mutate(
+  san_imp_cat2 = case_when(san_cat_lab=="No facility"~"No facility",
+                          san_cat_lab=="Unimproved"~"Unimproved",
+                          san_cat_lab=="Improved" & (WS15!="2"|is.na(WS15))~"Limited",
+                          san_cat_lab=="Improved" & (WS15=="2") & WS12 %in% c("1","3") & WS13 %in% c("1","11","2","3","31","21","4","41")~"Safely managed",
+                          san_cat_lab=="Improved" & (WS15=="2")~"Basic"
+  ),
+  san_imp_cat2 = factor(san_imp_cat2, levels=rev(c("No facility", "Unimproved", "Limited", "Basic", "Safely managed")))
+)
+table(d$san_imp_cat2)
+prop.table(table(d$san_imp_cat2))*100
+table(d$country, d$san_imp_cat2)
+table(d$san_imp_cat, d$san_imp_cat2)
 
 
 
@@ -446,8 +468,10 @@ d <- d %>% subset(., select = c(country,
                                 wat_imp, 
                                 hyg_imp, 
                                 san_imp_cat,
+                                san_imp_cat2,
                                 wat_imp_cat,
                                 hyg_imp_cat,
+                                piped_san,
                                 safely_manH20, 
                                 EC_S, EC_H, 
                                 EC_risk_S, 

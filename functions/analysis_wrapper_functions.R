@@ -16,7 +16,7 @@ run_MICS_regressions <- function(outcomes, family, PAF, Wvars, save.data=F){
  
 
 for(i in outcomes){
-  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- res7 <- res8 <- NULL
+  res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- res7 <- res8 <- res9 <- NULL
   print(i)
   res1 <- d %>% group_by(country) %>%
     do(mics_regression(d=.,
@@ -96,12 +96,22 @@ for(i in outcomes){
                        weight = "popweight",
                        clustid= "clust_num",
                        family=family, calc_PAF=PAF, low_risk_level="Improved"))
-  if(save.data) saveRDS(res8, file=here(paste0("results/individual_estimates/",i,"_WASH_",adj,".rds")))
+  if(save.data) saveRDS(res8, file=here(paste0("results/individual_estimates/",i,"_WASH_noEC_",adj,".rds")))
+  
+  res9 <- d %>% group_by(country) %>%
+    do(mics_regression(d=.,
+                       Y =i,
+                       X="piped_san",
+                       W=Wvars,
+                       weight = "popweight",
+                       clustid= "clust_num",
+                       family=family, calc_PAF=PAF, low_risk_level="Piped"))
+  if(save.data) saveRDS(res8, file=here(paste0("results/individual_estimates/",i,"_pipedSan_",adj,".rds")))
   
 
   
   
-  fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6, res7, res8)
+  fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6, res7, res8, res9)
 }
  
   return(fullres) 
@@ -160,6 +170,7 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
   
   fullres <- NULL 
   
+  set.seed(12345)
   
   for(i in outcomes){
     res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- res7 <- NULL
@@ -214,8 +225,16 @@ run_mics_multinomial_regressions <- function(outcomes, family, PAF, Wvars){
                                      family=family, calc_PAF=PAF, low_risk_level="Basic"))
     #saveRDS(res5, file=here(paste0("results/individual_estimates/",i,"_hyg_imp_",adj,".rds")))
     
+    res6 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="san_imp_cat2",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Safely managed"))
     
-    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5)
+    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6)
   }
   
   return(fullres) 

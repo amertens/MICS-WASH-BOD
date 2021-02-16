@@ -10,6 +10,30 @@ sink("codebooks/factor_levels.txt")
 
 #To recode:
 
+cat("\nWS11_lab, #sanitation type\n")
+res <- d %>% group_by(WS11) %>%
+  do(res=paste0(.$WS11[1],": ", unique(.$WS11_lab)))
+res[[2]]
+
+cat("\nWS12_lab, #Pit latrine or septic tank ever been emptied\n")
+res <- d %>% group_by(WS12) %>%
+  do(res=paste0(.$WS12[1],": ", unique(.$WS12_lab)))
+res[[2]]
+
+cat("\nWS13_lab, #Place the contents were emptied\n")
+res <- d %>% group_by(WS13) %>%
+  do(res=paste0(.$WS13[1],": ", unique(.$WS13_lab)))
+res[[2]]
+
+cat("\nWS14_lab, #Location of the toilet faciltity\n")
+res <- d %>% group_by(WS14) %>%
+  do(res=paste0(.$WS14[1],": ", unique(.$WS14_lab)))
+res[[2]]
+
+
+
+
+
 cat("\nWS1_lab, #drinking water source\n")
 res <- d %>% group_by(WS1) %>%
   do(res=paste0(.$WS1[1],": ", unique(.$WS1_lab)))
