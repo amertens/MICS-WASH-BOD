@@ -151,7 +151,7 @@ p_multi_pooled_HH_sens <- plotdf %>% filter(adjusted==1, binary ==1, analysis %i
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
-  coord_flip() + scale_shape_manual(values=c(19,13)) +
+  coord_flip() + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
@@ -175,7 +175,7 @@ p_multi_pooled_WQ_sens <- plotdf %>% filter(adjusted==1, binary ==1, analysis %i
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
-  coord_flip() + scale_shape_manual(values=c(19,13)) +
+  coord_flip() + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
@@ -205,7 +205,7 @@ p_basic <- basic %>%
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
-  coord_flip() + scale_shape_manual(values=c(19,13)) +
+  coord_flip() + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),

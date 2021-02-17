@@ -24,7 +24,7 @@ p_unadj_comp_RR <- d %>% filter(binary==1, analysis=="primary", country=="Pooled
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 #continuous
@@ -37,7 +37,7 @@ p_unadj_comp_diff <- d %>% filter(binary==0, analysis=="primary", country=="Pool
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 0) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Z-score difference") + theme(legend.title = element_blank(), legend.position = "right")
 
 #-------------------------------------------------------------
@@ -54,7 +54,7 @@ p_tmle_comp_RR <- d %>% filter(Y=="Diarrhea", X %in% c("EC_H","EC_S"), binary==1
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 #diff
@@ -66,7 +66,7 @@ p_tmle_comp_diff <- d %>% filter(Y=="HAZ", X %in% c("EC_H","EC_S"), binary==0, a
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 0) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Z-score difference") + theme(legend.title = element_blank(), legend.position = "right")
 
 
@@ -82,7 +82,7 @@ p_tmle_comp_RR_forest <- d %>% filter(Y=="Diarrhea", X %in% c("EC_H","EC_S"), bi
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
@@ -95,7 +95,7 @@ p_tmle_comp_diff_forest <- d %>% filter(Y=="HAZ", X %in% c("EC_H","EC_S"), binar
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position = position_dodge(0.6)) +
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 0) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
@@ -111,7 +111,7 @@ p_FE_comp_RR <- d %>% filter(binary==1, adjusted==1, multinomial==0, analysis %i
   scale_color_manual(values=tableau10[c(10,4)], guide = guide_legend(reverse = TRUE)) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
-  coord_flip() +  scale_shape_manual(values=c(19,13)) +
+  coord_flip() +  scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic reference level") + ylab("Relative Risk") + theme(legend.title = element_blank(), legend.position = "right")
 
 
