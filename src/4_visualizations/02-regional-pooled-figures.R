@@ -3,7 +3,7 @@ rm(list=ls())
 source("0-config.R")
 
 d <- readRDS(here("results/pooled_results.rds")) %>% 
-  filter(analysis=="region") %>%
+  filter(analysis=="region"|analysis=="region-multi") %>%
   #filter(!is.na(region), region!="Pooled") %>%
   rename(Region=region) %>%
   mutate(Region = factor(Region, levels=rev(c("WCA", "ESA", "MENA", "SA", "EAP", "LAC", "ECA"))))

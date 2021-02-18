@@ -75,7 +75,7 @@ df <- df %>%
     Xlab = case_when(X=="EC_H" ~ "Contaminated\nHH water", 
                      X=="EC_S" ~ "Contaminated\nsource water", 
                      X=="san_imp" ~ "Unimproved\nsanitation", 
-                     X=="piped_san" ~ "Piped\nsanitation", 
+                     X=="piped_san" ~ "Non-piped\nsanitation", 
                      X=="wat_imp" ~ "Unimproved\nwater supply", 
                      X=="hyg_imp" ~ "Unimproved\nhygiene", 
                      X=="WASH" ~ "Not improved WASH\nwith no contamination",
@@ -90,7 +90,7 @@ df <- df %>%
     Xlab=factor(Xlab, levels = rev(c(
       "Unimproved\nwater supply", 
       "Unimproved\nsanitation", 
-      "Piped\nsanitation", 
+      "Non-piped\nsanitation", 
       "Unimproved\nhygiene", 
       "Unimproved\nWASH",
       "Contaminated\nHH water", 
@@ -106,7 +106,7 @@ df <- df %>%
     Xlab2 = case_when(X=="EC_H" ~ "Contaminated HH water", 
                      X=="EC_S" ~ "Contaminated source water", 
                      X=="san_imp" ~ "Unimproved sanitation",
-                     X=="piped_san" ~ "Piped sanitation", 
+                     X=="piped_san" ~ "Non-piped sanitation", 
                      X=="wat_imp" ~ "Unimproved water supply", 
                      X=="hyg_imp" ~ "Unimproved hygiene", 
                      X=="WASH" ~ "Not improved WASH with no contamination",
@@ -121,7 +121,7 @@ df <- df %>%
     Xlab2=factor(Xlab2, levels = rev(c(
       "Unimproved water supply", 
       "Unimproved sanitation", 
-      "Piped sanitation", 
+      "Non-piped sanitation", 
       "Unimproved hygiene", 
       "Unimproved WASH",
       "Contaminated HH water", 
@@ -145,7 +145,7 @@ df <- df %>%
       contrast=="4" ~ "Very high risk", 
       contrast==contrast ~ contrast 
     ),
-    contrast=factor(contrast, levels=rev(c("Piped","Safe","Safely managed","Unsafe","Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
+    contrast=factor(contrast, levels=rev(c("Non-piped","Safe","Safely managed","Unsafe","Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
     ref = case_when(
       ref=="0" & !grepl("EC",X)~ "Improved",
       ref=="0" & grepl("EC",X) ~ "Uncontaminated",
