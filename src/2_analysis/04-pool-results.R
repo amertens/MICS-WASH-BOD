@@ -37,7 +37,7 @@ table(d$Y, d$analysis, d$adjusted)
 #Drop if country is missing reference category
 table(d$X, d$ref)
 d <- d %>% filter(!(
-  ((X=="san_imp_cat"|X=="wat_imp_cat") & ref=="Basic" & analysis!="sens-multi")  
+  ((X=="san_imp_cat2"|X=="san_imp_cat"|X=="wat_imp_cat") & ref=="Basic" & analysis!="sens-multi")  
 )
 )
 
