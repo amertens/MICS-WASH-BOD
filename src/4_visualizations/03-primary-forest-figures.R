@@ -10,7 +10,8 @@ d <- readRDS(here("results/pooled_results.rds")) %>%
 levels(d$Y)
 unique(d$X)
 d$X <- factor(d$X, levels =c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat","hyg_imp_cat",
-                             "EC_H","EC_S",  "wat_imp", "san_imp", "hyg_imp", "WASH", "safely_manH20", "WASH_noEC" ))
+                             "EC_H","EC_S",  "wat_imp", "san_imp", "hyg_imp", "WASH", "safely_manH20", "WASH_noEC",
+                             "piped_san" ,"san_imp_cat2"))
 levels(d$X)
 
 i=levels(d$Y)[7]
@@ -79,7 +80,7 @@ for(i in levels(d$Y)){
 # names(plist)
 # length(plist)
 # 
- plist$Mortality.EC_H
+ plist$Diarrhea.piped_san
 
 
 

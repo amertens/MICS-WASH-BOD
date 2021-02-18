@@ -142,10 +142,11 @@ df <- df %>%
       contrast=="1" & grepl("EC",X) ~ "Contaminated",
       contrast=="2" ~ "Moderate risk",
       contrast=="3" ~ "High risk", 
+      contrast=="Not piped" ~ "Non-piped", 
       contrast=="4" ~ "Very high risk", 
       contrast==contrast ~ contrast 
     ),
-    contrast=factor(contrast, levels=rev(c("Non-piped","Safe","Safely managed","Unsafe","Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
+    contrast=factor(contrast, levels=rev(c("Piped","Non-piped","Safe","Safely managed","Unsafe","Improved","Uncontaminated","Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   "Surface water", "Unimproved"))),
     ref = case_when(
       ref=="0" & !grepl("EC",X)~ "Improved",
       ref=="0" & grepl("EC",X) ~ "Uncontaminated",
