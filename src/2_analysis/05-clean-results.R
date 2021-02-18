@@ -22,8 +22,12 @@ SA <- SA[order(SA)]
 ESA <- ESA[order(ESA)]
 WCA <- WCA[order(WCA)]
 
+#XXXXXXXXXXXXXXXXXXXXXXXXX
+# TEMP drop san_imp_cat2
+#XXXXXXXXXXXXXXXXXXXXXXXXX
 
-
+table(df$X)
+df <-  df %>% filter(X!="san_imp_cat2")
 
 #Add reference categories with ref label
 head(df)
