@@ -27,7 +27,7 @@ p_prim_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binary==1, analysis
   geom_point(aes(shape=sig), size=2) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   #scale_color_manual(values=c("black","blue")) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   geom_hline(yintercept = 1) +
   #scale_y_continuous(breaks=c(0.25, 0.5,1, 1.1, 1.5, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_y_continuous(trans='log10') +
@@ -45,7 +45,7 @@ p_prim_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binary==1, analysis
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   #scale_color_manual(values=tableau10) +
   geom_hline(yintercept = 1) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   scale_y_continuous(trans='log10') +
   coord_flip() +
   xlab("WASH Characteristic") + ylab("Relative Risk (ref: Improved)")
@@ -73,7 +73,7 @@ p_multi_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="primary-mul
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 1) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
   xlab("") + ylab("Relative Risk")+
@@ -95,7 +95,7 @@ p_multi_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="primary-mul
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 1) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
   xlab("") + ylab("Relative Risk")+
@@ -119,7 +119,7 @@ p_prim_Zscore_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binary==0, a
   geom_point(aes(shape=sig), size=2) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_hline(yintercept = 0) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   coord_flip() +
   xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")
 
@@ -128,7 +128,7 @@ p_prim_Zscore_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binary==0, a
   ggplot(., aes(y=est, x=Xlab),color="black") +
   facet_grid(~Y) +
   geom_point(aes(shape=sig), size=2) + 
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_hline(yintercept = 0) +
   coord_flip() +
@@ -153,7 +153,7 @@ p_multi_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis=="prim
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 0) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   coord_flip() +
   xlab("") + ylab("Z-score difference")+
   theme(strip.background = element_blank(),
@@ -174,7 +174,7 @@ p_multi_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis=="prim
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
   geom_text(aes(label=reflab), nudge_y=.05, size = 3) +
   geom_hline(yintercept = 0) +
-  scale_shape_manual(values=c(19,13)) +
+  scale_shape_manual(values=c(19,13), guide=FALSE) +
   coord_flip() +
   xlab("") + ylab("Z-score difference")+
   theme(strip.background = element_blank(),

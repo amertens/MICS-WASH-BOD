@@ -2,7 +2,9 @@
 rm(list=ls())
 source("0-config.R")
 
-d <- readRDS(here("results/pooled_results.rds")) %>% filter(!is.na(region), region!="pooled") %>%
+d <- readRDS(here("results/pooled_results.rds")) %>% 
+  filter(analysis=="region"|analysis=="region-multi") %>%
+  #filter(!is.na(region), region!="Pooled") %>%
   rename(Region=region) %>%
   mutate(Region = factor(Region, levels=rev(c("WCA", "ESA", "MENA", "SA", "EAP", "LAC", "ECA"))))
 
@@ -37,7 +39,7 @@ p_Region_prim_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binary==1, a
   facet_grid(~Y) +
   geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.5, 0.7, 1,1.4, 2, 3, 4), trans='log10') +
   #scale_y_continuous(trans='log10') +
@@ -54,7 +56,7 @@ p_Region_prim_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binary==1, a
   facet_grid(~Y) +
   geom_point(aes(shape=sig), position=position_dodge(0.5)) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.5, 0.7, 1,1.4, 2, 3, 4, 6), trans='log10') +
   coord_flip(ylim=c(0.5, 6)) +
@@ -86,7 +88,7 @@ p_Region_multi_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="regi
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10') +
   coord_flip(ylim=c(0.25, 3.5)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
@@ -109,7 +111,7 @@ p_Region_multi_pooled_WQ <- d %>% filter(adjusted==1, binary==1, analysis=="regi
   geom_hline(yintercept = 1) +
   scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10') +
   coord_flip(ylim=c(0.4, 3)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
@@ -133,7 +135,7 @@ p_Region_prim_Zscore_pooled_HH <- d %>% filter(ref!=contrast, adjusted==1, binar
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-0.5, 0.25)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")+ 
   theme(legend.position = "bottom") + guides(colour = guide_legend(reverse = TRUE, nrow = 1))
 
@@ -145,7 +147,7 @@ p_Region_prim_Zscore_pooled_WQ <- d %>% filter(ref!=contrast, adjusted==1, binar
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub), position=position_dodge(0.5)) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-1, 0.25)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("WASH Characteristic") + ylab("Z-score difference (ref: Improved)")+ 
   theme(legend.position = "bottom") + guides(colour = guide_legend(reverse = TRUE, nrow = 1))
 
@@ -170,7 +172,7 @@ p_Region_multi_Zscore_pooled_HH <- d %>% filter(adjusted==1, binary==0, analysis
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-1, 0.75)) +
   xlab("") + ylab("Z-score difference")+
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
         strip.text.x = element_text(size=8, face = "bold"),
@@ -191,7 +193,7 @@ p_Region_multi_Zscore_pooled_WQ <- d %>% filter(adjusted==1, binary==0, analysis
   geom_text(aes(label=reflab), nudge_y=.05, size = 3) +
   geom_hline(yintercept = 0) +
   coord_flip(ylim=c(-0.5, 0.5)) +
-    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13)) +
+    scale_color_manual(values=dd.col) + scale_shape_manual(values=c(19,13), guide=FALSE) +
   xlab("") + ylab("Z-score difference")+
   theme(strip.background = element_blank(),
         axis.text.y = element_text(size=8, hjust = 1),
