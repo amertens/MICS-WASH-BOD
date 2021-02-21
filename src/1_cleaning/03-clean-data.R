@@ -171,22 +171,22 @@ table(d$country, is.na(d$WS15), d$san_cat_lab)
 
 #calculate levels without community coverage
 d <- d %>% mutate(
-  san_imp_cat = case_when(san_cat_lab=="No facility"~"No facility",
+  san_imp_cat_basic = case_when(san_cat_lab=="No facility"~"No facility",
                           san_cat_lab=="Unimproved"~"Unimproved",
                           san_cat_lab=="Improved" & (WS15!="2"|is.na(WS15))~"Limited", #Note is.na is not needed currently because no improved is missing WS15
                           san_cat_lab=="Improved" & (WS15=="2")~"Basic"
   ))
-table(d$san_imp_cat)
-table(is.na(d$san_imp_cat), d$san_imp)
-table(d$country, d$san_imp_cat)
+table(d$san_imp_cat_basic)
+table(is.na(d$san_imp_cat_basic), d$san_imp)
+table(d$country, d$san_imp_cat_basic)
 
 #calculate community coverage 
 d <- d %>% group_by(country, clust_num) %>% 
-  mutate(san_coverage= mean(san_imp_cat=="Basic"), high_coverage=ifelse(san_coverage>0.75,1,0)) %>%
+  mutate(san_coverage= mean(san_imp_cat_basic=="Basic"), high_coverage=ifelse(san_coverage>0.75,1,0)) %>%
   ungroup()
 
 summary(d$san_coverage)
-prop.table(table(d$san_imp_cat, d$high_coverage),1)
+prop.table(table(d$san_imp_cat_basic, d$high_coverage),1)
 table(d$san_cat_lab, d$high_coverage, d$WS15)
 
 table(d$country, d$WS15)
@@ -223,6 +223,37 @@ prop.table(table(d$san_imp_cat2))*100
 table(d$country, d$san_imp_cat2)
 table(d$san_imp_cat, d$san_imp_cat2)
 
+#Piped_san_cat
+# a. Unimproved (no facility, unimproved and limited combined) (baseline)
+# b. Basic, non-sewer
+# c. Basic connected to sewer
+table(d$san_imp_cat_basic, d$piped_san)
+d <- d %>% mutate(
+  Piped_san_cat = case_when(
+    san_imp_cat_basic!="Basic" ~ "Unimproved",
+    piped_san=="Not piped" ~ "Basic, non-sewer",
+    piped_san=="Piped" ~ "Sewered"
+  ),
+  Piped_san_cat = factor(Piped_san_cat, levels = rev(c("Sewered","Basic, non-sewer","Unimproved")))
+)
+table(d$Piped_san_cat)
+table(d$Piped_san_cat, d$san_imp_cat_basic, d$piped_san)
+
+# san_coverage
+# a. Unimproved (no facility, unimproved and limited combined) (baseline)
+# b. Basic (<75% coverage)
+# c. Basic (???75% coverage)
+table(d$san_imp_cat)
+d <- d %>% mutate(
+  san_coverage = case_when(
+    san_imp_cat %in% c("Limited", "Unimproved", "No facility") ~ "Unimproved",
+    piped_san=="Not piped" ~ "Basic",
+    piped_san=="Piped" ~ "High coverage"
+  ),
+  san_coverage = factor(san_coverage, levels = rev(c("High coverage","Basic","Unimproved")))
+)
+table(d$san_coverage)
+table(d$country, d$san_coverage)
 
 
 # 1.	Surface water (no service)
@@ -322,9 +353,71 @@ d$WASH_noEC[is.na(d$san_imp)|is.na(d$wat_imp)|is.na(d$hyg_imp)] <- NA
 table(d$WASH)
 table(d$WASH_noEC)
 
-# d %>% group_by(country) %>%
-#   summarise(N_households=n(), N_imp_wat=sum(wat_imp, na.rm=T), N_imp_san=sum(san_imp, na.rm=T),  N_imp_hygeine=sum(hyg_imp, na.rm=T), N_imp_WASH=sum(WASH_noEC, na.rm=T))
 
+#Code secondary water contrasts
+# 1. Improved, not on premise versus unimproved source (unimproved and surface together)
+table(d$wat_imp_cat)
+d <- d %>% mutate(
+  imp_off_prem_V_unimp = case_when(
+  wat_imp_cat %in% c("Unimproved","Surface water") ~ "Unimproved",
+  wat_imp=="Improved" & WS3 %in% c(3,4) ~ "Improved, off premise"
+          ),
+  imp_off_prem_V_unimp = factor(imp_off_prem_V_unimp, levels = c("Improved, off premise","Unimproved"))
+  )
+table(d$imp_off_prem_V_unimp)
+table(d$country, d$imp_off_prem_V_unimp)
+table(d$country, is.na(d$imp_off_prem_V_unimp))
+table(d$wat_imp_cat, is.na(d$imp_off_prem_V_unimp))
+
+# 2. Improved on premise versus Improved, not on premise
+d <- d %>% mutate(
+  imp_on_prem_V_imp_off_prem = case_when(
+    wat_imp=="Improved" & WS3 %in% c(1,2) ~ "Improved, on premise",
+    wat_imp=="Improved" & WS3 %in% c(3,4) ~ "Improved, off premise"
+    ),
+  imp_on_prem_V_imp_off_prem = factor(imp_on_prem_V_imp_off_prem, levels = c("Improved, on premise","Improved, off premise"))
+  )
+table(d$imp_on_prem_V_imp_off_prem)
+table(d$wat_imp_cat, (d$imp_on_prem_V_imp_off_prem))
+table(d$wat_imp_cat, is.na(d$imp_on_prem_V_imp_off_prem))
+
+# 3. Improved, on premise, high water quality versus Improved, on premise, not HQ water
+d <- d %>% mutate(
+  imp_on_prem_HQ_V_imp_on_prem_LQ = case_when(
+    wat_imp=="Improved" & WS3 %in% c(1,2) & EC_H=="Uncontaminated" ~ "Improved, on premise, uncontaminated",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & EC_H=="Contaminated" ~ "Improved, on premise, contaminated"
+  ),
+  imp_on_prem_HQ_V_imp_on_prem_LQ = factor(imp_on_prem_HQ_V_imp_on_prem_LQ, levels = c("Improved, on premise, uncontaminated","Improved, on premise, contaminated"))
+)
+table(d$imp_on_prem_HQ_V_imp_on_prem_LQ)
+table(d$country, d$imp_on_prem_HQ_V_imp_on_prem_LQ)
+
+# 4. Improved, on premise, continuous supply/sufficient water versus improved on premise, non-sufficient
+d <- d %>% mutate(
+  imp_on_prem_sufficient_V_imp_on_prem_insufficient = case_when(
+    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) ~ "Improved, on premise, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 ~ "Improved, on premise, insufficient"
+  ),
+  imp_on_prem_sufficient_V_imp_on_prem_insufficient = factor(imp_on_prem_sufficient_V_imp_on_prem_insufficient, levels = c("Improved, on premise, sufficient","Improved, on premise, insufficient"))
+)
+table(d$imp_on_prem_sufficient_V_imp_on_prem_insufficient)
+table(d$country, d$imp_on_prem_sufficient_V_imp_on_prem_insufficient, d$diarrhea)
+
+# 5. Improved, on premise, HQ water plus sufficient water versus improved, on premise, not HQ water and non-sufficient
+d <- d %>% mutate(
+  imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ = case_when(
+    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) & EC_H=="Uncontaminated"  ~ "Improved, on premise, HQ, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 & EC_H=="Contaminated" ~ "Improved, on premise, LQ, insufficient"
+  ),
+  imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ = factor(imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ, levels = c("Improved, on premise, HQ, sufficient","Improved, on premise, LQ, insufficient"))
+)
+table(d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ)
+table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ, d$diarrhea)
+
+
+#-------------------------------------------------------------------
+# Outcome coding
+#-------------------------------------------------------------------
 
 #Rename outcome variables
 d <- d %>% rename(
@@ -479,6 +572,13 @@ d <- d %>% subset(., select = c(country,
                                 EC_cfu_H, EC_cfu_S,
                                 WASH, 
                                 WASH_noEC,
+                                Piped_san_cat,
+                                san_coverage,
+                                imp_off_prem_V_unimp,
+                                imp_on_prem_V_imp_off_prem,
+                                imp_on_prem_HQ_V_imp_on_prem_LQ,
+                                imp_on_prem_sufficient_V_imp_on_prem_insufficient,
+                                imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ,
                                 diarrhea, 
                                 ari,
                                 mort,
