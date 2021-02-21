@@ -461,3 +461,96 @@ run_mics_tmle <- function(outcomes, family, PAF=NULL, glm=F, Wvars){
 
 
 
+
+
+
+
+
+
+
+run_MICS_regressions_secondary <- function(outcomes, family, PAF, Wvars){
+  
+  adj <- ifelse(is.null(Wvars),"unadj","adj")
+  
+  fullres <- NULL 
+  
+  set.seed(12345)
+  
+  for(i in outcomes){
+    res1 <- res2 <- res3 <- res4 <- res5 <- res6 <- res7 <- NULL
+    print(i)
+    res1 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="Piped_san_cat",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Sewered"))
+    
+    res2 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="san_coverage",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="High coverage"))
+    
+    res3 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_off_prem_V_unimp",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, off premise"))
+    
+    res4 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_on_prem_V_imp_off_prem",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, on premise"))
+    
+    res5 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_on_prem_HQ_V_imp_on_prem_LQ",
+                         W=Wvars,
+                         weight = "ecpopweight_H",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, on premise, uncontaminated"))
+    
+    res6 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_on_prem_sufficient_V_imp_on_prem_insufficient",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, on premise, sufficient"))
+    
+    res7 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ",
+                         W=Wvars,
+                         weight = "ecpopweight_H",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, on premise, HQ, sufficient"))
+    
+    
+    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6, res7)
+  }
+  
+  return(fullres) 
+}
+
+
+
+
+
+
