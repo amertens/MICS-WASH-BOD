@@ -16,7 +16,7 @@ d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 #-------------------------------------------------
 
 res_unadj <- res_unadj_bin <- res_unadj_cont <- NULL
-res_unadj_bin <- run_MICS_regressions_secondary(outcomes = c("diarrhea"), family="modified possion", PAF=F, Wvars=NULL, save.data=F)
+res_unadj_bin <- run_MICS_regressions_secondary(outcomes = c("diarrhea"), family="modified possion", PAF=F, Wvars=NULL)
 
 
 res_unadj <- bind_rows(res_unadj_bin, res_unadj_cont)
@@ -32,7 +32,7 @@ saveRDS(res_unadj, here("results/unadjusted_RR_secondary.rds"))
 res_adj <- res_adj_bin <- res_adj_cont <- NULL
 
 d <- droplevels(d)
-res_adj_bin <- run_MICS_regressions_secondary(outcomes = c("diarrhea"), family="modified possion", PAF=F, Wvars=Wvars, save.data=F)
+res_adj_bin <- run_MICS_regressions_secondary(outcomes = c("diarrhea"), family="modified possion", PAF=F, Wvars=Wvars)
 
 
 res_adj <- bind_rows(res_adj_bin, res_adj_cont)
