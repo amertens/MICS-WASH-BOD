@@ -92,20 +92,13 @@ df <- df %>%
                      X=="san_imp_cat2" ~ "Safely managed\nsanitation", 
                      X=="wat_imp_cat" ~ "Water supply\ncategory", 
                      X=="hyg_imp_cat" ~ "Hygiene\ncategory",
-X=="Piped_san_cat" ~ "Piped sanitation",
-X=="san_coverage" ~ "Sanitation Coverage",
-X=="imp_off_prem_V_unimp" ~ "Unimproved\n(ref: Imp. off prem.)",
-X=="imp_on_prem_V_imp_off_prem" ~ "Imp. off prem.\n(ref: Imp. on prem.)",
-X=="imp_on_prem_HQ_V_imp_on_prem_LQ" ~ "Imp. on prem. HQ\n(ref: Imp. on prem. LQ)"
-
-
-xxxxxxxxxxxxxx
-Need to fix the Xlab and Xlab2 below to match above and rerun figures with updated data and X-labels.
-Then update website
-xxxxxxxxxxxxxxxx
-
-X=="imp_on_prem_sufficient_V_imp_on_prem_insufficient" ~ "Imp. on prem. suff.\nV Imp. on prem. insuff.",
-X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. suff. HQ\nV Imp. on prem. insuff. LQ"),
+                      X=="Piped_san_cat" ~ "Piped sanitation",
+                      X=="san_coverage" ~ "Sanitation Coverage",
+                      X=="imp_off_prem_V_unimp" ~ "Unimproved\n(ref: Imp. off prem.)",
+                      X=="imp_on_prem_V_imp_off_prem" ~ "Imp. off prem.\n(ref: Imp. on prem.)",
+                      X=="imp_on_prem_HQ_V_imp_on_prem_LQ" ~ "Imp. on prem. HQ\n(ref: Imp. on prem. LQ)",
+                      X=="imp_on_prem_sufficient_V_imp_on_prem_insufficient" ~ "Imp. on prem. insuff.\n(ref: Imp. on prem. suff.)",
+                      X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. insuff. LQ\n(ref:Imp. on prem. suff. HQ)"),
     Xlab=factor(Xlab, levels = rev(c(
       "Unimproved\nwater supply", 
       "Unimproved\nsanitation", 
@@ -124,11 +117,12 @@ X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. su
       "Hygiene\ncategory",
       "Piped sanitation",
       "Sanitation Coverage",
-      "Imp. off prem.\nV Unimp.",
-      "Imp. on prem.\nV Imp. off prem.",
-      "Imp. on prem. HQ\nV Imp. on prem. LQ",
-      "Imp. on prem. suff.\nV Imp. on prem. insuff.",
-      "Imp. on prem. suff. HQ\nV Imp. on prem. insuff. LQ"))),
+      "Unimproved\n(ref: Imp. off prem.)", 
+      "Imp. off prem.\n(ref: Imp. on prem.)",
+      "Imp. on prem. HQ\n(ref: Imp. on prem. LQ)",
+      "Imp. on prem. insuff.\n(ref: Imp. on prem. suff.)",
+      "Imp. on prem. insuff. LQ\n(ref:Imp. on prem. suff. HQ)"
+      ))),
     Xlab2 = case_when(X=="EC_H" ~ "Contaminated HH water", 
                      X=="EC_S" ~ "Contaminated source water", 
                      X=="san_imp" ~ "Unimproved sanitation",
@@ -146,11 +140,11 @@ X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. su
                      X=="hyg_imp_cat" ~ "Hygiene category",
                      X=="Piped_san_cat" ~ "Piped sanitation",
                      X=="san_coverage" ~ "Sanitation Coverage",
-                     X=="imp_off_prem_V_unimp" ~ "Imp. off prem. V Unimp.",
-                     X=="imp_on_prem_V_imp_off_prem" ~ "Imp. on prem. V Imp. off prem.",
-                     X=="imp_on_prem_HQ_V_imp_on_prem_LQ" ~ "Imp. on prem. HQ V Imp. on prem. LQ",
-                     X=="imp_on_prem_sufficient_V_imp_on_prem_insufficient" ~ "Imp. on prem. suff. V Imp. on prem. insuff.",
-                     X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. suff. HQ V Imp. on prem. insuff. LQ"),
+                     X=="imp_off_prem_V_unimp" ~ "Unimproved (ref: Imp. off prem.)",
+                     X=="imp_on_prem_V_imp_off_prem" ~ "Imp. off prem. (ref: Imp. on prem.)",
+                     X=="imp_on_prem_HQ_V_imp_on_prem_LQ" ~ "Imp. on prem. HQ (ref: Imp. on prem. LQ)",
+                     X=="imp_on_prem_sufficient_V_imp_on_prem_insufficient" ~ "Imp. on prem. insuff. (ref: Imp. on prem. suff.)",
+                     X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. insuff. LQ (ref:Imp. on prem. suff. HQ)"),
     Xlab2=factor(Xlab2, levels = rev(c(
       "Unimproved water supply", 
       "Unimproved sanitation", 
@@ -169,11 +163,12 @@ X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. su
       "Hygiene category",
       "Piped sanitation",
       "Sanitation Coverage",
-      "Imp. off prem. V Unimp.",
-      "Imp. on prem. V Imp. off prem.",
-      "Imp. on prem. HQ V Imp. on prem. LQ",
-      "Imp. on prem. suff. V Imp. on prem. insuff.",
-      "Imp. on prem. suff. HQ V Imp. on prem. insuff. LQ"))),
+      "Unimproved (ref: Imp. off prem.)", 
+      "Imp. off prem. (ref: Imp. on prem.)",
+      "Imp. on prem. HQ (ref: Imp. on prem. LQ)",
+      "Imp. on prem. insuff. (ref: Imp. on prem. suff.)",
+      "Imp. on prem. insuff. LQ (ref:Imp. on prem. suff. HQ)"
+      ))),
     contrast = case_when(
       contrast=="0" & !grepl("EC",X)~ "Improved",
       contrast=="1" & !grepl("EC",X)~ "Unimproved",
@@ -189,9 +184,9 @@ X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. su
     contrast=factor(contrast, levels=rev(
       c("Piped","Non-piped","Safe","Safely managed","Unsafe","Improved","Uncontaminated",
         "Contaminated","Low risk","Moderate risk", "High risk",  "Very high risk",  
-        "High coverage", "Continuous",  "Basic", "Limited",  "No facility", "None",   
+        "Basic, non-sewer","Sewered", 
+        "High coverage",  "Continuous",  "Basic", "Limited",  "No facility", "None", 
         "Surface water", "Unimproved",
-        "Basic, non-sewer","Sewered",                               
         "Improved, off premise",
         "Improved, on premise, contaminated","Improved, on premise, insufficient",
         "Improved, on premise, LQ, insufficient", "Improved, on premise",
