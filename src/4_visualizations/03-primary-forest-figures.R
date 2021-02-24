@@ -4,14 +4,21 @@ source("0-config.R")
 
 d <- readRDS(here("results/pooled_results.rds")) %>% 
    filter(!is.na(ci.lb),
-          analysis %in% c("primary-multi", "primary", "FE"))
+          analysis %in% c("primary-multi", "primary", "secondary", "FE"))
 
 
 levels(d$Y)
 unique(d$X)
 d$X <- factor(d$X, levels =c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat","hyg_imp_cat",
                              "EC_H","EC_S",  "wat_imp", "san_imp", "hyg_imp", "WASH", "safely_manH20", "WASH_noEC",
-                             "piped_san" ,"san_imp_cat2"))
+                             "piped_san" ,"san_imp_cat2",
+                             "Piped_san_cat",
+                             "san_coverage",
+                             "imp_off_prem_V_unimp",     
+                             "imp_on_prem_V_imp_off_prem",
+                             "imp_on_prem_HQ_V_imp_on_prem_LQ",
+                             "imp_on_prem_sufficient_V_imp_on_prem_insufficient",  
+                             "imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ"))
 levels(d$X)
 
 i=levels(d$Y)[7]
@@ -24,7 +31,7 @@ plist <- list()
 
 for(i in levels(d$Y)){
   for(j in levels(d$X)){
-   df <- d %>% filter(adjusted==1, analysis %in% c("primary","primary-multi","FE"), Y==i, X==j) %>% 
+   df <- d %>% filter(adjusted==1, analysis %in% c("primary","primary-multi","secondary","FE"), Y==i, X==j) %>% 
       droplevels(.) 
    
    if(nrow(df)>0){
