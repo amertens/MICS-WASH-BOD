@@ -247,8 +247,8 @@ table(d$san_imp_cat)
 d <- d %>% mutate(
   san_coverage = case_when(
     san_imp_cat %in% c("Limited", "Unimproved", "No facility") ~ "Unimproved",
-    piped_san=="Not piped" ~ "Basic",
-    piped_san=="Piped" ~ "High coverage"
+    san_imp_cat=="Basic" ~ "Basic",
+    san_imp_cat=="High coverage" ~ "High coverage"
   ),
   san_coverage = factor(san_coverage, levels = rev(c("High coverage","Basic","Unimproved")))
 )
