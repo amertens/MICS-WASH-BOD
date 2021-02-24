@@ -94,9 +94,16 @@ df <- df %>%
                      X=="hyg_imp_cat" ~ "Hygiene\ncategory",
 X=="Piped_san_cat" ~ "Piped sanitation",
 X=="san_coverage" ~ "Sanitation Coverage",
-X=="imp_off_prem_V_unimp" ~ "Imp. off prem.\nV Unimp.",
-X=="imp_on_prem_V_imp_off_prem" ~ "Imp. on prem.\nV Imp. off prem.",
-X=="imp_on_prem_HQ_V_imp_on_prem_LQ" ~ "Imp. on prem. HQ\nV Imp. on prem. LQ",
+X=="imp_off_prem_V_unimp" ~ "Unimproved\n(ref: Imp. off prem.)",
+X=="imp_on_prem_V_imp_off_prem" ~ "Imp. off prem.\n(ref: Imp. on prem.)",
+X=="imp_on_prem_HQ_V_imp_on_prem_LQ" ~ "Imp. on prem. HQ\n(ref: Imp. on prem. LQ)"
+
+
+xxxxxxxxxxxxxx
+Need to fix the Xlab and Xlab2 below to match above and rerun figures with updated data and X-labels.
+Then update website
+xxxxxxxxxxxxxxxx
+
 X=="imp_on_prem_sufficient_V_imp_on_prem_insufficient" ~ "Imp. on prem. suff.\nV Imp. on prem. insuff.",
 X=="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ" ~ "Imp. on prem. suff. HQ\nV Imp. on prem. insuff. LQ"),
     Xlab=factor(Xlab, levels = rev(c(
