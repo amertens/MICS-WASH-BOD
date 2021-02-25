@@ -87,7 +87,7 @@ for(i in levels(d$Y)){
 # names(plist)
 # length(plist)
 # 
- plist$Diarrhea.piped_san
+ plist$Diarrhea.Piped_san_cat
 
 
 
