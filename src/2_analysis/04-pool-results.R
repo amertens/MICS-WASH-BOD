@@ -164,7 +164,7 @@ RMAest_bin_region <- RMAest_bin_region %>%
   mutate(analysis=case_when(analysis=="primary"~"region", analysis=="primary-multi"~"region-multi"))
 
 
-df_FE <- bind_rows(RMAest_cont_FE, RMAest_bin_FE) %>% filter(analysis=="primary"|analysis=="primary-multi") %>% mutate(analysis="FE")
+df_FE <- bind_rows(RMAest_cont_FE, RMAest_bin_FE) %>% filter(analysis=="primary"|analysis=="primary-multi"|analysis=="secondary") %>% mutate(analysis="FE")
 df <- bind_rows(ind_df, RMAest_cont, RMAest_bin, df_FE, RMAest_cont_region, RMAest_bin_region)
 
 head(df)
