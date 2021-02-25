@@ -62,10 +62,10 @@ p_sec_multi_pooled <- d %>% filter(X %in% c("Piped_san_cat","san_coverage" ), ad
   facet_grid(Xlab~Y, scale="free_y", switch = "y") +
   geom_point(aes(shape=sig), size=2) + 
   geom_linerange(aes(ymin=ci.lb, ymax=ci.ub )) +
-  geom_text(aes(label=reflab), nudge_y=-.015, size = 3) +
+  geom_text(aes(label=reflab), nudge_y=-.03, size = 3) +
   geom_hline(yintercept = 1) +
   scale_shape_manual(values=c(19,13), guide=FALSE) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  scale_y_continuous(breaks=c(0.25, 0.5,0.7,0.8,0.9, 1, 1.1, 1.2, 2, 4, 8), trans='log10', labels=scaleFUN) +
   coord_flip() +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
