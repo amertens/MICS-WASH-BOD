@@ -66,7 +66,7 @@ df <- df %>%
     ),
     region=factor(region, levels=rev(c("WCA", "ESA", "LAC", "SA","EAP","MENA","ECA","Pooled"))),
     country=factor(country, levels=rev(c(WCA, ESA,LAC,SA,EAP,MENA,ECA, "Pooled - FE","Pooled - RE"))),
-    multinomial = ifelse(X %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat"),1,0),
+    multinomial = ifelse(X %in% c("EC_risk_H", "EC_risk_S", "wat_imp_cat", "san_imp_cat", "hyg_imp_cat","Piped_san_cat","san_coverage"),1,0),
     Y=case_when(
       Y=="stunt" ~ "Stunting",
       Y=="wast" ~ "Wasting",
