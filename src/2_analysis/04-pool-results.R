@@ -18,6 +18,15 @@ d_RR_multi_adj_sens <- readRDS(here("results/adjusted_mult_RR_sens.rds")) %>% mu
 d_unadj_secondary <- readRDS(here("results/unadjusted_RR_secondary.rds")) %>% mutate(analysis="secondary", W = "unadjusted", adjusted=0)
 d_adj_secondary <- readRDS(here("results/adjusted_RR_secondary.rds")) %>% mutate(analysis="secondary", adjusted=1)
 
+dim(d_adj_secondary)
+d_adj_secondary <- d_adj_secondary %>% filter(!is.na(ci.lb)) %>% group_by(country, analysis, Y, X, ref) %>% mutate(N=n()) %>%
+  filter(X %in% c("Piped_san_cat", "san_coverage") & N==2 | 
+           X %in% c("imp_off_prem_V_unimp","imp_on_prem_V_imp_off_prem",
+                    "imp_on_prem_HQ_V_imp_on_prem_LQ","imp_on_prem_sufficient_V_imp_on_prem_insufficient",
+                    "imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ") & N==1 )
+dim(d_adj_secondary)
+
+
 #d<- d_adj_secondary %>% filter(X %in% c("Piped_san_cat","san_coverage"))
 
 #only include countries with both subgroups

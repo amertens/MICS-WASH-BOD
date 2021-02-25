@@ -412,7 +412,7 @@ d <- d %>% mutate(
   imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ = factor(imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ, levels = c("Improved, on premise, HQ, sufficient","Improved, on premise, LQ, insufficient"))
 )
 table(d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ)
-table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ, d$diarrhea)
+table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ)
 
 
 #-------------------------------------------------------------------
