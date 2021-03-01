@@ -51,7 +51,7 @@ p_sec_pooled <- d %>% filter(!(X %in% c("Piped_san_cat","san_coverage" )),ref!=c
   #scale_y_continuous(breaks=c(0.25, 0.5,1, 1.1, 1.5, 2, 4, 8), trans='log10', labels=scaleFUN) +
   scale_y_continuous(trans='log10') +
   coord_flip() +
-  xlab("Sanitation Characteristic") + ylab("Relative Risk (ref: Improved)")
+  xlab("Water Characteristic") + ylab("Relative Risk (ref: Improved)")
 p_sec_pooled
 
 

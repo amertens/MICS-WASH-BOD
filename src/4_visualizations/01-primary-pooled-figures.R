@@ -74,7 +74,7 @@ p_multi_pooled_HH <- d %>% filter(adjusted==1, binary==1, analysis=="primary-mul
   geom_text(aes(label=reflab), nudge_y=.1, size = 3) +
   geom_hline(yintercept = 1) +
   scale_shape_manual(values=c(19,13), guide=FALSE) +
-  scale_y_continuous(breaks=c(0.25, 0.5,1, 2, 4, 8), trans='log10', labels=scaleFUN) +
+  scale_y_continuous(breaks=c(0.25, 0.5,0.8,1,1.2, 1.5, 2, 4, 8), trans='log10') +
   coord_flip() +
   xlab("") + ylab("Relative Risk")+
   theme(strip.background = element_blank(),
