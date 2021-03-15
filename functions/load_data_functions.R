@@ -236,7 +236,7 @@ namekey <- c(
 # }
 
 
-load_MICS_dataset <- function(country, saveCodebook=F){
+load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
   path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
   bh_path=paste0(country,"/bh.sav")
@@ -244,143 +244,151 @@ load_MICS_dataset <- function(country, saveCodebook=F){
   hl_path=paste0(country,"/hl.sav")
   
   d <- NULL
-  try(d <- read_dta(data_path(path)))
-  if(is.null(d)){
-    try(d <- read_sav(data_path(hh_path)))
-    if(is.null(d)){d <- read_dta(data_path(paste0(country,"/hh.dta")))} 
-
-    #to do: use excel sheet to get the variable name conversion
-    d <- plyr::rename( d, replace=namekey, warn_missing=F)
-  }
   
-  #Rename variables if needed
-  if(is.null(d$WS15)){
-    d <- d %>% 
-      subset(., select= -c(WS11)) %>%
-      rename(
-      WS11=WS8,
-      WS15=WS9
-    )
-  }
-  if(is.null(d$WS4)){
-    try(d <- d %>% rename(WS4=WS4A))
-  }
-  if(is.null(d$WS7)){
-    try(d <- d %>% rename(WS7=WS5A))
-  }
-
-  for(i in colnames(d)){
-    if(class(d[[i]])[1]=="haven_labelled"){
-      #d[[i]] <- as_factor(d[[i]])
-      d <- bind_cols(d, temporary=as_factor(d[[i]]))
-      colnames(d)[ncol(d)] <- paste0(i,"_lab")
-    }
-  }
-
-
-  if(isFile(data_path(hh_path))){
-    hh <- read_sav(data_path(hh_path))
-  }else{
-    hh_path=paste0(country,"/hh.dta")
-    hh <- read_dta(data_path(hh_path))
-  }
-  #summary(hh$WQ26)
-  try(hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
-    filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
-    subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S)))
-
+    try(d <- read_dta(data_path(path)))
+    if(is.null(d)){
+      try(d <- read_sav(data_path(hh_path)))
+      if(is.null(d)){d <- read_dta(data_path(paste0(country,"/hh.dta")))} 
   
-  
-  
-  #load and merge child health
-  ch <- read_sav(data_path(ch_path))
-  ch <- ch %>% rename(clust_num=HH1, HH_num=HH2)
-  
-  if("UF3" %in% colnames(ch)){
-    ch <- ch %>% rename(childLN=UF3)
-  }else{
-    ch$childLN=NA
-  }
-  if(!("UF4" %in% colnames(ch))){
-    ch <- ch %>% rename(UF4=UF6)
-  }
-  #subset to relevant CH variables
-  if(!is.null(ch$CAGED)){
-    ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "UF4", "childLN", "melevel", "HL4", "CAGED", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
-                                               "HAZFLAG", "WAZFLAG", "WHZFLAG", "CA1","CA14","CA16","CA17","CA18","CA20")]]
-    # ch <- ch %>% subset(., select = c(clust_num, HH_num, 
-    #                                   childLN, HL4, CAGED, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20))
-  }else{
-    ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "UF4", "childLN", "melevel","HL4", "CAGE", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
-                                               "HAZFLAG", "WAZFLAG", "WHZFLAG", "CA1","CA14","CA16","CA17","CA18","CA20")]]
-    # ch <- ch %>% subset(., select = c(clust_num, HH_num, 
-    #                                   childLN, HL4, CAGE, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20)) %>%
-    ch <- ch %>%  mutate(CAGED=CAGE*30.4167) %>%
-      subset(., select = -c(CAGE))
-  }
-  try(bh <- read_sav(data_path(bh_path)))
-  
-  try(bh$mort <- ifelse(bh$BH5==2,1,0))
-  try(bh$mort <- ifelse(bh$BH5==9,NA,bh$mort))
-  # summary(d$BH9C)
-  # table(d$BH9U, d$BH9N)
-  
-  try(bh <- bh  %>% rename(clust_num=HH1, HH_num=HH2, 
-                           #HH.LN=LN, 
-                           childLN=BH8))
-  #subset to relevant BH variables
-  try(bh <- bh[,colnames(bh) %in% c("clust_num", "HH_num","childLN", "brthord", "mort")])
-  
-
-  
-  # Relations with: hl.sav, tn.sav, wm.sav, bh.sav, fg.sav, mm.sav, ch.sav, fs.sav and mn.sav
-  # Base key variables: HH1 (cluster number) and HH2 (household number)
-  # 
-  # Instruction to the users:
-  #   When merging household members', women's, children's and other data files with their households, you need to use the cluster numbers (variable HH1) and household numbers (variable HH2) as key variables. Since there is a "one-to-many" relationship between households and individuals, you should start with the individual data: household member, women or child, as your "base" (or 'active data set') and locate the correct household for each member, meaning that you should be merging the household data sets onto household members', women's or children's data, and not the other way around. 
-  dim(ch)
-  dim(d)
-  d2 <- full_join(ch, d, by = c("clust_num","HH_num"))
-  dim(d2)
-  
-  dim(hh)
-  d3 <- NULL
-  try(d3 <- full_join(d2, hh, by = c("clust_num","HH_num")))
-  if(is.null(d3)){d3<-d2}
-  dim(d3)
-  
-  #table(is.na(bh$brthord))
-  try(d3 <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
-  dim(d3)
-  table(d3$mort)
-  #table(is.na(df$brthord))
-  
-  hl <- NULL
-  try(if(is.null(d3$HHAGE)){
-    hl <- read_sav(data_path(hl_path))
-    #lab<-makeVlist(hl)
-    hl2 <- NULL
-    try(
-      hl2 <- hl %>%
-      rename(UF4=HL8,
-             HH_num=HH2,
-             clust_num=HH1,
-             HHAGE=ED2A) %>%
-      select(clust_num, HH_num, UF4, HHAGE) %>% filter(UF4!=0))
-    if(is.null(hl2)){
-      hl2 <- hl %>%
-        rename(UF4=HL7,
-               HH_num=HH2,
-               clust_num=HH1,
-               HHAGE=HL6) %>%
-        select(clust_num, HH_num, UF4, HHAGE) %>% filter(UF4!=0)
+      #to do: use excel sheet to get the variable name conversion
+      d <- plyr::rename( d, replace=namekey, warn_missing=F)
     }
     
+    #Rename variables if needed
+  if(survey_round==5){
+    if(is.null(d$WS15)){
+      d <- d %>% 
+        subset(., select= -c(WS11)) %>%
+        rename(
+        WS11=WS8,
+        WS15=WS9
+      )
+    }
+    if(is.null(d$WS4)){
+      try(d <- d %>% rename(WS4=WS4A))
+    }
+    if(is.null(d$WS7)){
+      try(d <- d %>% rename(WS7=WS5A))
+    }
+  }
+  
+    for(i in colnames(d)){
+      if(class(d[[i]])[1]=="haven_labelled"){
+        #d[[i]] <- as_factor(d[[i]])
+        d <- bind_cols(d, temporary=as_factor(d[[i]]))
+        colnames(d)[ncol(d)] <- paste0(i,"_lab")
+      }
+    }
+  
+  
+    if(isFile(data_path(hh_path))){
+      hh <- read_sav(data_path(hh_path))
+    }else{
+      hh_path=paste0(country,"/hh.dta")
+      hh <- read_dta(data_path(hh_path))
+    }
+    #summary(hh$WQ26)
+    try(hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
+      filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
+      subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S)))
+  
+    
+    
+    
+    #load and merge child health
+    ch <- read_sav(data_path(ch_path))
+    ch <- ch %>% rename(clust_num=HH1, HH_num=HH2)
+    
+    if("UF3" %in% colnames(ch)){
+      ch <- ch %>% rename(childLN=UF3)
+    }else{
+      ch$childLN=NA
+    }
+    if(!("UF4" %in% colnames(ch))){
+      ch <- ch %>% rename(UF4=UF6)
+    }
+    #subset to relevant CH variables
+    if(!is.null(ch$CAGED)){
+      ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "UF4", "childLN", "melevel", "HL4", "CAGED", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
+                                                 "HAZFLAG", "WAZFLAG", "WHZFLAG", "CA1","CA14","CA16","CA17","CA18","CA20")]]
+      # ch <- ch %>% subset(., select = c(clust_num, HH_num, 
+      #                                   childLN, HL4, CAGED, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20))
+    }else{
+      ch <- ch[,colnames(ch)[colnames(ch) %in% c("clust_num", "HH_num", "UF4", "childLN", "melevel","HL4", "CAGE", "BD2", "BD3", "HAZ2", "WAZ2", "WHZ2", 
+                                                 "HAZFLAG", "WAZFLAG", "WHZFLAG", "CA1","CA14","CA16","CA17","CA18","CA20")]]
+      # ch <- ch %>% subset(., select = c(clust_num, HH_num, 
+      #                                   childLN, HL4, CAGE, BD2, BD3, HAZ2, WAZ2, WHZ2, HAZFLAG, WAZFLAG, WHZFLAG, CA1,CA14,CA16,CA17,CA18,CA20)) %>%
+      ch <- ch %>%  mutate(CAGED=CAGE*30.4167) %>%
+        subset(., select = -c(CAGE))
+    }
+    try(bh <- read_sav(data_path(bh_path)))
+    
+    try(bh$mort <- ifelse(bh$BH5==2,1,0))
+    try(bh$mort <- ifelse(bh$BH5==9,NA,bh$mort))
+    # summary(d$BH9C)
+    # table(d$BH9U, d$BH9N)
+    
+    try(bh <- bh  %>% rename(clust_num=HH1, HH_num=HH2, 
+                             #HH.LN=LN, 
+                             childLN=BH8))
+    #subset to relevant BH variables
+    try(bh <- bh[,colnames(bh) %in% c("clust_num", "HH_num","childLN", "brthord", "mort")])
+    
+  
+    
+    # Relations with: hl.sav, tn.sav, wm.sav, bh.sav, fg.sav, mm.sav, ch.sav, fs.sav and mn.sav
+    # Base key variables: HH1 (cluster number) and HH2 (household number)
+    # 
+    # Instruction to the users:
+    #   When merging household members', women's, children's and other data files with their households, you need to use the cluster numbers (variable HH1) and household numbers (variable HH2) as key variables. Since there is a "one-to-many" relationship between households and individuals, you should start with the individual data: household member, women or child, as your "base" (or 'active data set') and locate the correct household for each member, meaning that you should be merging the household data sets onto household members', women's or children's data, and not the other way around. 
+    dim(ch)
+    dim(d)
+    d2 <- full_join(ch, d, by = c("clust_num","HH_num"))
+    dim(d2)
+    
+    dim(hh)
+    d3 <- NULL
+    try(d3 <- full_join(d2, hh, by = c("clust_num","HH_num")))
+    if(is.null(d3)){
+      cat("HH dataset is missing!\n")
+      d3<-d2
+      }
     dim(d3)
-    dim(hl2)
-    d3 <- left_join(d3, hl2, by=c("clust_num","HH_num","UF4"))
+    
+    #table(is.na(bh$brthord))
+    try(d3 <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
     dim(d3)
-  })
+    table(d3$mort)
+    #table(is.na(df$brthord))
+    
+    hl <- NULL
+    try(if(is.null(d3$HHAGE)){
+      hl <- read_sav(data_path(hl_path))
+      #lab<-makeVlist(hl)
+      hl2 <- NULL
+      try(
+        hl2 <- hl %>%
+        rename(UF4=HL8,
+               HH_num=HH2,
+               clust_num=HH1,
+               HHAGE=ED2A) %>%
+        select(clust_num, HH_num, UF4, HHAGE) %>% filter(UF4!=0))
+      if(is.null(hl2)){
+        hl2 <- hl %>%
+          rename(UF4=HL7,
+                 HH_num=HH2,
+                 clust_num=HH1,
+                 HHAGE=HL6) %>%
+          select(clust_num, HH_num, UF4, HHAGE) %>% filter(UF4!=0)
+      }
+      
+      dim(d3)
+      dim(hl2)
+      d3 <- left_join(d3, hl2, by=c("clust_num","HH_num","UF4"))
+      dim(d3)
+    })
+
+  
   
   if(saveCodebook){
     lab<-makeVlist(d3)

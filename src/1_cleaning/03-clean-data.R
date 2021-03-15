@@ -414,6 +414,27 @@ d <- d %>% mutate(
 table(d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ)
 table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ)
 
+# 6. Improved, on premise, HQ water plus sufficient water versus improved, on premise, HQ water and non-sufficient
+d <- d %>% mutate(
+  imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ = case_when(
+    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) & EC_H=="Uncontaminated"  ~ "Improved, on premise, HQ, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 & EC_H=="Uncontaminated" ~ "Improved, on premise, HQ, insufficient"
+  ),
+  imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ = factor(imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ, levels = c("Improved, on premise, HQ, sufficient","Improved, on premise, HQ, insufficient"))
+)
+table(d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ)
+table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ)
+
+# 7. Improved, on premise, LQ water plus sufficient water versus improved, on premise, LQ water and non-sufficient
+d <- d %>% mutate(
+  imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ = case_when(
+    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) & EC_H=="Contaminated"  ~ "Improved, on premise, LQ, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 & EC_H=="Contaminated" ~ "Improved, on premise, LQ, insufficient"
+  ),
+  imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ = factor(imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ, levels = c("Improved, on premise, LQ, sufficient","Improved, on premise, LQ, insufficient"))
+)
+table(d$imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ)
+table(d$country, d$imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ)
 
 #-------------------------------------------------------------------
 # Outcome coding
@@ -539,15 +560,9 @@ res <- df %>% group_by(country) %>%
 dim(d)
 dim(res)
 
-d <- left_join(d, res, by = c("country","clust_num","HH_num"))
-dim(d)
-table(is.na(d$HHwealth_quart))
-table(d$country, is.na(d$HHwealth_quart))
-
-d$HHwealth_quart <-as.character(d$HHwealth_quart)
-d$HHwealth_quart[is.na(d$HHwealth_quart)] <- "missing"
-table(d$HHwealth_quart)
-d$HHwealth_quart <-factor(d$HHwealth_quart, levels=c("WealthQ1", "WealthQ2", "WealthQ3", "WealthQ4", "missing"))
+rm(df)
+rm(dfull)
+gc()
 
 
 
@@ -579,6 +594,8 @@ d <- d %>% subset(., select = c(country,
                                 imp_on_prem_HQ_V_imp_on_prem_LQ,
                                 imp_on_prem_sufficient_V_imp_on_prem_insufficient,
                                 imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ,
+                                imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ,
+                                imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ,
                                 diarrhea, 
                                 ari,
                                 mort,
@@ -627,9 +644,9 @@ d <- d %>% subset(., select = c(country,
                                 HC17, #any animals, 
                                 HC5, #roof material
                                 HC6, #wall material
-                                HC3, #number of rooms used for sleeping
-                                HHwealth,
-                                HHwealth_quart
+                                HC3#, #number of rooms used for sleeping
+                                # HHwealth,
+                                # HHwealth_quart
     )) %>% 
   rename(
     #educ=helevel, #education level
@@ -686,6 +703,20 @@ d <- d %>% subset(., select = c(country,
     nroom_sleeping = ifelse(nroom_sleeping=="99",NA,nroom_sleeping)#,
     #nroom_sleeping = as.numeric(nroom_sleeping)
   )
+
+
+#merge in HH wealth
+gc()
+d <- left_join(d, res, by = c("country","clust_num","HH_num"))
+dim(d)
+table(is.na(d$HHwealth_quart))
+table(d$country, is.na(d$HHwealth_quart))
+
+d$HHwealth_quart <-as.character(d$HHwealth_quart)
+d$HHwealth_quart[is.na(d$HHwealth_quart)] <- "missing"
+table(d$HHwealth_quart)
+d$HHwealth_quart <-factor(d$HHwealth_quart, levels=c("WealthQ1", "WealthQ2", "WealthQ3", "WealthQ4", "missing"))
+
 
 saveRDS(d, here("data/compiled_intermediate_MICS_survey.rds"))
 

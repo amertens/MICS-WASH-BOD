@@ -1,6 +1,5 @@
 
 
-
 # #saveRDS(res1, file=here(paste0("results/individual_estimates/",i,"_EC_H_",adj,".rds")))
 # 
 # 
@@ -542,8 +541,27 @@ run_MICS_regressions_secondary <- function(outcomes, family, PAF, Wvars){
                          clustid= "clust_num",
                          family=family, calc_PAF=PAF, low_risk_level="Improved, on premise, HQ, sufficient"))
     
+    res8 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ",
+                         W=Wvars,
+                         weight = "ecpopweight_H",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, on premise, HQ, sufficient"))
+
+    res9 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ",
+                         W=Wvars,
+                         weight = "ecpopweight_H",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Improved, on premise, LQ, sufficient"))
     
-    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6, res7)
+    
+    
+    fullres <- bind_rows(fullres, res1, res2, res3, res4, res5, res6, res7, res8, res9)
   }
   
   return(fullres) 
