@@ -23,9 +23,6 @@ d$ecpopweight_H <- as.numeric(d$ecpopweight_H)
 d$ecpopweight_S <- as.numeric(d$ecpopweight_S)
 d$popweight <- as.numeric(d$popweight)
 
-d$EC_cfu_H <- as.numeric(d$EC_cfu_H)
-d$EC_cfu_S <- as.numeric(d$EC_cfu_S)
-
 
 #------------------------------------------------------
 # clean outcomes and exposures
@@ -34,17 +31,17 @@ d$EC_cfu_S <- as.numeric(d$EC_cfu_S)
 d <- d %>% mutate(
   EC_risk_H = 
     case_when(
-      EC_risk_H_1 ==100 ~ 1,   
-      EC_risk_H_2 ==100 ~ 2,   
-      EC_risk_H_3 ==100 ~ 3,   
-      EC_risk_H_4 ==100 ~ 4
+      EC_risk_H_1 ==1 ~ 1,   
+      EC_risk_H_2 ==1 ~ 2,   
+      EC_risk_H_3 ==1 ~ 3,   
+      EC_risk_H_4 ==1 ~ 4
     ),
   EC_risk_S = 
     case_when(
-      EC_risk_S_1 ==100 ~ 1,   
-      EC_risk_S_2 ==100 ~ 2,   
-      EC_risk_S_3 ==100 ~ 3,   
-      EC_risk_S_4 ==100 ~ 4
+      EC_risk_S_1 ==1 ~ 1,   
+      EC_risk_S_2 ==1 ~ 2,   
+      EC_risk_S_3 ==1 ~ 3,   
+      EC_risk_S_4 ==1 ~ 4
     ),
     EC_risk_H = factor(EC_risk_H, levels=c("1","2","3","4")),
     EC_risk_S = factor(EC_risk_S, levels=c("1","2","3","4"))
@@ -84,6 +81,8 @@ prop.table(table(is.na(d$EC_risk_H)))
 # table(d$country, d$HW3BC)
 # table(d$country, d$HW3A)
 
+table(d$HW7A)
+table(d$HW3BA)
 table(d$HW7A, d$HW3BA)
 table(d$HW7A=="A", d$HW3BA=="A")
 
@@ -96,8 +95,7 @@ d$hyg_imp <- factor(ifelse(d$HW2==1 &
                                 (d$HW3BB=="B" & !is.na(d$HW3BB))|
                                 (d$HW3BC=="C" & !is.na(d$HW3BC))), 
                            "Improved","Unimproved"), levels=c("Improved","Unimproved"))
-d$hyg_imp[(d$HW2==9 | d$HW1>4 | 
-             (is.na(d$HW7A)&is.na(d$HW7B)&is.na(d$HW3BA)&is.na(d$HW3BB)&is.na(d$HW3BC)))] <- NA
+d$hyg_imp[(d$HW2==9 | d$HW1>4 | (is.na(d$HW7A)&is.na(d$HW7B)&is.na(d$HW3BA)&is.na(d$HW3BB)&is.na(d$HW3BC)))] <- NA
 table(d$hyg_imp)
 prop.table(table(d$hyg_imp))
 table(d$country, d$hyg_imp)

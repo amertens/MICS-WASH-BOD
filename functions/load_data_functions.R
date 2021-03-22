@@ -237,23 +237,23 @@ namekey <- c(
 
 
 load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
-  path=paste0(country,"/",country,"_cleaned.dta")
+ 
+  #path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
   bh_path=paste0(country,"/bh.sav")
   hh_path=paste0(country,"/hh.sav")
   hl_path=paste0(country,"/hl.sav")
   
-  d <- NULL
-  
-    try(d <- read_dta(data_path(path)))
-    if(is.null(d)){
+      d <- NULL
       try(d <- read_sav(data_path(hh_path)))
       if(is.null(d)){d <- read_dta(data_path(paste0(country,"/hh.dta")))} 
   
+  #Merge with namekey. Make sure all datasets have ecoli and weights
       #to do: use excel sheet to get the variable name conversion
-      d <- plyr::rename( d, replace=namekey, warn_missing=F)
-    }
-    
+      d <- plyr::rename( d, replace=namekey, warn_missing=T)
+      suppressWarnings(try(d <- d %>% rename(clust_num=HH1, HH_num=HH2)))
+      
+      
     #Rename variables if needed
   if(survey_round==5){
     if(is.null(d$WS15)){
@@ -281,16 +281,16 @@ load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
     }
   
   
-    if(isFile(data_path(hh_path))){
-      hh <- read_sav(data_path(hh_path))
-    }else{
-      hh_path=paste0(country,"/hh.dta")
-      hh <- read_dta(data_path(hh_path))
-    }
+    # if(isFile(data_path(hh_path))){
+    #   hh <- read_sav(data_path(hh_path))
+    # }else{
+    #   hh_path=paste0(country,"/hh.dta")
+    #   hh <- read_dta(data_path(hh_path))
+    # }
     #summary(hh$WQ26)
-    try(hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
-      filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
-      subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S)))
+    # try(hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
+    #   filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
+    #   subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S)))
   
     
     
@@ -346,21 +346,20 @@ load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
     d2 <- full_join(ch, d, by = c("clust_num","HH_num"))
     dim(d2)
     
-    dim(hh)
-    d3 <- NULL
-    try(d3 <- full_join(d2, hh, by = c("clust_num","HH_num")))
-    if(is.null(d3)){
-      cat("HH dataset is missing!\n")
-      d3<-d2
-      }
-    dim(d3)
+    # dim(hh)
+    # d3 <- NULL
+    # try(d3 <- full_join(d2, hh, by = c("clust_num","HH_num")))
+    # if(is.null(d3)){
+    #   cat("HH dataset is missing!\n")
+    #   d3<-d2
+    #   }
+    # dim(d3)
     
     #table(is.na(bh$brthord))
-    try(d3 <- left_join(d3, bh, by = c("clust_num","HH_num","childLN")))
-    dim(d3)
-    table(d3$mort)
-    #table(is.na(df$brthord))
-    
+    d3<-NULL
+    try(d3 <- left_join(d2, bh, by = c("clust_num","HH_num","childLN")))
+    if(is.null(d3)){d3<-d2}
+       
     hl <- NULL
     try(if(is.null(d3$HHAGE)){
       hl <- read_sav(data_path(hl_path))
@@ -399,250 +398,179 @@ load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
   df <- df %>%
     mutate_all(as.character)
   
-  
+  df <- df[,!grepl("\\.",colnames(df))]
+
+  df <- clean_WASH(df)
   
   return(df)
 }
 
 
-
-
-load_MICS_mort_dataset <- function(country){
-  bh_path=paste0(country,"/bh.sav")
-  hh_path=paste0(country,"/hh.sav")
-
-    d<-NULL
-    try(d <- read_sav(data_path(hh_path)))
-    if(is.null(d)){d <- read_dta(data_path(paste0(country,"/hh.dta")))} 
-    
-    d <- plyr::rename( d, replace=namekey, warn_missing=F)
-    d <- d[, unique(colnames(d))]
-    d <- d %>% mutate(
-      svd = as.numeric(HH5D),
-      svm = as.numeric(HH5M),
-      svy = as.numeric(HH5Y)
-    ) %>%
-      mutate(svtime = lubridate::ymd(paste(svy,svm,svd,sep="-"))) %>%
-      subset(., select = c(clust_num, HH_num, svtime))
-    head(d)
-
-  try(bh <- read_sav(data_path(bh_path)))
-  try(bh$mort <- ifelse(bh$BH5==2,1,0))
-  try(bh$mort <- ifelse(bh$BH5==9,NA,bh$mort))
-  if(is.null(bh$BH4D))(bh$BH4D <- 15)
-  try(bh <- bh  %>% rename(clust_num=HH1, HH_num=HH2, 
-                           childLN=BH8,
-                           age=BH6,
-                           sex=BH3,
-                           agedthm=BH9C,
-                           agedthu=BH9U,
-                           agedthn=BH9N,
-                           birthday= BH4D,
-                           birthmn= BH4M,
-                           birthyr= BH4Y
-                           )%>%
-      mutate( birthday= ifelse(birthday==99,NA,birthday),
-              birthmn= ifelse(birthmn==99,NA,birthmn),
-              birthyr= ifelse(birthyr==9999,NA,birthyr),
-        dob = lubridate::ymd(
-          paste(birthyr,birthmn,birthday,sep="-")),
-        agedthu=as.numeric(agedthu),
-        agedthn=as.numeric(agedthn),
-      agedth = case_when(agedthu==1 ~ agedthn/365,
-                         agedthu==2 ~ agedthn/12,
-                         agedthu==3 ~ agedthn,
-                         agedthu==9 ~ NA_real_))) 
-    
-  #subset to relevant BH variables
-  try(bh <- bh[,colnames(bh) %in% c("clust_num", "HH_num","childLN", "mort","sex","age","agedth","dob")])
-  
-  dim(bh)
-  dim(d)
-  d2 <- full_join(bh, d, by = c("clust_num","HH_num"))
-  dim(d2)
-  
-  d3 <- d2 %>% mutate(time_from_birth= lubridate::time_length(svtime-dob,unit="years")) %>% 
-    #drop children older than 5 who died, and children who died more than 5 years prior to survey
-    filter(time_from_birth <= 5 & time_from_birth >= 0)
-  dim(d3)
-  table(d3$mort)  
-  summary(d3$time_from_birth)
-  summary(d3$agedth)
-  summary(d3$age)
-  
-  d4 <- d3 %>% subset(., select=c(clust_num, HH_num,childLN,sex,mort))
-  
-  df <- data.frame(d4, country= country)
-  df <- df %>%
-    mutate_all(as.character)
-  
-  return(df)
-}
 
 
 
 #clean WASH variables
 clean_WASH <- function(d){
-  colnames(d)
-  table(d$WS1)
-  table(d$WS1_lab)
   
   d <- d %>% mutate(
     wat_class_lab = case_when(
-      WS1=="11" ~ "Piped water",
-      WS1=="12" ~ "Piped water",
-      WS1=="13" ~ "Piped water",
-      WS1=="14" ~ "Piped water",
-      WS1=="21" ~ "Boreholes/Tubewells",
-      WS1=="22" ~ "Boreholes/Tubewells",
-      WS1=="23" ~ "Boreholes/Tubewells",
-      WS1=="31" ~ "Protected wells and springs",
-      WS1=="32" ~ "Unprotected wells and springs",
-      WS1=="41" ~ "Protected wells and springs",
-      WS1=="42" ~ "Unprotected wells and springs",
-      WS1=="51" ~ "Rainwater",
-      WS1=="61" ~ "Delivered water",
-      WS1=="62" ~ "Delivered water",
-      WS1=="71" ~ "Delivered water",
-      WS1=="72" ~ "Delivered water",
-      WS1=="73" ~ "Delivered water",
-      WS1=="81" ~ "Surface water",
-      WS1=="82" ~ "Surface water",
-      WS1=="91" ~ "Packaged water",
-      WS1=="92" ~ "Packaged water",
-      WS1=="93" ~ "Packaged water",
-      WS1=="96" ~ "Missing",
-      WS1=="99" ~ "Missing",
-      is.na(WS1)~ "Missing"),
+      WS1=="11" ~ "Piped water", # PIPED WATER: PIPED INTO DWELLING
+      WS1=="12" ~ "Piped water", # PIPED WATER: PIPED TO YARD / PLOT
+      WS1=="13" ~ "Piped water", # PIPED WATER: PIPED TO NEIGHBOUR
+      WS1=="14" ~ "Piped water", # PIPED WATER: PUBLIC TAP / STANDPIPE
+      WS1=="21" ~ "Boreholes/Tubewells", # TUBE WELL / BOREHOLE
+      WS1=="22" ~ "Boreholes/Tubewells", # TUBE WELL / BOREHOLE UNPROTECTED WELL
+      WS1=="23" ~ "Boreholes/Tubewells", # HAND PUMP (Machincal)
+      WS1=="31" ~ "Protected wells and springs", #DUG WELL: PROTECTED WELL
+      WS1=="32" ~ "Unprotected wells and springs", #DUG WELL: UNPROTECTED WELL
+      WS1=="41" ~ "Protected wells and springs", #SPRING: PROTECTED SPRING
+      WS1=="42" ~ "Unprotected wells and springs", #SPRING: UNPROTECTED SPRING
+      WS1=="51" ~ "Rainwater", # RAINWATER
+      WS1=="52" ~ "Tank", #OWN CEMENT OR OTHER TANK
+      WS1=="53" ~ "Tank", #NEIGHBOUR?S CEMENT OR OTHER TANK
+      WS1=="54" ~ "Tank", #COMMUNITY CEMENT OR OTHER TANK
+      WS1=="61" ~ "Delivered water", #TANKER-TRUCK
+      WS1=="62" ~ "Delivered water", #BIDON, BASSIN,SEAU LIVRE A DOMICILE
+      WS1=="71" ~ "Delivered water", #CART WITH SMALL TANK
+      WS1=="72" ~ "Delivered water", #WATER KIOSK
+      WS1=="73" ~ "Delivered water", #WATER KIOSK NOT CONNECTED WITH PIPED WATER
+      WS1=="81" ~ "Surface water", #SURFACE WATER
+      WS1=="82" ~ "Desalination plant", #DISALINATION PLANT WATER
+      WS1=="91" ~ "Packaged water", #PACKAGED WATER: BOTTLED WATER
+      WS1=="92" ~ "Packaged water", #PACKAGED WATER: SACHET WATER
+      WS1=="93" ~ "Packaged water", #PACKAGED WATER: DESALINIZED & STERILIZED WATER
+      WS1=="96" ~ "Missing", #OTHER
+      WS1=="99" ~ "Missing", #NO RESPONSE
+      is.na(WS1)~ "Missing"), 
     wat2_class_lab = case_when(
-      WS2=="11" ~ "Piped water",
-      WS2=="12" ~ "Piped water",
-      WS2=="13" ~ "Piped water",
-      WS2=="14" ~ "Piped water",
-      WS2=="21" ~ "Boreholes/Tubewells",
-      WS2=="22" ~ "Boreholes/Tubewells",
-      WS2=="23" ~ "Boreholes/Tubewells",
-      WS2=="31" ~ "Protected wells and springs",
-      WS2=="32" ~ "Unprotected wells and springs",
-      WS2=="41" ~ "Protected wells and springs",
-      WS2=="42" ~ "Unprotected wells and springs",
-      WS2=="51" ~ "Rainwater",
-      WS2=="61" ~ "Delivered water",
-      WS2=="62" ~ "Delivered water",
-      WS2=="71" ~ "Delivered water",
-      WS2=="72" ~ "Delivered water",
-      WS2=="73" ~ "Delivered water",
-      WS2=="81" ~ "Surface water",
-      WS2=="82" ~ "Surface water",
-      WS2=="91" ~ "Packaged water",
-      WS2=="92" ~ "Packaged water",
-      WS2=="93" ~ "Packaged water",
-      WS2=="96" ~ "Missing",
-      WS2=="99" ~ "Missing",
-      is.na(WS2)~ "Missing"),
+      WS2=="11" ~ "Piped water", # PIPED WATER: PIPED INTO DWELLING
+      WS2=="12" ~ "Piped water", # PIPED WATER: PIPED TO YARD / PLOT
+      WS2=="13" ~ "Piped water", # PIPED WATER: PIPED TO NEIGHBOUR
+      WS2=="14" ~ "Piped water", # PIPED WATER: PUBLIC TAP / STANDPIPE
+      WS2=="21" ~ "Boreholes/Tubewells", # TUBE WELL / BOREHOLE
+      WS2=="22" ~ "Boreholes/Tubewells", # TUBE WELL / BOREHOLE UNPROTECTED WELL
+      WS2=="23" ~ "Boreholes/Tubewells", # HAND PUMP (Machincal)
+      WS2=="31" ~ "Protected wells and springs", #DUG WELL: PROTECTED WELL
+      WS2=="32" ~ "Unprotected wells and springs", #DUG WELL: UNPROTECTED WELL
+      WS2=="41" ~ "Protected wells and springs", #SPRING: PROTECTED SPRING
+      WS2=="42" ~ "Unprotected wells and springs", #SPRING: UNPROTECTED SPRING
+      WS2=="51" ~ "Rainwater", # RAINWATER
+      WS2=="52" ~ "Tank", #OWN CEMENT OR OTHER TANK
+      WS2=="53" ~ "Tank", #NEIGHBOUR?S CEMENT OR OTHER TANK
+      WS2=="54" ~ "Tank", #COMMUNITY CEMENT OR OTHER TANK
+      WS2=="61" ~ "Delivered water", #TANKER-TRUCK
+      WS2=="62" ~ "Delivered water", #BIDON, BASSIN,SEAU LIVRE A DOMICILE
+      WS2=="71" ~ "Delivered water", #CART WITH SMALL TANK
+      WS2=="72" ~ "Delivered water", #WATER KIOSK
+      WS2=="73" ~ "Delivered water", #WATER KIOSK NOT CONNECTED WITH PIPED WATER
+      WS2=="81" ~ "Surface water", #SURFACE WATER
+      WS2=="82" ~ "Desalination plant", #DISALINATION PLANT WATER
+      WS2=="91" ~ "Packaged water", #PACKAGED WATER: BOTTLED WATER
+      WS2=="92" ~ "Packaged water", #PACKAGED WATER: SACHET WATER
+      WS2=="93" ~ "Packaged water", #PACKAGED WATER: DESALINIZED & STERILIZED WATER
+      WS2=="96" ~ "Missing", #OTHER
+      WS2=="99" ~ "Missing", #NO RESPONSE
+      is.na(WS2)~ "Missing"), #
     wat_imp = as.character(case_when(
-      wat_class_lab %in% c("Rainwater","Surface water","Unprotected wells and springs","Delivered water")  ~ 0,
-      wat_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells")  ~ 1,
-      wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Rainwater","Surface water","Unprotected wells and springs","Delivered water")  ~ 0,
-      wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells")  ~ 1,
+      
+      #https://washdata.org/monitoring/drinking-water
+      #Note: Improved drinking water sources are those that have the potential to 
+      #deliver safe water by nature of their design and construction, and include:
+      #piped water, boreholes or tubewells, protected dug wells, protected springs, 
+      #rainwater, and packaged or delivered water
+      #file:///C:/Users/andre/Downloads/JMP-2017-tr-smdw%20(1).pdf
+      wat_class_lab %in% c("Surface water","Unprotected wells and springs")  ~ 0,
+      wat_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells", "Tank", "Desalination plant","Packaged water","Delivered water","Rainwater")  ~ 1,
+      # wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Rainwater","Surface water","Unprotected wells and springs","Delivered water")  ~ 0,
+      # wat_class_lab=="Packaged water" & wat2_class_lab %in% c("Protected wells and springs","Piped water","Boreholes/Tubewells")  ~ 1,
       wat_class_lab == "Missing" ~ NA_real_
     )),
     san_cat_lab = NA,
     san_cat_lab = case_when(
+       # 11: FLUSH / POUR FLUSH: FLUSH TO PIPED SEWER SYSTEM   
+       # 12: FLUSH / POUR FLUSH: FLUSH TO SEPTIC TANK     
+       # 13: FLUSH / POUR FLUSH: FLUSH TO PIT LATRINE    
+       # 14: FLUSH / POUR FLUSH: FLUSH TO OPEN DRAIN         
+       # 15: Flush to unknown place / Not sure / DK where                          
+       # 18: FLUSH / POUR FLUSH: FLUSH TO DONT KNOW WHERE           
+       # 21: PIT LATRINE: VENTILATED IMPROVED PIT LATRINE                                                        
+       # 22: PIT LATRINE: PIT LATRINE WITH SLAB                                                     
+       # 23: PIT LATRINE: PIT LATRINE WITHOUT SLAB / OPEN PIT                             
+       # 24: PIT LATRINE WITH SEAT                                  
+       # 25: Latrine as <fa> n without slab, without roof or door
+       # 31: COMPOSTING TOILET                                                    
+       # 41: BUCKET                                                 
+       # 51: HANGING TOILET / HANGING LATRINE          
+       # 61: MOBILE TOILET
+       # 95: NO FACILITY / BUSH / FIELD                          
+       # 96: OTHER   
+       # 99: NO RESPONSE  
+    
+      #https://washdata.org/monitoring/sanitation
+      #Improved sanitation facilities are those designed to hygienically separate excreta from
+      #human contact, and include: flush/pour flush to piped sewer system, septic tanks or pit 
+      #latrines; ventilated improved pit latrines, composting toilets or pit latrines with slabs
        WS11 %in% c("95") ~ "No facility",
-       WS11 %in% c("14","18","23","51") ~ "Unimproved",
+       WS11 %in% c("14","15","18","23","24","25","41","51") ~ "Unimproved",
        #WS15 == "2" & WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
-       WS11 %in% c("11","12","13","21","22","31","")~ "Improved",
+       WS11 %in% c("11","12","13","21","22","31","61")~ "Improved",
        WS11 %in% c("96","99") ~ NA_character_,
-       is.na(san_cat_lab) ~ "Unimproved"
+       is.na(WS11) ~ NA_character_
     ),
     san_imp = as.character(case_when(
       san_cat_lab %in% c("Unimproved","No facility")  ~ 0,
       san_cat_lab == c("Improved")  ~ 1,
       san_cat_lab == "Missing" | is.na(san_cat_lab) ~ NA_real_
-      )),
-    ecpopweight_H = wqhweight,
-    ecpopweight_S = wqsweight,
-    popweight = hhweight
+      ))
     )
+  
+  try(d <- d %>% rename(
+    popweight = hhweight
+  ))
+  try(d <- d %>% rename(
+    ecpopweight_H = wqhweight,
+    ecpopweight_S = wqsweight
+  ))
+  try(d <- d %>% rename(
+    ecpopweight_H = wqhaweight,
+    ecpopweight_S = wqsaweight
+  ))
+  if(is.null(d$ecpopweight_H)){
+    try(d <- d %>% mutate(
+      ecpopweight_H = wqweight,
+      ecpopweight_S = wqweight
+    ))
+  }
+  if(is.null(d$ecpopweight_H)){
+    try(d <- d %>% mutate(
+      ecpopweight_H = popweight,
+      ecpopweight_S = popweight
+    ))
+  }
+  
   
   d$EC_100_H <- as.numeric(d$EC_100_H)
   d$EC_100_S <- as.numeric(d$EC_100_S)
-d$EC_risk_H_1 <- ifelse(d$EC_100_H==0,"100","0") 	#Low risk: E. coli < 1 cfu/100 mL
+d$EC_risk_H_1 <- ifelse(d$EC_100_H==0,"1","0") 	#Low risk: E. coli < 1 cfu/100 mL
   d$EC_risk_H_1[is.na(d$EC_100_H)] <-  NA
-d$EC_risk_H_2 <- ifelse(d$EC_100_H>0 & d$EC_100_H<11,"100","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
+d$EC_risk_H_2 <- ifelse(d$EC_100_H>0 & d$EC_100_H<11,"1","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
   d$EC_risk_H_2[is.na(d$EC_100_H)] <-  NA
-d$EC_risk_H_3 <- ifelse(d$EC_100_H>10 & d$EC_100_H<101,"100","0") 	#High risk: E. coli 11-100 cfu/100 mL
+d$EC_risk_H_3 <- ifelse(d$EC_100_H>10 & d$EC_100_H<101,"1","0") 	#High risk: E. coli 11-100 cfu/100 mL
   d$EC_risk_H_3[is.na(d$EC_100_H)] <-  NA
-d$EC_risk_H_4 <- ifelse(d$EC_100_H>100,"100","0") 	#Very high risk: E. coli >100 cfu/100 mL
+d$EC_risk_H_4 <- ifelse(d$EC_100_H>100,"1","0") 	#Very high risk: E. coli >100 cfu/100 mL
   d$EC_risk_H_4[is.na(d$EC_100_H)] <-  NA
-d$EC_risk_S_1 <- ifelse(d$EC_100_S==0,"100","0") 	#Low risk: E. coli < 1 cfu/100 mL
+d$EC_risk_S_1 <- ifelse(d$EC_100_S==0,"1","0") 	#Low risk: E. coli < 1 cfu/100 mL
   d$EC_risk_S_1[is.na(d$EC_100_S)] <-  NA
-d$EC_risk_S_2 <- ifelse(d$EC_100_S>0 & d$EC_100_S<11,"100","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
+d$EC_risk_S_2 <- ifelse(d$EC_100_S>0 & d$EC_100_S<11,"1","0") 	#Moderate risk: E. coli 1-10 cfu/100 mL
   d$EC_risk_S_2[is.na(d$EC_100_S)] <-  NA
-d$EC_risk_S_3 <- ifelse(d$EC_100_S>10 & d$EC_100_S<101,"100","0") 	#High risk: E. coli 11-100 cfu/100 mL
+d$EC_risk_S_3 <- ifelse(d$EC_100_S>10 & d$EC_100_S<101,"1","0") 	#High risk: E. coli 11-100 cfu/100 mL
   d$EC_risk_S_3[is.na(d$EC_100_S)] <-  NA
-d$EC_risk_S_4 <- ifelse(d$EC_100_S>100,"100","0") 	#Very high risk: E. coli >100 cfu/100 mL
+d$EC_risk_S_4 <- ifelse(d$EC_100_S>100,"1","0") 	#Very high risk: E. coli >100 cfu/100 mL
   d$EC_risk_S_4[is.na(d$EC_100_S)] <-  NA
   d$EC_100_H <- as.character(d$EC_100_H)
   d$EC_100_S <- as.character(d$EC_100_S)
 
-#   table(d$EC_risk_H_1)
-#   table(d$EC_risk_H_2)
-#   table(d$EC_risk_H_3)
-#   table(d$EC_risk_H_4)
-#   table(d$EC_risk_S_1)
-#   table(d$EC_risk_S_2)
-#   table(d$EC_risk_S_3)
-#   table(d$EC_risk_S_4)
-  
-  
-  
- #Variables to add: 
-  # EC_risk_H_1
-  # EC_risk_H_2
-  # EC_risk_H_3
-  # EC_risk_H_4
-  # EC_risk_S_1
-  # EC_risk_S_2
-  # EC_risk_S_3
-  # EC_risk_S_4
-  
-  
   return(d)
-#  table(d$WS8) 
-#  table(d$WS9) 
-#  
-#  table(d$wat_class_lab)
-#  table(d$wat_imp)
-#  table(d$san_class_lab)
-#  table(d$san_imp)
-#        
-#   
-# unique(d$wat_class_lab)
-# unique(d$wat_imp)
-# 
-#   res <- bd %>% group_by(WS11) %>%
-#     do(res=paste0(.$WS11[1],": ", unique(.$WS11_lab)))
-#   res[[2]]
-#   res2 <- bd %>% group_by(WS15) %>%
-#     do(res=paste0(.$WS15[1],": ", unique(.$WS15_lab)))
-#   res2[[2]]
-# 
-# 
-#   table(bd$san_cat_lab)
-#   table(bd$san_imp)
-  
-  
 }
-
-
-
-
-
-
-
-
-
 
 

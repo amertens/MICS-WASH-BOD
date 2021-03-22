@@ -2,13 +2,55 @@ rm(list=ls())
 source("0-config.R")
 library(washb)
 
-
+gc()
 d <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
-
+d <- d %>% subset(., select=c(HW1:HW6, WS1,WS2,WS11:WS14, helevel, area_type, HC4:HC6, EU1:EU4, HC17,
+                              HW1_lab:HW6_lab, WS1_lab,WS2_lab,WS11_lab:WS14_lab, helevel_lab, area_type_lab, HC4_lab:HC6_lab, EU1_lab:EU4_lab, HC17_lab))
+gc()
 
 sink("codebooks/factor_levels.txt") 
 
 #To recode:
+
+cat("\nHW1_lab, #Place where household members most often wash their hands\n")
+res <- d %>% group_by(HW1) %>%
+  do(res=paste0(.$HW1[1],": ", unique(.$HW1_lab)))
+res[[2]]
+
+cat("\nHW2_lab, #Water available at the place for handwashing\n")
+res <- d %>% group_by(HW2) %>%
+  do(res=paste0(.$HW2[1],": ", unique(.$HW2_lab)))
+res[[2]]
+
+cat("\nHW3_lab, #Soap or detergent present at place of handwashing\n")
+res <- d %>% group_by(HW3) %>%
+  do(res=paste0(.$HW3[1],": ", unique(.$HW3_lab)))
+res[[2]]
+
+cat("\nHW4_lab, #Usual place for handwashing\n")
+res <- d %>% group_by(HW4) %>%
+  do(res=paste0(.$HW4[1],": ", unique(.$HW4_lab)))
+res[[2]]
+
+cat("\nHW5_lab, #Soap/other material available for washing hands\n")
+res <- d %>% group_by(HW5) %>%
+  do(res=paste0(.$HW5[1],": ", unique(.$HW5_lab)))
+res[[2]]
+
+cat("\nHW6_lab, #Hand washing material shown\n")
+res <- d %>% group_by(HW6) %>%
+  do(res=paste0(.$HW6[1],": ", unique(.$HW6_lab)))
+res[[2]]
+
+
+
+
+
+
+
+
+
+
 
 cat("\nWS11_lab, #sanitation type\n")
 res <- d %>% group_by(WS11) %>%
@@ -37,6 +79,11 @@ res[[2]]
 cat("\nWS1_lab, #drinking water source\n")
 res <- d %>% group_by(WS1) %>%
   do(res=paste0(.$WS1[1],": ", unique(.$WS1_lab)))
+res[[2]]
+
+cat("\nWS2_lab, #water secondary source\n")
+res <- d %>% group_by(WS2) %>%
+  do(res=paste0(.$WS2[1],": ", unique(.$WS2_lab)))
 res[[2]]
 
 
@@ -70,10 +117,6 @@ res <- d %>% group_by(EU3) %>%
   do(res=paste0(.$EU3[1],": ", unique(.$EU3_lab)))
 res[[2]]
 
-cat("\nEU4_lab, #type of energy source of cookstove\n")
-res <- d %>% group_by(HC5) %>%
-  do(res=paste0(.$HC5[1],": ", unique(.$HC5_lab)))
-res[[2]]
 
 cat("\nHC17, #any animals, \n")
 res <- d %>% group_by(HC17) %>%

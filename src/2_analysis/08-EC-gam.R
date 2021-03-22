@@ -6,6 +6,7 @@ source("0-config.R")
 #load clean data
 d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 
+d <- d %>% rename(EC_cfu_H=EC_100_H, EC_cfu_S=EC_100_S)
 
 d$EC_cfu_H[d$EC_cfu_H>101] <-NA
 d$EC_cfu_S[d$EC_cfu_S>101] <-NA
