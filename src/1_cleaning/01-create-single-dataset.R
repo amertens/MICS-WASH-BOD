@@ -6,67 +6,138 @@ source("0-config.R")
         # Samoa (not available yet)
 
 #non-standard survey formats - double check
-df_ga <- load_MICS_dataset("Georgia", survey_round=6) #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
-#df_CI <- load_MICS_dataset("CoteIvoire", survey_round=5) #Check online, but the data doesn't have WQ data
+df_ga <- load_MICS_dataset("Georgia", survey_round=6, saveCodebook=T) #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
+#df_CI <- load_MICS_dataset("CoteIvoire", survey_round=5, saveCodebook=T) #Check online, but the data doesn't have WQ data
 #df_cuba <- load_MICS_dataset("Cuba") #check but Cuba doesn't have WQ module
-df_PAR <- load_MICS_dataset("Paraguay", survey_round=5) 
-df_ni <- load_MICS_dataset("Nigeria", survey_round=5) 
-df_cg <- load_MICS_dataset("Congo", survey_round=5) 
+df_PAR <- load_MICS_dataset("Paraguay", survey_round=5, saveCodebook=T, rename_Vars=T) 
+df_ni <- load_MICS_dataset("Nigeria", survey_round=5, saveCodebook=T, rename_Vars=T) 
+df_cg <- load_MICS_dataset("Congo", survey_round=5, saveCodebook=T) 
 
 
 #Standard survey formats
-df_chad <- load_MICS_dataset("Chad", survey_round=6)
-df_CAR <- load_MICS_dataset("CAR", survey_round=6)
-df_bd <- load_MICS_dataset("Bangladesh", survey_round=6)
-df_pakPun <- load_MICS_dataset("PakistanPunjab", survey_round=6)
-df_ze <- load_MICS_dataset("Zimbabwe", survey_round=6)
-df_al <- load_MICS_dataset("Algeria", survey_round=6)
-df_ks <- load_MICS_dataset("Kosovo", survey_round=6)
-df_STP <- load_MICS_dataset("Sao Tome and Principe", survey_round=6)
-df_np <- load_MICS_dataset("Nepal", survey_round=6) 
-df_DRC <- load_MICS_dataset("DRC", survey_round=6) 
-df_ta <- load_MICS_dataset("Tonga", survey_round=6)
-df_gb <- load_MICS_dataset("Gambia", survey_round=6)
-df_G_B <- load_MICS_dataset("Guinea Bissau", survey_round=6)
-df_ki <- load_MICS_dataset("Kiribati", survey_round=6)
-df_laPDR <- load_MICS_dataset("LaoPDR", survey_round=6)
-df_le <- load_MICS_dataset("Lesotho", survey_round=6)
-df_md <- load_MICS_dataset("Madagascar", survey_round=6)
-df_mo <- load_MICS_dataset("Mongolia", survey_round=6)
-df_SL <- load_MICS_dataset("SierraLeone", survey_round=6)
-df_sur <- load_MICS_dataset("Suriname", survey_round=6)
-df_tg <- load_MICS_dataset("Togo", survey_round=6)
-df_tun <- load_MICS_dataset("Tunisia", survey_round=6)
-df_gh <- load_MICS_dataset("Ghana", survey_round=6) 
-df_iq <- load_MICS_dataset("Iraq", survey_round=6)
+df_chad <- load_MICS_dataset("Chad", survey_round=6, saveCodebook=T)
+df_CAR <- load_MICS_dataset("CAR", survey_round=6, saveCodebook=T)
+df_bd <- load_MICS_dataset("Bangladesh", survey_round=6, saveCodebook=T)
+df_pakPun <- load_MICS_dataset("PakistanPunjab", survey_round=6, saveCodebook=T)
+df_ze <- load_MICS_dataset("Zimbabwe", survey_round=6, saveCodebook=T)
+df_al <- load_MICS_dataset("Algeria", survey_round=6, saveCodebook=T)
+df_ks <- load_MICS_dataset("Kosovo", survey_round=6, saveCodebook=T)
+df_STP <- load_MICS_dataset("Sao Tome and Principe", survey_round=6, saveCodebook=T)
+df_np <- load_MICS_dataset("Nepal", survey_round=6, saveCodebook=T) 
+df_DRC <- load_MICS_dataset("DRC", survey_round=6, saveCodebook=T) 
+df_ta <- load_MICS_dataset("Tonga", survey_round=6, saveCodebook=T)
+df_gb <- load_MICS_dataset("Gambia", survey_round=6, saveCodebook=T)
+df_G_B <- load_MICS_dataset("Guinea Bissau", survey_round=6, saveCodebook=T)
+df_ki <- load_MICS_dataset("Kiribati", survey_round=6, saveCodebook=T)
+df_laPDR <- load_MICS_dataset("LaoPDR", survey_round=6, saveCodebook=T)
+df_le <- load_MICS_dataset("Lesotho", survey_round=6, saveCodebook=T)
+df_md <- load_MICS_dataset("Madagascar", survey_round=6, saveCodebook=T)
+df_mo <- load_MICS_dataset("Mongolia", survey_round=6, saveCodebook=T)
+df_SL <- load_MICS_dataset("SierraLeone", survey_round=6, saveCodebook=T)
+df_sur <- load_MICS_dataset("Suriname", survey_round=6, saveCodebook=T)
+df_tg <- load_MICS_dataset("Togo", survey_round=6, saveCodebook=T)
+df_tun <- load_MICS_dataset("Tunisia", survey_round=6, saveCodebook=T)
+df_gh <- load_MICS_dataset("Ghana", survey_round=6, saveCodebook=T) 
+df_iq <- load_MICS_dataset("Iraq", survey_round=6, saveCodebook=T)
 
-#Two studies with slightly different variable names. Recode:
-#Paraguay, Nigeria
-df_PAR <- df_PAR %>% rename(
-        EU4_lab=HC6_lab,
-        EU4=HC6,
-        HC6_lab=HC5_lab,
-        HC6=HC5,
-        HC5_lab=HC4_lab,
-        HC5=HC4,
-        HC4_lab=HC3_lab,
-        HC4=HC3,
-        HC3_lab=HC2_lab,
-        HC3=HC2)
-df_ni <- df_ni %>% rename(
-        EU4_lab=HC6_lab,
-        EU4=HC6,
-        HC6_lab=HC5_lab,
-        HC6=HC5,
-        HC5_lab=HC4_lab,
-        HC5=HC4,
-        HC4_lab=HC3_lab,
-        HC4=HC3,
-        HC3_lab=HC2_lab,
-        HC3=HC2)
+
+
+lab_al <- readRDS(here("codebooks/wash_codes/Algeria_WASHvars.rds"))
+lab_bd <- readRDS(here("codebooks/wash_codes/Bangladesh_WASHvars.rds"))
+lab_CAR <- readRDS(here("codebooks/wash_codes/CAR_WASHvars.rds"))
+lab_chad <- readRDS(here("codebooks/wash_codes/Chad_WASHvars.rds"))
+lab_cg <- readRDS(here("codebooks/wash_codes/Congo_WASHvars.rds"))
+lab_DRC <- readRDS(here("codebooks/wash_codes/DRC_WASHvars.rds"))
+lab_gb <- readRDS(here("codebooks/wash_codes/Gambia_WASHvars.rds"))
+lab_ga <- readRDS(here("codebooks/wash_codes/Georgia_WASHvars.rds"))
+lab_gh <- readRDS(here("codebooks/wash_codes/Ghana_WASHvars.rds"))
+lab_G_B <- readRDS(here("codebooks/wash_codes/Guinea Bissau_WASHvars.rds"))
+lab_iq <- readRDS(here("codebooks/wash_codes/Iraq_WASHvars.rds"))
+lab_ki <- readRDS(here("codebooks/wash_codes/Kiribati_WASHvars.rds"))
+lab_ks <- readRDS(here("codebooks/wash_codes/Kosovo_WASHvars.rds"))
+lab_laPDR <- readRDS(here("codebooks/wash_codes/LaoPDR_WASHvars.rds"))
+lab_le <- readRDS(here("codebooks/wash_codes/Lesotho_WASHvars.rds"))
+lab_md <- readRDS(here("codebooks/wash_codes/Madagascar_WASHvars.rds"))
+lab_mo <- readRDS(here("codebooks/wash_codes/Mongolia_WASHvars.rds"))
+lab_np <- readRDS(here("codebooks/wash_codes/Nepal_WASHvars.rds"))
+lab_ni <- readRDS(here("codebooks/wash_codes/Nigeria_WASHvars.rds"))
+lab_pakPun <- readRDS(here("codebooks/wash_codes/PakistanPunjab_WASHvars.rds"))
+lab_PAR <- readRDS(here("codebooks/wash_codes/Paraguay_WASHvars.rds"))
+lab_SL <- readRDS(here("codebooks/wash_codes/Sao Tome and Principe_WASHvars.rds"))
+lab_STP <- readRDS(here("codebooks/wash_codes/SierraLeone_WASHvars.rds"))
+lab_sur <- readRDS(here("codebooks/wash_codes/Suriname_WASHvars.rds"))
+lab_tg <- readRDS(here("codebooks/wash_codes/Togo_WASHvars.rds"))
+lab_ta <- readRDS(here("codebooks/wash_codes/Tonga_WASHvars.rds"))
+lab_tun <- readRDS(here("codebooks/wash_codes/Tunisia_WASHvars.rds"))
+lab_ze <- readRDS(here("codebooks/wash_codes/Zimbabwe_WASHvars.rds"))
+
+labs <- bind_rows(lab_ni, lab_cg, lab_ga, lab_PAR,
+                  lab_al, lab_bd, lab_CAR,  lab_chad,  lab_DRC, lab_G_B,   
+                  lab_gb, lab_gh, lab_iq, lab_ki, lab_ks, lab_laPDR, 
+                  lab_le, lab_md, lab_mo,  lab_np, lab_pakPun,    
+                  lab_SL, lab_STP, lab_sur, lab_ta, lab_tg, lab_tun,lab_ze)
+
+WASH_labs <- labs %>% mutate(country = factor(country, levels = unique(country))) %>%
+  spread(key = country, value = label)
+WASH_labs <- WASH_labs %>% mutate(variable = case_when(
+  name=="EU1" ~ "type of stove",
+  name=="EU2" ~ "Cookstove have a chimney",
+  name=="EU3" ~ "Cookstove have a fan",
+  name=="EU4" ~ "Type of energy source for cookstove",
+  name=="HC17" ~ "Household own any animals",
+  name=="HC4" ~ "Main material of floor",
+  name=="HC5" ~ "Main material of roof",
+  name=="HC6" ~ "Main material of exterior wall",
+  name=="HW1" ~ "Place where household members most often wash their hands",
+  name=="HW2" ~ "Water available at the place for handwashing",
+  name=="HW3" ~ "Soap or detergent present at place of handwashing",
+  name=="HW4" ~ "Usual place for handwashing",
+  name=="HW5" ~ "Soap/other material available for washing hands",
+  name=="HW6" ~ "Hand washing material shown",
+  name=="WS1" ~ "Main source of drinking water",
+  name=="WS11" ~ "Type of toilet facility",
+  name=="WS12" ~ "Pit latrine or septic tank ever been emptied",
+  name=="WS13" ~ "Place the contents were emptied",
+  name=="WS14" ~ "Location of the toilet faciltity",
+  name=="WS15" ~ "Toilet facility shared",
+  name=="WS2" ~ "Main source of water used for other purposes (if bottled water used for drinking)"
+)) %>% relocate(name, variable)
+write.csv(WASH_labs, here::here(paste0("codebooks/WASH_vars.csv")))
+
+
+
+
+
+
 
 
 save(list=ls(pattern="df_"), file=here("data/raw_MICS_surveys.rdata"))
+
+# 
+# 
+# WASHlab <- df %>% select(HW1,
+#                          HW2,
+#                          HW3,
+#                          HW4,
+#                          HW5,
+#                          HW6,
+#                          WS11,
+#                          WS12,
+#                          WS13,
+#                          WS14,
+#                          WS15,
+#                          WS1,
+#                          WS2,
+#                          HC4,
+#                          EU1,
+#                          EU2,
+#                          EU3,
+#                          HC17,
+#                          HC5,
+#                          HC6,
+#                          EU4) %>% makeVlist(.)  
+# saveRDS(WASHlab, here::here(paste0("codebooks/wash_codes/",country,"_WASHvars.rds")))
+
 
   
 #load(here("data/raw_MICS_surveys.rdata"))

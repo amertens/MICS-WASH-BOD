@@ -72,6 +72,11 @@ res <- d %>% group_by(WS14) %>%
   do(res=paste0(.$WS14[1],": ", unique(.$WS14_lab)))
 res[[2]]
 
+cat("\nWS15_lab, #Toilet facility shared")
+res <- d %>% group_by(WS15) %>%
+  do(res=paste0(.$WS15[1],": ", unique(.$WS15_lab)))
+res[[2]]
+
 
 
 

@@ -236,7 +236,7 @@ namekey <- c(
 # }
 
 
-load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
+load_MICS_dataset <- function(country, survey_round, saveCodebook=F, rename_Vars=F){
  
   #path=paste0(country,"/",country,"_cleaned.dta")
   ch_path=paste0(country,"/ch.sav")
@@ -388,18 +388,43 @@ load_MICS_dataset <- function(country, survey_round, saveCodebook=F){
     })
 
   
-  
+    df <- data.frame(d3, country= country)
+    
+    
+    if(rename_Vars){
+      df <- df %>% rename(
+        # HW3=HW4,
+        # HW3_lab=HW4_lab,
+        EU4=HC6,
+        EU4_lab=HC6_lab,
+        EU4=HC6,
+        HC6_lab=HC5_lab,
+        HC6=HC5,
+        HC5_lab=HC4_lab,
+        HC5=HC4,
+        HC4_lab=HC3_lab,
+        HC4=HC3,
+        HC3_lab=HC2_lab,
+        HC3=HC2) 
+    }
+
+    
+    
   if(saveCodebook){
-    lab<-makeVlist(d3)
+    lab<-makeVlist(df)
     write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
-  }
+    WASHlab <- df[,which(colnames(df) %in% c("HW1", "HW2", "HW3","HW4","HW5","HW6",
+    "WS11","WS12", "WS13","WS14","WS15","WS1","WS2","HC4","EU1","EU2","EU3","HC17",
+    "HC5","HC6","EU4"))]
+    WASHlab <- makeVlist(WASHlab)  
+    WASHlab$country=country
+    saveRDS(WASHlab, here::here(paste0("codebooks/wash_codes/",country,"_WASHvars.rds")))
+    }
   
-  df <- data.frame(d3, country= country)
   df <- df %>%
     mutate_all(as.character)
   
   df <- df[,!grepl("\\.",colnames(df))]
-
   df <- clean_WASH(df)
   
   return(df)

@@ -71,53 +71,55 @@ prop.table(table(is.na(d$EC_risk_H)))
 # table(d$HW7B)
 # table(d$HW7C)
 
-# table(d$country, d$HW2)
-# table(d$country, d$HW7A)
-# table(d$country, d$HW7B)
-# 
-# 
-# table(d$country, d$HW3BA)
-# table(d$country, d$HW3BB)
-# table(d$country, d$HW3BC)
-# table(d$country, d$HW3A)
+#combine differentially named variables
+d$HW7A[is.na(d$HW7A)] <- ifelse(d$HW3BA[is.na(d$HW7A)]=="A" | d$HW3BC[is.na(d$HW7A)]=="C", "A","")
+d$HW7A[is.na(d$HW7A)] <- ifelse(d$HW3BA[is.na(d$HW7A)]=="?" & d$HW3BC[is.na(d$HW7A)]=="?", NA,d$HW7A[is.na(d$HW7A)])
+d$HW7B[is.na(d$HW7B)] <- ifelse(d$HW3BB[is.na(d$HW7A)]=="B", "B","")
+d$HW7B[is.na(d$HW7B)] <- ifelse(d$HW3BB[is.na(d$HW7A)]=="?", NA,d$HW7B[is.na(d$HW7B)])
+d$HW7C[is.na(d$HW7C)] <- ifelse(d$HW3BD[is.na(d$HW7A)]=="D", "C","")
+d$HW7C[is.na(d$HW7C)] <- ifelse(d$HW3BD[is.na(d$HW7A)]=="?", NA,d$HW7C[is.na(d$HW7C)])
 
-table(d$HW7A)
-table(d$HW3BA)
-table(d$HW7A, d$HW3BA)
-table(d$HW7A=="A", d$HW3BA=="A")
+d$HW3[is.na(d$HW3)] <- d$HW3A[is.na(d$HW3)]
 
 
+table(d$country, d$HW1)
+table(d$country, d$HW2)
+table(d$country, d$HW3)
+table(d$country, d$HW7A) #Bar soap or Liquid soap
+table(d$country, d$HW7B) #Detergent (Powder / Liquid / Paste)
+table(d$country, d$HW7C) #Ash/mud/sand
 
-d$hyg_imp <- factor(ifelse(d$HW2==1 & 
-                             ((d$HW7A=="A" & !is.na(d$HW7A))|
-                                (d$HW7B=="B" & !is.na(d$HW7B))|
-                                (d$HW3BA=="A" & !is.na(d$HW3BA))|
-                                (d$HW3BB=="B" & !is.na(d$HW3BB))|
-                                (d$HW3BC=="C" & !is.na(d$HW3BC))), 
+
+
+
+d$hyg_imp <- factor(ifelse(d$HW1<4 &
+                            d$HW2==1 & 
+                             d$HW3==1, 
                            "Improved","Unimproved"), levels=c("Improved","Unimproved"))
-d$hyg_imp[(d$HW2==9 | d$HW1>4 | (is.na(d$HW7A)&is.na(d$HW7B)&is.na(d$HW3BA)&is.na(d$HW3BB)&is.na(d$HW3BC)))] <- NA
+d$hyg_imp[(d$HW1>4 | is.na(d$HW1)) | (d$HW2==9|d$HW3==9)] <- NA
 table(d$hyg_imp)
-prop.table(table(d$hyg_imp))
+table(is.na(d$hyg_imp))
 table(d$country, d$hyg_imp)
 prop.table(table(d$country, d$hyg_imp),1)
 
 
 
-
+#https://washdata.org/monitoring/hygiene
 # 1.	None (no facility)
-# 2.	Limited - availability of a handwashing facility on premises without soap or water
+# 2.	Limited - availability of a handwashing facility on premises without soap or water (using ash/sand is limited)
 # 3.	Basic - availability of a handwashing facility on premises with soap and water (highest measured level of service measured)
-table(d$country,d$HW2)
 d <- d %>% mutate(
   hyg_imp_cat = case_when(
-    HW2 == 2 ~"None",
-    HW2 == 1 & hyg_imp != "Improved" ~"Limited",
+    HW1 == 4 ~"None",
+    HW1 < 4 & (HW2 == 2 | HW3 == 2) & hyg_imp != "Improved"  ~"Limited",
     hyg_imp == "Improved" ~"Basic"
   ),
   hyg_imp_cat = factor(hyg_imp_cat, levels=c( "Basic", "Limited","None"))
 )
-d$hyg_imp_cat[is.na(d$HW2)] <- NA
+d$hyg_imp_cat[(d$hyg_imp)] <- NA
 table(d$hyg_imp_cat)
+table(d$hyg_imp, d$hyg_imp_cat)
+table(1*is.na(d$hyg_imp), is.na(d$hyg_imp_cat))
 table(d$country,d$hyg_imp_cat)
 
 
@@ -207,6 +209,7 @@ table(d$san_imp, d$san_imp_cat)
 
 #Make 2nd category with Safely Managed as the highest level of service
 #https://washdata.org/monitoring/sanitation
+#https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6765900/
 d <- d %>% mutate(
   san_imp_cat2 = case_when(san_cat_lab=="No facility"~"No facility",
                           san_cat_lab=="Unimproved"~"Unimproved",
@@ -216,6 +219,10 @@ d <- d %>% mutate(
   ),
   san_imp_cat2 = factor(san_imp_cat2, levels=rev(c("No facility", "Unimproved", "Limited", "Basic", "Safely managed")))
 )
+
+#Note Nigeria and Paraguay don't have the necessary variables to calculate safely managed
+d$san_imp_cat2[d$country %in% c("Paraguay", "Nigeria")] <- NA
+
 table(d$san_imp_cat2)
 prop.table(table(d$san_imp_cat2))*100
 table(d$country, d$san_imp_cat2)
@@ -290,41 +297,24 @@ table(d$continious_wat)
 # WS4	Time (in minutes) to get water and come back
 # WS7	There been any time in the last month without sufficient water
 
-
-# d <- d %>% mutate(
-#   wat_imp_cat = case_when(wat_class_lab=="Surface water"~"Surface water",
-#                           wat_class_lab=="Unprotected wells and springs"~"Unimproved",
-#                           wat_imp=="Unimproved"~"Unimproved",
-#                           wat_imp=="Improved" & WS4>30  ~"Limited",
-#                           wat_imp=="Improved" & (WS4<=30 | is.na(WS4))~"Basic",
-#                           wat_imp=="Improved" & (WS4<=30 | is.na(WS4)) & WS3<=2 & WS7==2~"Continuous"
-#   ),
-#   wat_imp_cat = factor(wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
-# )
-
-
-
 d$WS3 <- as.numeric(d$WS3)
 d$WS4 <- as.numeric(d$WS4)
 
 d$wat_imp_cat <- NA
 d$wat_imp_cat[d$wat_class_lab=="Surface water"] <- "Surface water"
 d$wat_imp_cat[d$wat_class_lab=="Unprotected wells and springs"] <- "Unimproved"
-d$wat_imp_cat[d$wat_imp=="Improved"& d$WS4>30] <- "Limited"
-d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4))] <- "Basic"
-#d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4)) &  d$WS3<=2 & d$WS7==2] <- "Continuous"
-d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | is.na(d$WS4)) &  d$WS3<=2 & (d$WS7!=1|is.na(d$WS7))] <- "Continuous"
+d$wat_imp_cat[d$wat_imp=="Improved"& d$WS4>30 ] <- "Limited"
+d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS4<=30 | (d$WS3<=2 & d$WS7!=2) | is.na(d$WS4))] <- "Basic"
+d$wat_imp_cat[d$wat_imp=="Improved"& (d$WS3<=2) & (d$WS7==2)] <- "Continuous"
 d$wat_imp_cat = factor(d$wat_imp_cat, levels=rev(c("Surface water", "Unimproved", "Limited", "Basic","Continuous")))
 
-table(d$country, d$wat_imp_cat)
+table(d$wat_imp_cat)
 d$wat_imp_cat[is.na(d$wat_class_lab)|d$wat_class_lab=="Missing"|is.na(d$wat_imp)] <- NA
-#d$wat_imp_cat[d$wat_imp=="Improved" & (d$WS3==9|is.na(d$WS3)|d$WS4>=998|is.na(d$WS4))] <- NA
-table(d$country, d$wat_imp_cat)
+table(d$wat_imp_cat)
 
 table((d$wat_class_lab), d$wat_imp)
 table(is.na(d$wat_imp_cat), d$wat_imp)
 table(d$wat_imp_cat)
-
 
 
 #code any contamination
@@ -399,12 +389,11 @@ d <- d %>% mutate(
   imp_on_prem_sufficient_V_imp_on_prem_insufficient = factor(imp_on_prem_sufficient_V_imp_on_prem_insufficient, levels = c("Improved, on premise, sufficient","Improved, on premise, insufficient"))
 )
 table(d$imp_on_prem_sufficient_V_imp_on_prem_insufficient)
-table(d$country, d$imp_on_prem_sufficient_V_imp_on_prem_insufficient, d$diarrhea)
 
 # 5. Improved, on premise, HQ water plus sufficient water versus improved, on premise, not HQ water and non-sufficient
 d <- d %>% mutate(
   imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ = case_when(
-    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) & EC_H=="Uncontaminated"  ~ "Improved, on premise, HQ, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==2 & EC_H=="Uncontaminated"  ~ "Improved, on premise, HQ, sufficient",
     wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 & EC_H=="Contaminated" ~ "Improved, on premise, LQ, insufficient"
   ),
   imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ = factor(imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ, levels = c("Improved, on premise, HQ, sufficient","Improved, on premise, LQ, insufficient"))
@@ -415,7 +404,7 @@ table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ)
 # 6. Improved, on premise, HQ water plus sufficient water versus improved, on premise, HQ water and non-sufficient
 d <- d %>% mutate(
   imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ = case_when(
-    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) & EC_H=="Uncontaminated"  ~ "Improved, on premise, HQ, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==2 & EC_H=="Uncontaminated"  ~ "Improved, on premise, HQ, sufficient",
     wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 & EC_H=="Uncontaminated" ~ "Improved, on premise, HQ, insufficient"
   ),
   imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ = factor(imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ, levels = c("Improved, on premise, HQ, sufficient","Improved, on premise, HQ, insufficient"))
@@ -426,7 +415,7 @@ table(d$country, d$imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ)
 # 7. Improved, on premise, LQ water plus sufficient water versus improved, on premise, LQ water and non-sufficient
 d <- d %>% mutate(
   imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ = case_when(
-    wat_imp=="Improved" & WS3 %in% c(1,2) & (d$WS7!=1|is.na(d$WS7)) & EC_H=="Contaminated"  ~ "Improved, on premise, LQ, sufficient",
+    wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==2 & EC_H=="Contaminated"  ~ "Improved, on premise, LQ, sufficient",
     wat_imp=="Improved" & WS3 %in% c(1,2) & d$WS7==1 & EC_H=="Contaminated" ~ "Improved, on premise, LQ, insufficient"
   ),
   imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ = factor(imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ, levels = c("Improved, on premise, LQ, sufficient","Improved, on premise, LQ, insufficient"))
@@ -582,7 +571,7 @@ d <- d %>% subset(., select = c(country,
                                 EC_S, EC_H, 
                                 EC_risk_S, 
                                 EC_risk_H, 
-                                EC_cfu_H, EC_cfu_S,
+                                #EC_cfu_H, EC_cfu_S,
                                 WASH, 
                                 WASH_noEC,
                                 Piped_san_cat,
@@ -607,7 +596,7 @@ d <- d %>% subset(., select = c(country,
                                 ecpopweight_H, 
                                 ecpopweight_S, 
                                 popweight,
-                                ID, 
+                                #ID, 
                                 wscore,
                                 windex5,
                                 windex10,
@@ -617,10 +606,10 @@ d <- d %>% subset(., select = c(country,
                                 wscorer,
                                 windex5r,
                                 windex10r,
-                                hhweight,
-                                wqhaweight,
-                                wqeweight,
-                                wqsaweight,
+                                #hhweight,
+                                #wqhaweight,
+                                #wqeweight,
+                                #wqsaweight,
                                 stratum,
                                 PSU,
                                 #helevel, #education level
