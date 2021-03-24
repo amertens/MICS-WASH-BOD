@@ -415,7 +415,19 @@ load_MICS_dataset <- function(country, survey_round, saveCodebook=F, rename_Vars
     write.csv(lab, here::here(paste0("codebooks/",country,"_vars.csv")))
     WASHlab <- df[,which(colnames(df) %in% c("HW1", "HW2", "HW3","HW4","HW5","HW6",
     "WS11","WS12", "WS13","WS14","WS15","WS1","WS2","HC4","EU1","EU2","EU3","HC17",
-    "HC5","HC6","EU4"))]
+    "HC5","HC6","EU4", "WS9", "WS10A", "WS10B", "WS10C", "WS10D", "WS10E", 
+    "WQ4",
+    "WQ5A",
+    "WQ5B",
+    "WQ5C",
+    "WQ5D",
+    "WQ5E",
+    "WQ14",
+    "WQ15A",
+    "WQ15B",
+    "WQ15C",
+    "WQ15D",
+    "WQ15E"))]
     WASHlab <- makeVlist(WASHlab)  
     WASHlab$country=country
     saveRDS(WASHlab, here::here(paste0("codebooks/wash_codes/",country,"_WASHvars.rds")))

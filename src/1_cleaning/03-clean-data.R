@@ -423,6 +423,69 @@ d <- d %>% mutate(
 table(d$imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ)
 table(d$country, d$imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ)
 
+#----------------------------------------
+#Code water treatment variables
+#----------------------------------------
+
+#Harmonize water treatment variables
+
+# Treat water to make safer for drinking- change WS4 to WS9 for countries missing it
+   #check if study measured WS4
+   obs_to_rename = d$country %in% c("Nigeria","Paraguay")
+   d$WS9[obs_to_rename] <- d$WQ4[obs_to_rename]
+   d$WS10A[obs_to_rename] <- d$WQ5A[obs_to_rename]
+   d$WS10B[obs_to_rename] <- d$WQ5B[obs_to_rename]
+   d$WS10C[obs_to_rename] <- d$WQ5C[obs_to_rename]
+   d$WS10D[obs_to_rename] <- d$WQ5D[obs_to_rename]
+   d$WS10E[obs_to_rename] <- d$WQ5E[obs_to_rename]
+# WS9	Treat water to make safer for drinking
+   table(d$WS9, d$WS9_lab)
+# WS10A	Water treatment: Boil
+# WS10B	Water treatment: Add bleach/chlorine
+   table(d$WS10B, d$WS10B_lab)
+# WS10C	Water treatment: Strain it through a cloth
+# WS10D	Water treatment: Use water filter
+   table(d$WS10D, d$WS10D_lab)
+# WS10E	Water treatment: Solar disinfection
+   table(d$WS10E, d$WS10E_lab)
+   
+  d <- d %>% mutate(
+    POU_anytreatment = case_when(
+      WS9==2 ~ "Untreated",
+      WS9==1 ~ "Treated"),
+    POU_chlorine = case_when(
+      WS9==2 ~ "Untreated",
+      WS10B=="B" ~ "Treated"),
+    POU_filter = case_when(
+      WS9==2 ~ "Untreated",
+      WS10D=="D" ~ "Treated"),
+    POU_solar = case_when(
+      WS9==2 ~ "Untreated",
+      WS10E=="E" ~ "Treated"),
+    POU_anytreatment = ifelse(WS9>2|is.na(WS9),NA,POU_anytreatment),
+    POU_chlorine = ifelse(WS10B=="?"|WS9>2|is.na(WS10B)|is.na(WS9),NA,POU_chlorine),
+    POU_filter = ifelse(WS10D=="?"|WS9>2|is.na(WS10D)|is.na(WS9),NA,POU_filter),
+    POU_solar = ifelse(WS10E=="?"|WS9>2|is.na(WS10E)|is.na(WS9),NA,POU_solar),
+    POU_anytreatment = factor(POU_anytreatment, levels = c("Untreated","Treated")),
+    POU_chlorine = factor(POU_chlorine, levels = c("Untreated","Treated")),
+    POU_filter = factor(POU_filter, levels = c("Untreated","Treated")),
+    POU_solar = factor(POU_solar, levels = c("Untreated","Treated")))
+  
+  table(d$POU_anytreatment)
+  table(d$POU_chlorine)
+  table(d$POU_filter)
+  table(d$POU_solar)
+  table(d$country, d$POU_anytreatment)
+  table(d$country, d$POU_chlorine)
+  table(d$country, d$POU_filter)
+  table(d$country, d$POU_solar)
+
+
+
+
+
+
+
 #-------------------------------------------------------------------
 # Outcome coding
 #-------------------------------------------------------------------
@@ -583,6 +646,10 @@ d <- d %>% subset(., select = c(country,
                                 imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_LQ,
                                 imp_on_prem_sufficient_HQ_V_imp_on_prem_insufficient_HQ,
                                 imp_on_prem_sufficient_LQ_V_imp_on_prem_insufficient_LQ,
+                                POU_anytreatment,
+                                POU_chlorine,
+                                POU_filter,
+                                POU_solar,
                                 diarrhea, 
                                 ari,
                                 mort,

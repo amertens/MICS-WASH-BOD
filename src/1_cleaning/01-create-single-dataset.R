@@ -100,7 +100,25 @@ WASH_labs <- WASH_labs %>% mutate(variable = case_when(
   name=="WS13" ~ "Place the contents were emptied",
   name=="WS14" ~ "Location of the toilet faciltity",
   name=="WS15" ~ "Toilet facility shared",
-  name=="WS2" ~ "Main source of water used for other purposes (if bottled water used for drinking)"
+  name=="WS2" ~ "Main source of water used for other purposes (if bottled water used for drinking)",
+  name=="WS9" ~ "Treat water to make safer for drinking", 
+  name=="WS10A" ~ "Water treatment: Boil", 
+  name=="WS10B" ~ "Water treatment: Add bleach/chlorine", 
+  name=="WS10C" ~ "Water treatment: Strain it through a cloth", 
+  name=="WS10D" ~ "Water treatment: Use water filter", 
+  name=="WS10E" ~ "Water treatment: Solar disinfection", 
+  name=="WQ4" ~ "Water treatment",
+  name=="WQ5A" ~ "Water treatment: Boil",
+  name=="WQ5B" ~ "Water treatment: Add bleach/chlorine",
+  name=="WQ5C" ~ "Water treatment: Strain it through a cloth",
+  name=="WQ5D" ~ "Water treatment: Use water filter",
+  name=="WQ5E" ~ "Water treatment: Solar disinfection",
+  name=="WQ14" ~ "Drink water without making any treatment",
+  name=="WQ15A" ~ "Water treatment: Boil",
+  name=="WQ15B" ~ "Water treatment: Add bleach/chlorine",
+  name=="WQ15C" ~ "Water treatment: Strain it through a cloth",
+  name=="WQ15D" ~ "Water treatment: Use water filter",
+  name=="WQ15E" ~ "Water treatment: Solar disinfection"
 )) %>% relocate(name, variable)
 write.csv(WASH_labs, here::here(paste0("codebooks/WASH_vars.csv")))
 

@@ -570,5 +570,61 @@ run_MICS_regressions_secondary <- function(outcomes, family, PAF, Wvars){
 
 
 
+run_MICS_regressions_POU <- function(outcomes, family, PAF, Wvars){
+  
+  adj <- ifelse(is.null(Wvars),"unadj","adj")
+  
+  fullres <- NULL 
+  
+  set.seed(12345)
+  
+  for(i in outcomes){
+    res1 <- res2 <- res3 <- res4 <- NULL
+    print(i)
+    res1 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="POU_anytreatment",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Treated"))
+    
+    res2 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="POU_chlorine",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Treated"))
+    
+    res3 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="POU_filter",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Treated"))
+    
+    res4 <- d %>% group_by(country) %>%
+      do(mics_regression(d=.,
+                         Y =i,
+                         X="POU_solar",
+                         W=Wvars,
+                         weight = "popweight",
+                         clustid= "clust_num",
+                         family=family, calc_PAF=PAF, low_risk_level="Treated"))
+    
+    fullres <- bind_rows(fullres, res1, res2, res3, res4)
+  }
+  
+  return(fullres) 
+}
+
+
+
+
 
 
