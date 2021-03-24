@@ -3,7 +3,7 @@
 rm(list=ls())
 source("0-config.R")
 
-d_unadj <- d_RR_multi_unadj <- d_adj <- d_RR_multi_adj <- d_tmle_adj <- d_rural_adj <- d_mort <- NULL
+d_unadj <- d_RR_multi_unadj <- d_adj <- d_RR_multi_adj <- d_tmle_adj <- d_rural_adj <- d_mort <- d_unadj_secondary_POU <- d_adj_secondary_POU <-NULL
 
 d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="primary", W = "unadjusted", adjusted=0)
 d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted", adjusted=0)
@@ -17,6 +17,8 @@ d_RR_multi_adj_sens <- readRDS(here("results/adjusted_mult_RR_sens.rds")) %>% mu
 
 d_unadj_secondary <- readRDS(here("results/unadjusted_RR_secondary.rds")) %>% mutate(analysis="secondary", W = "unadjusted", adjusted=0)
 d_adj_secondary <- readRDS(here("results/adjusted_RR_secondary.rds")) %>% mutate(analysis="secondary", adjusted=1)
+d_unadj_secondary_POU <- readRDS(here("results/unadjusted_RR_secondary_POU.rds")) %>% mutate(analysis="secondary POU", W = "unadjusted", adjusted=0)
+d_adj_secondary_POU <- readRDS(here("results/adjusted_RR_secondary_POU.rds")) %>% mutate(analysis="secondary POU", adjusted=1)
 
 dim(d_adj_secondary)
 d_adj_secondary <- d_adj_secondary %>% filter(!is.na(ci.lb)) %>% group_by(country, analysis, Y, X, ref) %>% mutate(Ncats=n()) %>%
@@ -37,7 +39,8 @@ d_rural_adj <- d_rural_adj  %>% group_by(country, analysis, Y, X, ref, contrast)
 dim(d_rural_adj)
 
 #combine results
-d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, d_mort, d_mort_multi,d_RR_multi_adj_sens, d_unadj_secondary, d_adj_secondary) %>%
+d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, 
+               d_mort, d_mort_multi,d_RR_multi_adj_sens, d_unadj_secondary, d_adj_secondary, d_unadj_secondary_POU, d_adj_secondary_POU) %>%
   filter(!is.na(coef))
 table(d$analysis, is.na(d$adjusted))
 
