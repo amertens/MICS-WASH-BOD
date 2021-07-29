@@ -3,111 +3,52 @@
 rm(list=ls())
 source("0-config.R")
 
+df_PakistanSindh <- load_MICS_mort_dataset("PakistanSindh")
+df_guyana <- load_MICS_mort_dataset("Guyana")
 
-#NOTES
-# Check email... new studies were released
-# Check draft report and make sure all countries are included here
-#go through and make sure all load correctly
-#update covariate data cleaning to use numeric codes rather than language specific, 
-# especially if new languages are in the new surveys 
-#(save a conversion codebook)
-
-#To add (in the future):
-# Samoa (not available yet)
+#non-standard survey formats - double check
+df_ga <- load_MICS_mort_dataset("Georgia") 
+df_PAR <- load_MICS_mort_dataset("Paraguay") 
+df_ni <- load_MICS_mort_dataset("Nigeria") 
+df_cg <- load_MICS_mort_dataset("Congo") 
 
 
-#Newly added:
-#Congo
-#nepal
-#Algeria
-#Kosovo
-#Cuba 2019 Datasets 
-#Sao Tome and Principe 2019 Datasets
-
-chad <- load_MICS_mort_dataset("Chad")
-CAR <- load_MICS_mort_dataset("CAR")
-
-bd <- load_MICS_mort_dataset("Bangladesh")
-pakPun <- load_MICS_mort_dataset("PakistanPunjab")
-ze <- load_MICS_mort_dataset("Zimbabwe")
-
-al <- load_MICS_mort_dataset("Algeria")
-ks <- load_MICS_mort_dataset("Kosovo")
-#cuba <- load_MICS_mort_dataset("Cuba") #check but Cuba doesn't have WQ module
-STP <- load_MICS_mort_dataset("Sao Tome and Principe")
-np <- load_MICS_mort_dataset("Nepal") 
-DRC <- load_MICS_mort_dataset("DRC") 
-ta <- load_MICS_mort_dataset("Tonga")
-gb <- load_MICS_mort_dataset("Gambia")
-G_B <- load_MICS_mort_dataset("Guinea Bissau")
-
-cg <- load_MICS_mort_dataset("Congo") 
-ki <- load_MICS_mort_dataset("Kiribati")
-laPDR <- load_MICS_mort_dataset("LaoPDR")
-le <- load_MICS_mort_dataset("Lesotho")
-md <- load_MICS_mort_dataset("Madagascar")
-mo <- load_MICS_mort_dataset("Mongolia")
-ni <- load_MICS_mort_dataset("Nigeria") 
-PAR <- load_MICS_mort_dataset("Paraguay") 
-SL <- load_MICS_mort_dataset("SierraLeone")
-sur <- load_MICS_mort_dataset("Suriname")
-tg <- load_MICS_mort_dataset("Togo")
-tun <- load_MICS_mort_dataset("Tunisia")
-CI <- load_MICS_mort_dataset("CoteIvoire") 
-#ga <- load_MICS_mort_dataset("Georgia") #Georgia doesn't have mortality
-gh <- load_MICS_mort_dataset("Ghana") 
-iq <- load_MICS_mort_dataset("Iraq")
+#Standard survey formats
+df_chad <- load_MICS_mort_dataset("Chad")
+df_CAR <- load_MICS_mort_dataset("CAR")
+df_bd <- load_MICS_mort_dataset("Bangladesh")
+df_pakPun <- load_MICS_mort_dataset("PakistanPunjab")
+df_ze <- load_MICS_mort_dataset("Zimbabwe")
+df_al <- load_MICS_mort_dataset("Algeria")
+df_ks <- load_MICS_mort_dataset("Kosovo")
+df_STP <- load_MICS_mort_dataset("Sao Tome and Principe")
+df_np <- load_MICS_mort_dataset("Nepal") 
+df_DRC <- load_MICS_mort_dataset("DRC") 
+df_ta <- load_MICS_mort_dataset("Tonga")
+df_gb <- load_MICS_mort_dataset("Gambia")
+df_G_B <- load_MICS_mort_dataset("Guinea Bissau")
+df_ki <- load_MICS_mort_dataset("Kiribati")
+df_laPDR <- load_MICS_mort_dataset("LaoPDR")
+df_le <- load_MICS_mort_dataset("Lesotho")
+df_md <- load_MICS_mort_dataset("Madagascar")
+df_mo <- load_MICS_mort_dataset("Mongolia")
+df_SL <- load_MICS_mort_dataset("SierraLeone")
+df_sur <- load_MICS_mort_dataset("Suriname")
+df_tg <- load_MICS_mort_dataset("Togo")
+df_tun <- load_MICS_mort_dataset("Tunisia")
+df_gh <- load_MICS_mort_dataset("Ghana") 
+df_iq <- load_MICS_mort_dataset("Iraq")
 
 
 
 
 
 
-ls()
 
 
-save(bd, 
-     cg,
-     gb,
-     iq,
-     chad,
-     CAR,
-     CI,
-     gh,ki,laPDR, 
-     DRC, ta, G_B,
-     le,md,mo,          
-     ni,
-     np,
-     pakPun, PAR,
-     SL,              
-     sur, tg, tun, ze,
-     al, ks, STP, file=here("data/raw_MICS_mort.rdata"))
-
-
-#load(here("data/raw_MICS_surveys.rdata"))
-d <- bind_rows(bd, 
-               cg,
-               gb,
-               iq,
-               chad,
-               CAR,
-               CI,
-               gh,ki,laPDR, 
-               DRC, ta, G_B,
-               le,md,mo,          
-               ni,
-               np,
-               pakPun, PAR,
-               SL,              
-               sur, tg, tun, ze,
-               al, ks, STP)
-
-
+d <- bind_rows(lapply(ls(pattern="df_"),get))
 dim(d)
 colnames(d)
-
-table(d$country, d$mort)
-prop.table(table(d$country, d$mort),1)*100
 
 saveRDS(d, here("data/compiled_raw_MICS_mortality.rds"))
 

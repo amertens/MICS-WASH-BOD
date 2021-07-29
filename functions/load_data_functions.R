@@ -279,21 +279,6 @@ load_MICS_dataset <- function(country, survey_round, saveCodebook=F, rename_Vars
         colnames(d)[ncol(d)] <- paste0(i,"_lab")
       }
     }
-  
-  
-    # if(isFile(data_path(hh_path))){
-    #   hh <- read_sav(data_path(hh_path))
-    # }else{
-    #   hh_path=paste0(country,"/hh.dta")
-    #   hh <- read_dta(data_path(hh_path))
-    # }
-    #summary(hh$WQ26)
-    # try(hh <- hh %>% rename(  clust_num=HH1, HH_num=HH2, EC_cfu_H=WQ26, EC_cfu_S=WQ27) %>% 
-    #   filter(!is.na(EC_cfu_H)|!is.na(EC_cfu_S)) %>%
-    #   subset(., select = c(clust_num, HH_num, EC_cfu_H, EC_cfu_S)))
-  
-    
-    
     
     #load and merge child health
     ch <- read_sav(data_path(ch_path))

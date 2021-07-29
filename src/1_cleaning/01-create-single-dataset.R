@@ -4,6 +4,10 @@ source("0-config.R")
 
 #To add (in the future):
         # Samoa (not available yet)
+#PakistanSindh
+#Guyana
+df_PakistanSindh <- load_MICS_dataset("PakistanSindh", survey_round=6, saveCodebook=T)
+df_guyana <- load_MICS_dataset("Guyana", survey_round=6, saveCodebook=T)
 
 #non-standard survey formats - double check
 df_ga <- load_MICS_dataset("Georgia", survey_round=6, saveCodebook=T) #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
@@ -51,6 +55,7 @@ lab_DRC <- readRDS(here("codebooks/wash_codes/DRC_WASHvars.rds"))
 lab_gb <- readRDS(here("codebooks/wash_codes/Gambia_WASHvars.rds"))
 lab_ga <- readRDS(here("codebooks/wash_codes/Georgia_WASHvars.rds"))
 lab_gh <- readRDS(here("codebooks/wash_codes/Ghana_WASHvars.rds"))
+lab_guy <- readRDS(here("codebooks/wash_codes/Guyana_WASHvars.rds"))
 lab_G_B <- readRDS(here("codebooks/wash_codes/Guinea Bissau_WASHvars.rds"))
 lab_iq <- readRDS(here("codebooks/wash_codes/Iraq_WASHvars.rds"))
 lab_ki <- readRDS(here("codebooks/wash_codes/Kiribati_WASHvars.rds"))
@@ -62,6 +67,7 @@ lab_mo <- readRDS(here("codebooks/wash_codes/Mongolia_WASHvars.rds"))
 lab_np <- readRDS(here("codebooks/wash_codes/Nepal_WASHvars.rds"))
 lab_ni <- readRDS(here("codebooks/wash_codes/Nigeria_WASHvars.rds"))
 lab_pakPun <- readRDS(here("codebooks/wash_codes/PakistanPunjab_WASHvars.rds"))
+lab_pakSin <- readRDS(here("codebooks/wash_codes/PakistanSindh_WASHvars.rds"))
 lab_PAR <- readRDS(here("codebooks/wash_codes/Paraguay_WASHvars.rds"))
 lab_SL <- readRDS(here("codebooks/wash_codes/Sao Tome and Principe_WASHvars.rds"))
 lab_STP <- readRDS(here("codebooks/wash_codes/SierraLeone_WASHvars.rds"))
@@ -71,10 +77,10 @@ lab_ta <- readRDS(here("codebooks/wash_codes/Tonga_WASHvars.rds"))
 lab_tun <- readRDS(here("codebooks/wash_codes/Tunisia_WASHvars.rds"))
 lab_ze <- readRDS(here("codebooks/wash_codes/Zimbabwe_WASHvars.rds"))
 
-labs <- bind_rows(lab_ni, lab_cg, lab_ga, lab_PAR,
+labs <- bind_rows(lab_ni, lab_cg, lab_ga, lab_PAR, lab_guy, 
                   lab_al, lab_bd, lab_CAR,  lab_chad,  lab_DRC, lab_G_B,   
                   lab_gb, lab_gh, lab_iq, lab_ki, lab_ks, lab_laPDR, 
-                  lab_le, lab_md, lab_mo,  lab_np, lab_pakPun,    
+                  lab_le, lab_md, lab_mo,  lab_np, lab_pakPun,   lab_pakSin, 
                   lab_SL, lab_STP, lab_sur, lab_ta, lab_tg, lab_tun,lab_ze)
 
 WASH_labs <- labs %>% mutate(country = factor(country, levels = unique(country))) %>%
@@ -127,44 +133,11 @@ write.csv(WASH_labs, here::here(paste0("codebooks/WASH_vars.csv")))
 
 
 
-
-
 save(list=ls(pattern="df_"), file=here("data/raw_MICS_surveys.rdata"))
 
-# 
-# 
-# WASHlab <- df %>% select(HW1,
-#                          HW2,
-#                          HW3,
-#                          HW4,
-#                          HW5,
-#                          HW6,
-#                          WS11,
-#                          WS12,
-#                          WS13,
-#                          WS14,
-#                          WS15,
-#                          WS1,
-#                          WS2,
-#                          HC4,
-#                          EU1,
-#                          EU2,
-#                          EU3,
-#                          HC17,
-#                          HC5,
-#                          HC6,
-#                          EU4) %>% makeVlist(.)  
-# saveRDS(WASHlab, here::here(paste0("codebooks/wash_codes/",country,"_WASHvars.rds")))
-
-
-  
-#load(here("data/raw_MICS_surveys.rdata"))
 d <- bind_rows(lapply(ls(pattern="df_"),get))
-               
-
 dim(d)
 colnames(d)
-
 saveRDS(d, here("data/compiled_raw_MICS_survey.rds"))
 
 table(d$country, d$san_cat_lab)

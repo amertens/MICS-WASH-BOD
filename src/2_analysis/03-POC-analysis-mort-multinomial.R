@@ -5,7 +5,9 @@ source("0-config.R")
 
 
 #load clean data
-d <- readRDS(here("data/compiled_clean_MICS_mortality.rds"))
+#d <- readRDS(here("data/compiled_clean_MICS_mortality.rds"))
+d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
+
 d <- d %>% filter(!is.na(mort)) %>% mutate(mort=as.numeric(mort))
 table(d$country, d$mort)
 

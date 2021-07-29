@@ -179,12 +179,13 @@ table(d$POU_chlorine)
 table(d$wat_imp)
 table(d$POU_chlorine, d$wat_imp)
 
+table(d$imp_on_prem_V_imp_off_prem)
 table(d$imp_off_prem_V_unimp)
 
 d <- d %>% mutate(POU_chlorine_V_unimp = case_when(
-  POU_chlorine=="Treated" & imp_on_prem_sufficient_V_unimp=="Improved, on premise, sufficient" ~ "Improved, on premise, sufficient, POU chlorine",
+  POU_chlorine=="Treated" & imp_on_prem_V_imp_off_prem=="Improved, on premise" ~ "Improved, on premise, POU chlorine",
   imp_off_prem_V_unimp=="Unimproved" ~ "Unimproved"),
-  POU_chlorine_V_unimp = factor(POU_chlorine_V_unimp, levels=c("Unimproved", "Improved, on premise, sufficient, POU chlorine"))
+  POU_chlorine_V_unimp = factor(POU_chlorine_V_unimp, levels=c("Unimproved", "Improved, on premise, POU chlorine"))
 )
 table(d$POU_chlorine_V_unimp)
 
@@ -201,9 +202,9 @@ res.POU_chlorine_V_unimp <- d %>% group_by(country) %>%
 
 # POU chlorine vs	Improved, not on premise
 d <- d %>% mutate(POU_chlorine_V_imp_off_prem = case_when(
-  POU_chlorine=="Treated" & imp_on_prem_sufficient_V_unimp=="Improved, on premise, sufficient" ~ "Improved, on premise, sufficient, POU chlorine",
+  POU_chlorine=="Treated" & imp_on_prem_V_imp_off_prem=="Improved, on premise" ~ "Improved, on premise, POU chlorine",
   imp_off_prem_V_unimp=="Improved, off premise" ~ "Improved, off premise"),
-  POU_chlorine_V_imp_off_prem = factor(POU_chlorine_V_imp_off_prem, levels=c("Improved, off premise", "Improved, on premise, sufficient, POU chlorine"))
+  POU_chlorine_V_imp_off_prem = factor(POU_chlorine_V_imp_off_prem, levels=c("Improved, off premise", "Improved, on premise, POU chlorine"))
 )
 table(d$POU_chlorine_V_imp_off_prem)
 
@@ -226,9 +227,9 @@ table(d$POU_solar, d$wat_imp)
 table(d$imp_off_prem_V_unimp)
 
 d <- d %>% mutate(POU_solar_V_unimp = case_when(
-  POU_solar=="Treated" & imp_on_prem_sufficient_V_unimp=="Improved, on premise, sufficient" ~ "Improved, on premise, sufficient, POU solar",
+  POU_solar=="Treated" & imp_on_prem_V_imp_off_prem=="Improved, on premise" ~ "Improved, on premise, POU solar",
   imp_off_prem_V_unimp=="Unimproved" ~ "Unimproved"),
-  POU_solar_V_unimp = factor(POU_solar_V_unimp, levels=c("Unimproved", "Improved, on premise, sufficient, POU solar"))
+  POU_solar_V_unimp = factor(POU_solar_V_unimp, levels=c("Unimproved", "Improved, on premise, POU solar"))
 )
 table(d$POU_solar_V_unimp)
 
@@ -245,9 +246,9 @@ res.POU_solar_V_unimp <- d %>% group_by(country) %>%
 
 # POU solar vs	Improved, not on premise
 d <- d %>% mutate(POU_solar_V_imp_off_prem = case_when(
-  POU_solar=="Treated" & imp_on_prem_sufficient_V_unimp=="Improved, on premise, sufficient" ~ "Improved, on premise, sufficient, POU solar",
+  POU_solar=="Treated" & imp_on_prem_V_imp_off_prem=="Improved, on premise" ~ "Improved, on premise, POU solar",
   imp_off_prem_V_unimp=="Improved, off premise" ~ "Improved, off premise"),
-  POU_solar_V_imp_off_prem = factor(POU_solar_V_imp_off_prem, levels=c("Improved, off premise", "Improved, on premise, sufficient, POU solar"))
+  POU_solar_V_imp_off_prem = factor(POU_solar_V_imp_off_prem, levels=c("Improved, off premise", "Improved, on premise, POU solar"))
 )
 table(d$POU_solar_V_imp_off_prem)
 
@@ -271,9 +272,9 @@ table(d$POU_filter, d$wat_imp)
 table(d$imp_off_prem_V_unimp)
 
 d <- d %>% mutate(POU_filter_V_unimp = case_when(
-  POU_filter=="Treated" & imp_on_prem_sufficient_V_unimp=="Improved, on premise, sufficient" ~ "Improved, on premise, sufficient, POU filter",
+  POU_filter=="Treated" & imp_on_prem_V_imp_off_prem=="Improved, on premise" ~ "Improved, on premise, POU filter",
   imp_off_prem_V_unimp=="Unimproved" ~ "Unimproved"),
-  POU_filter_V_unimp = factor(POU_filter_V_unimp, levels=c("Unimproved", "Improved, on premise, sufficient, POU filter"))
+  POU_filter_V_unimp = factor(POU_filter_V_unimp, levels=c("Unimproved", "Improved, on premise, POU filter"))
 )
 table(d$POU_filter_V_unimp)
 
@@ -290,9 +291,9 @@ res.POU_filter_V_unimp <- d %>% group_by(country) %>%
 
 # POU filter vs	Improved, not on premise
 d <- d %>% mutate(POU_filter_V_imp_off_prem = case_when(
-  POU_filter=="Treated" & imp_on_prem_sufficient_V_unimp=="Improved, on premise, sufficient" ~ "Improved, on premise, sufficient, POU filter",
+  POU_filter=="Treated" & imp_on_prem_V_imp_off_prem=="Improved, on premise" ~ "Improved, on premise, POU filter",
   imp_off_prem_V_unimp=="Improved, off premise" ~ "Improved, off premise"),
-  POU_filter_V_imp_off_prem = factor(POU_filter_V_imp_off_prem, levels=c("Improved, off premise", "Improved, on premise, sufficient, POU filter"))
+  POU_filter_V_imp_off_prem = factor(POU_filter_V_imp_off_prem, levels=c("Improved, off premise", "Improved, on premise, POU filter"))
 )
 table(d$POU_filter_V_imp_off_prem)
 

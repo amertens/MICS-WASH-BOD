@@ -1,0 +1,87 @@
+---
+title: "Tables"
+author: "Andrew Mertens"
+date: "Sept 28, 2020"
+output:
+  word_document:
+    reference_docx: MICS_WASH_BOD_analysis_plan.docx
+  html_document:
+    df_print: paged
+---
+
+<!-- output: html_notebook -->
+<!-- editor_options:  -->
+<!--   chunk_output_type: inline -->
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(warn = -1) 
+library(janitor)
+library(knitr)
+library(here)
+library(table1)
+library(rvest)
+
+source(here("0-config.R"))
+
+
+op = function(x, d=2) sprintf(paste0("%1.",d,"f"), x) 
+ library(pander)
+panderOptions('digits', 2)
+panderOptions('round', 2)
+panderOptions('keep.trailing.zeros', TRUE)
+panderOptions('graph.fontsize', 8)
+
+panderOptions('table.alignment.default', function(df)
+    ifelse(sapply(df, is.numeric), 'right', 'left'))
+panderOptions('table.split.table', Inf)
+panderOptions('big.mark', ",")
+panderOptions('keep.trailing.zeros', TRUE)
+
+```
+
+
+
+```{r, echo=F, warning=F, message=F}
+
+
+d <- readRDS(here("results/pooled_SRMA_results.rds"))
+d <- d %>% ungroup() %>% 
+  rename(est=RR, ci.lb=RR.CI1, ci.ub=RR.CI2) %>%
+  select(X:ci.ub) %>%
+  mutate(est = round(est,2),
+         ci.lb = round(ci.lb,2),
+         ci.ub = round(ci.ub,2),
+         # rev_est =round(1/est,2),
+         # rev_ci.lb =round(1/ci.ub,2),
+         # rev_ci.ub =round(1/ci.lb,2),
+         est = paste0(est, " (",ci.lb,", ",ci.ub,")")#,
+         #rev_est = paste0(rev_est, " (",rev_ci.lb,", ",rev_ci.ub,")")
+         ) %>% select(
+           X,	ref,	contrast, est#, rev_est
+         )
+
+knitr::kable(d)
+
+ 
+ 
+
+```
+
+```{r, echo=F, warning=F, message=F}
+
+
+plist <- readRDS(here("figures/forest_figure_objects_SRMA.rds"))
+
+for(i in 1:length(plist)){
+  print(plist[[i]])
+}
+
+ 
+ 
+
+```
+
+
