@@ -6,9 +6,19 @@ source("0-config.R")
 setwd("C:/Users/andre/Dropbox/MICS-WASH-data/")
 
 
+df_al <- load_MICS_dataset("Algeria", survey_round=6, saveCodebook=T)
+
+
+
+
+
+
 #To add (in the future):
-#Guyana MICS 6
-#df_guyana <- load_MICS_dataset("Guyana", survey_round=6, saveCodebook=T)
+        # Samoa (not available yet)
+#PakistanSindh
+#Guyana
+df_PakistanSindh <- load_MICS_dataset("PakistanSindh", survey_round=6, saveCodebook=T)
+df_guyana <- load_MICS_dataset("Guyana", survey_round=6, saveCodebook=T)
 
 #non-standard survey formats - double check
 df_ga <- load_MICS_dataset("Georgia", survey_round=6, saveCodebook=T) #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
@@ -46,16 +56,12 @@ df_tg <- load_MICS_dataset("Togo", survey_round=6, saveCodebook=T)
 df_tun <- load_MICS_dataset("Tunisia", survey_round=6, saveCodebook=T)
 df_gh <- load_MICS_dataset("Ghana", survey_round=6, saveCodebook=T) 
 df_iq <- load_MICS_dataset("Iraq", survey_round=6, saveCodebook=T)
+df_sam <- load_MICS_dataset("Samoa", survey_round=6, saveCodebook=T)
 
-#New added 2023
+#New 2022
 df_dr <- load_MICS_dataset("DominicanRepublic", survey_round=6, saveCodebook=T)
-df_PakistaBaluch <- load_MICS_dataset("PakistanBaluchistan", survey_round=6, saveCodebook=T)
-df_PakistanSindh <- load_MICS_dataset("PakistanSindh", survey_round=6, saveCodebook=T)
-df_PakistanKhyber <- load_MICS_dataset("PakistanKhyber", survey_round=6, saveCodebook=T)
+df_P_Baluch <- load_MICS_dataset("PakistanBaluchistan", survey_round=6, saveCodebook=T)
 df_hond <- load_MICS_dataset("Honduras", survey_round=6, saveCodebook=T)
-df_tac <- load_MICS_dataset("Turks and Caicos", survey_round=6, saveCodebook=T)
-df_tuv <- load_MICS_dataset("Tuvalu", survey_round=6, saveCodebook=T)
-df_viet <- load_MICS_dataset("Vietnam", survey_round=6, saveCodebook=T)
 
 
 #WASH codes
@@ -91,14 +97,7 @@ lab_tun <- readRDS(here("codebooks/wash_codes/Tunisia_WASHvars.rds"))
 lab_ze <- readRDS(here("codebooks/wash_codes/Zimbabwe_WASHvars.rds"))
 lab_DR <- readRDS(here("codebooks/wash_codes/DominicanRepublic_WASHvars.rds"))
 
-
-lab_sam <- readRDS(here("codebooks/wash_codes/Samoa_WASHvars.rds"))
-lab_hond <- readRDS(here("codebooks/wash_codes/Honduras_WASHvars.rds"))
-lab_viet <- readRDS(here("codebooks/wash_codes/Vietnam_WASHvars.rds"))
-lab_tuv <- readRDS(here("codebooks/wash_codes/Tuvalu_WASHvars.rds"))
-lab_TaC <- readRDS(here("codebooks/wash_codes/Turks and Caicos_WASHvars.rds"))
-lab_pakKhy <- readRDS(here("codebooks/wash_codes/PakistanKhyber_WASHvars.rds"))
-lab_pakBal <- readRDS(here("codebooks/wash_codes/PakistanBaluchistan_WASHvars.rds"))
+#Add: P_Balochistan, Honduras, Samoa
 
 
 labs <- bind_rows(lab_ni, lab_cg, lab_ga, lab_PAR, lab_guy, 
@@ -106,7 +105,7 @@ labs <- bind_rows(lab_ni, lab_cg, lab_ga, lab_PAR, lab_guy,
                   lab_gb, lab_gh, lab_iq, lab_ki, lab_ks, lab_laPDR, 
                   lab_le, lab_md, lab_mo,  lab_np, lab_pakPun,   lab_pakSin, 
                   lab_SL, lab_STP, lab_sur, lab_ta, lab_tg, lab_tun,lab_ze,
-                  lab_DR, lab_sam, lab_hond, lab_viet, lab_tuv, lab_TaC, lab_pakKhy, lab_pakBal)
+                  lab_DR)
 
 WASH_labs <- labs %>% mutate(country = factor(country, levels = unique(country))) %>%
   spread(key = country, value = label)
@@ -159,9 +158,6 @@ write.csv(WASH_labs, here::here(paste0("codebooks/WASH_vars.csv")))
 
 
 save(list=ls(pattern="df_"), file=here("data/raw_MICS_surveys.rdata"))
-
-gc()
-load(here("data/raw_MICS_surveys.rdata"))
 
 d <- bind_rows(lapply(ls(pattern="df_"),get))
 dim(d)
