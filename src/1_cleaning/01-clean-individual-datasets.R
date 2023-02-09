@@ -156,15 +156,4 @@ write.csv(WASH_labs, here::here(paste0("codebooks/WASH_vars.csv")))
 
 save(list=ls(pattern="df_"), file=here("data/raw_MICS_surveys.rdata"))
 
-<<<<<<< HEAD:src/1_cleaning/01-create-single-dataset.R
-d <- bind_rows(lapply(ls(pattern="df_"),get))
-dim(d)
-colnames(d)
-saveRDS(d, here("data/compiled_raw_MICS_survey.rds"))
-
-table(d$country, d$san_cat_lab)
-
-=======
->>>>>>> ecf7b03a3f58235264277bdbbc020bd164260979:src/1_cleaning/01-clean-individual-datasets.R
-setwd(here::here())
 
