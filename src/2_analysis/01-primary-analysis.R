@@ -9,7 +9,7 @@ source("0-config.R")
 #load clean data
 d <- readRDS(here("data/compiled_clean_MICS_survey.rds"))
 
-
+unique(d$country)
                 # Y ="stunt"
                 # X="WASH"
                 # W=NULL

@@ -8,6 +8,7 @@ source("0-config.R")
 
 
 dfull <- readRDS(here("data/compiled_raw_MICS_survey.rds"))
+unique(dfull$country)
 
 d <- dfull
 
@@ -773,4 +774,4 @@ d$HHwealth_quart <-factor(d$HHwealth_quart, levels=c("WealthQ1", "WealthQ2", "We
 
 
 saveRDS(d, here("data/compiled_intermediate_MICS_survey.rds"))
-
+unique(d$country)

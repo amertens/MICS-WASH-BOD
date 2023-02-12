@@ -596,3 +596,74 @@ d$EC_risk_S_4 <- ifelse(d$EC_100_S>100,"1","0") 	#Very high risk: E. coli >100 c
 }
 
 
+
+
+
+load_MICS_mort_dataset <- function(country){
+  bh_path=paste0(country,"/bh.sav")
+  hh_path=paste0(country,"/hh.sav")
+  
+  d <- read_sav(data_path(hh_path))
+  d <- plyr::rename( d, replace=namekey, warn_missing=F)
+  d <- d[, unique(colnames(d))]
+  d <- d %>% mutate(
+    svd = as.numeric(HH5D),
+    svm = as.numeric(HH5M),
+    svy = as.numeric(HH5Y)
+  ) %>%
+    mutate(svtime = lubridate::ymd(paste(svy,svm,svd,sep="-"))) %>%
+    subset(., select = c(clust_num, HH_num, svtime))
+  head(d)
+  
+  try(bh <- read_sav(data_path(bh_path)))
+  try(bh$mort <- ifelse(bh$BH5==2,1,0))
+  try(bh$mort <- ifelse(bh$BH5==9,NA,bh$mort))
+  if(is.null(bh$BH4D))(bh$BH4D <- 15)
+  try(bh <- bh  %>% rename(clust_num=HH1, HH_num=HH2, 
+                           childLN=BH8,
+                           age=BH6,
+                           sex=BH3,
+                           agedthm=BH9C,
+                           agedthu=BH9U,
+                           agedthn=BH9N,
+                           birthday= BH4D,
+                           birthmn= BH4M,
+                           birthyr= BH4Y
+  )%>%
+    mutate( birthday= ifelse(birthday==99,NA,birthday),
+            birthmn= ifelse(birthmn==99,NA,birthmn),
+            birthyr= ifelse(birthyr==9999,NA,birthyr),
+            dob = lubridate::ymd(
+              paste(birthyr,birthmn,birthday,sep="-")),
+            agedthu=as.numeric(agedthu),
+            agedthn=as.numeric(agedthn),
+            agedth = case_when(agedthu==1 ~ agedthn/365,
+                               agedthu==2 ~ agedthn/12,
+                               agedthu==3 ~ agedthn,
+                               agedthu==9 ~ NA_real_))) 
+  
+  #subset to relevant BH variables
+  try(bh <- bh[,colnames(bh) %in% c("clust_num", "HH_num","childLN", "mort","sex","age","agedth","dob")])
+  
+  dim(bh)
+  dim(d)
+  d2 <- full_join(bh, d, by = c("clust_num","HH_num"))
+  dim(d2)
+  
+  d3 <- d2 %>% mutate(time_from_birth= lubridate::time_length(svtime-dob,unit="years")) %>% 
+    #drop children older than 5 who died, and children who died more than 5 years prior to survey
+    filter(time_from_birth <= 5 & time_from_birth >= 0)
+  dim(d3)
+  table(d3$mort)  
+  summary(d3$time_from_birth)
+  summary(d3$agedth)
+  summary(d3$age)
+  
+  d4 <- d3 %>% subset(., select=c(clust_num, HH_num,childLN,sex,mort))
+  
+  df <- data.frame(d4, country= country)
+  df <- df %>%
+    mutate_all(as.character)
+  
+  return(df)
+}
