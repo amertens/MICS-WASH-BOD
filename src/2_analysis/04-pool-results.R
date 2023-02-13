@@ -71,13 +71,17 @@ d <- d %>% filter(!(
 unique(d$country)
 
 #Set up vector
-EAP <- c("Mongolia", "Tonga",  "Kiribati", "Laos")
+EAP <- c("Mongolia", "Tonga",  "Kiribati", "LaoPDR","Samoa")
 ECA <- c("Georgia", "Kosovo")
-LAC <- c("Suriname","Paraguay" )
+LAC <- c("Suriname","Paraguay", "DominicanRepublic", "Guyana", "Honduras")
 MENA <- c("Algeria","Iraq","Tunisia" )
-SA <- c("Bangladesh", "Nepal", "Pakistan")
+SA <- c("Bangladesh", "Nepal", "PakistanBaluchistan","PakistanPunjab","PakistanSindh")
 ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
+WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo","SierraLeone","Sao Tome and Principe")
+
+country_labs<-c(EAP, ECA, LAC, MENA, SA, ESA, WCA)
+unique(d$country)[!(unique(d$country) %in% country_labs)]
+country_labs[!(country_labs %in% unique(d$country))]
 
 EAP <- EAP[order(EAP)]
 ECA <- ECA[order(ECA)]
@@ -90,10 +94,10 @@ WCA <- WCA[order(WCA)]
 d <- d %>%
   mutate(
     country=case_when(
-      country=="PakistanPunjab" ~ "Pakistan",
-      country=="LaoPDR" ~ "Laos",
-      country=="SierraLeone" ~ "Sierra Leone",
-      country=="Sao Tome and Principe" ~ "Sao Tome+Prin.",
+      # country=="PakistanPunjab" ~ "Pakistan",
+      # country=="LaoPDR" ~ "Laos",
+      # country=="SierraLeone" ~ "Sierra Leone",
+      # country=="Sao Tome and Principe" ~ "Sao Tome+Prin.",
       country==country ~ country
     ),
     region = case_when(

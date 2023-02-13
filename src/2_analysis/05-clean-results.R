@@ -3,16 +3,16 @@ rm(list=ls())
 source("0-config.R")
 
 df <- readRDS(here("results/pooled_raw_results.rds"))
-
+unique(df$country)
 
 #Set up vector
-EAP <- c("Mongolia", "Tonga",  "Kiribati", "Laos")
+EAP <- c("Mongolia", "Tonga",  "Kiribati", "LaoPDR","Samoa")
 ECA <- c("Georgia", "Kosovo")
-LAC <- c("Suriname","Paraguay" )
+LAC <- c("Suriname","Paraguay", "DominicanRepublic", "Guyana", "Honduras")
 MENA <- c("Algeria","Iraq","Tunisia" )
-SA <- c("Bangladesh", "Nepal", "Pakistan")
+SA <- c("Bangladesh", "Nepal", "PakistanBaluchistan","PakistanPunjab","PakistanSindh")
 ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo", "Sierra Leone", "Sao Tome+Prin.")
+WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo","SierraLeone","Sao Tome and Principe")
 
 EAP <- EAP[order(EAP)]
 ECA <- ECA[order(ECA)]
@@ -40,6 +40,8 @@ unique(df$contrast[df$analysis=="secondary"])
 
 table(df$X, df$ref)
 table(df$X, df$contrast)
+table(df$analysis)
+table(df$country)
 
 #Clean data for figures
 df <- df %>% 
@@ -239,4 +241,4 @@ df$sig[is.na(df$sig)] <- "Not sig."
 table(df$sig)
 
 saveRDS(df, here("results/pooled_results.rds"))
-
+unique(df$country)
