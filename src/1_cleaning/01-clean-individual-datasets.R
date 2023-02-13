@@ -22,7 +22,7 @@ df_guyana <- load_MICS_dataset("Guyana", survey_round=6, saveCodebook=T)
 
 #non-standard survey formats - double check
 df_ga <- load_MICS_dataset("Georgia", survey_round=6, saveCodebook=T) #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
-#df_CI <- load_MICS_dataset("CoteIvoire", survey_round=5, saveCodebook=T) #Check online, but the data doesn't have WQ data
+df_CI <- load_MICS_dataset("CoteIvoire", survey_round=5, saveCodebook=T) #Check online, but the data doesn't have WQ data
 #df_cuba <- load_MICS_dataset("Cuba") #check but Cuba doesn't have WQ module
 df_PAR <- load_MICS_dataset("Paraguay", survey_round=5, saveCodebook=T, rename_Vars=T) 
 #Note, MICS 6 exists for Nigeria but dropped water quality module
