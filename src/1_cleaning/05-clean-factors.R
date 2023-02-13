@@ -297,4 +297,4 @@ d$birthord <- as.numeric(d$birthord)
 
 
 saveRDS(d, here("data/compiled_clean_MICS_survey.rds"))
-
+unique(d$country)
