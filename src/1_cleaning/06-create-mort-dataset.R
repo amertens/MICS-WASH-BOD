@@ -40,6 +40,7 @@ df_gh <- load_MICS_mort_dataset("Ghana")
 df_iq <- load_MICS_mort_dataset("Iraq")
 
 
+df_sam <- load_MICS_mort_dataset("Samoa")
 df_dr <- load_MICS_mort_dataset("DominicanRepublic")
 df_PakistaBaluch <- load_MICS_mort_dataset("PakistanBaluchistan")
 df_PakistanSindh <- load_MICS_mort_dataset("PakistanSindh")
