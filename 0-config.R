@@ -15,8 +15,8 @@ library(janitor)
 library(forcats)
 library(metafor)
 library(R.utils)
-# library(tlverse)
-# library(sl3)
+library(tlverse)
+library(sl3)
 try(library(washb))
 
 #remotes::install_github("Larsvanderlaan/tmle3@firstChanges") #Lar's development version with survey weights
