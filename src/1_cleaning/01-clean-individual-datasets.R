@@ -6,23 +6,24 @@ source("0-config.R")
 setwd("C:/Users/andre/Dropbox/MICS-WASH-data/")
 
 
-df_al <- load_MICS_dataset("Algeria", survey_round=6, saveCodebook=T)
 
+#New
+#Benin, Fiji, vietnam
 
-
-
+df_benin <- load_MICS_dataset("Benin", survey_round=6, saveCodebook=T)
+df_fiji <- load_MICS_dataset("Fiji", survey_round=6, saveCodebook=T)
+df_vt <- load_MICS_dataset("Vietnam", survey_round=6, saveCodebook=T)
 
 
 #To add (in the future):
         # Samoa (not available yet)
-#PakistanSindh
-#Guyana
-df_PakistanSindh <- load_MICS_dataset("PakistanSindh", survey_round=6, saveCodebook=T)
-df_guyana <- load_MICS_dataset("Guyana", survey_round=6, saveCodebook=T)
+
+
+
 
 #non-standard survey formats - double check
 df_ga <- load_MICS_dataset("Georgia", survey_round=6, saveCodebook=T) #Georgia has an abortion module, not a birth history module. See if birth order can be derived from that
-df_CI <- load_MICS_dataset("CoteIvoire", survey_round=5, saveCodebook=T) #Check online, but the data doesn't have WQ data
+#df_CI <- load_MICS_dataset("CoteIvoire", survey_round=5, saveCodebook=T) #Check online, but the data doesn't have WQ data
 #df_cuba <- load_MICS_dataset("Cuba") #check but Cuba doesn't have WQ module
 df_PAR <- load_MICS_dataset("Paraguay", survey_round=5, saveCodebook=T, rename_Vars=T) 
 #Note, MICS 6 exists for Nigeria but dropped water quality module
@@ -32,6 +33,9 @@ df_cg <- load_MICS_dataset("Congo", survey_round=5, saveCodebook=T)
 
 
 #Standard survey formats
+df_PakistanSindh <- load_MICS_dataset("PakistanSindh", survey_round=6, saveCodebook=T)
+df_guyana <- load_MICS_dataset("Guyana", survey_round=6, saveCodebook=T)
+
 df_al <- load_MICS_dataset("Algeria", survey_round=6, saveCodebook=T)
 df_chad <- load_MICS_dataset("Chad", survey_round=6, saveCodebook=T)
 df_CAR <- load_MICS_dataset("CAR", survey_round=6, saveCodebook=T)
