@@ -5,6 +5,7 @@
 source("0-config.R")
 
 source(here("src/4_visualizations/01-primary-pooled-figures.R"))
+source(here("src/4_visualizations/02-secondary-pooled-figures.R"))
 source(here("src/4_visualizations/02-PAF-figures.R"))
 source(here("src/4_visualizations/02-regional-pooled-figures.R"))
 source(here("src/4_visualizations/03-primary-forest-figures.R"))
