@@ -25,7 +25,6 @@ res. <- d %>% group_by(country) %>%
                      clustid= "clust_num",
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
-fullres. <- bind_rows(fullres, res)
 
 # Improved, on premise vs.	unimproved
 table(d$imp_on_prem_V_imp_off_prem)
@@ -100,7 +99,6 @@ res.imp_on_prem_HQ_V_imp_off_prem <- d %>% group_by(country) %>%
                      clustid= "clust_num",
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
-fullres. <- bind_rows(fullres, res)
 
 # Improved, on premise, higher water quality (POU or source) vs Improved, on premise
 levels(d$imp_on_prem_HQ_V_imp_on_prem_LQ)
@@ -114,7 +112,7 @@ res.imp_on_prem_HQ_V_imp_on_prem_LQ <- d %>% group_by(country) %>%
                      clustid= "clust_num",
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
-fullres. <- bind_rows(fullres, res)
+
 
 # Improved, on premise, continuous supply vs	unimproved 
 table(d$imp_on_prem_sufficient_V_imp_on_prem_insufficient)
@@ -135,7 +133,7 @@ res.imp_on_prem_sufficient_V_unimp <- d %>% group_by(country) %>%
                      clustid= "clust_num",
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
-fullres. <- bind_rows(fullres, res)
+
 
 
 # Improved, on premise, continuous supply vs	Improved, not on premise
@@ -155,7 +153,7 @@ res.imp_on_prem_sufficient_V_imp_off_prem <- d %>% group_by(country) %>%
                      clustid= "clust_num",
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
-fullres. <- bind_rows(fullres, res)
+
 
 
 # Improved, on premise, continuous supply vs	Improved, on premise
@@ -171,7 +169,7 @@ res.imp_on_prem_sufficient_V_imp_on_prem_insufficient <- d %>% group_by(country)
                      clustid= "clust_num",
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
-fullres. <- bind_rows(fullres, res)
+
 
 
 # POU chlorine vs	unimproved 
@@ -426,7 +424,7 @@ res.highcov_V_lowcov <- d %>% group_by(country) %>%
                      family="modified possion", calc_PAF=FALSE, 
                      low_risk_level=""))
 
-save(list=ls(pattern="res\\."), file=here("results/SRMA_comp_adjusted_RR.Rdata"))
+save(list=ls(pattern="res\\."), file=here("results/SRMA_comp_unadjusted_RR.Rdata"))
 
 
 

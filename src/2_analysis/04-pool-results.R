@@ -9,7 +9,7 @@ d_unadj <- readRDS(here("results/unadjusted_RR.rds")) %>% mutate(analysis="prima
 d_RR_multi_unadj <- readRDS(here("results/unadjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", W = "unadjusted", adjusted=0)
 d_adj <- readRDS(here("results/adjusted_RR.rds")) %>% mutate(analysis="primary", adjusted=1)
 d_RR_multi_adj <- readRDS(here("results/adjusted_mult_RR.rds")) %>% mutate(analysis="primary-multi", adjusted=1)
-d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle", adjusted=1) %>% rename(coef=est)
+d_tmle_adj <- readRDS(here("results/adjusted_tmle_ests.rds")) %>% mutate(analysis="tmle", adjusted=1) #%>% rename(coef=est)
 d_rural_adj <- readRDS(here("results/adjusted_rural_subgroup.rds")) %>% mutate(analysis="rural", adjusted=1, subgroup=str_split(country,"-",simplify = T)[,2], country=str_split(country,"-",simplify = T)[,1])
 d_mort <- readRDS(here("results/mort_RR.rds")) %>% mutate(analysis="primary") 
 d_mort_multi <- readRDS(here("results/mort_mult_RR.rds")) %>% mutate(analysis="primary-multi") 
@@ -19,6 +19,10 @@ d_unadj_secondary <- readRDS(here("results/unadjusted_RR_secondary.rds")) %>% mu
 d_adj_secondary <- readRDS(here("results/adjusted_RR_secondary.rds")) %>% mutate(analysis="secondary", adjusted=1)
 d_unadj_secondary_POU <- readRDS(here("results/unadjusted_RR_secondary_POU.rds")) %>% mutate(analysis="secondary POU", W = "unadjusted", adjusted=0)
 d_adj_secondary_POU <- readRDS(here("results/adjusted_RR_secondary_POU.rds")) %>% mutate(analysis="secondary POU", adjusted=1)
+
+d_adj_SRMA_comp<- readRDS(here("results/SRMA_comp_adjusted_RR.rds")) %>% mutate(analysis="SRMA comp", adjusted=1)
+
+
 
 dim(d_adj_secondary)
 d_adj_secondary <- d_adj_secondary %>% filter(!is.na(ci.lb)) %>% group_by(country, analysis, Y, X, ref) %>% mutate(Ncats=n()) %>%
@@ -40,7 +44,9 @@ dim(d_rural_adj)
 
 #combine results
 d <- bind_rows(d_unadj, d_RR_multi_unadj, d_adj, d_RR_multi_adj, d_tmle_adj, d_rural_adj, 
-               d_mort, d_mort_multi,d_RR_multi_adj_sens, d_unadj_secondary, d_adj_secondary, d_unadj_secondary_POU, d_adj_secondary_POU) %>%
+               d_mort, d_mort_multi,d_RR_multi_adj_sens, d_unadj_secondary, d_adj_secondary, 
+               d_unadj_secondary_POU, d_adj_secondary_POU,
+               d_adj_SRMA_comp) %>%
   filter(!is.na(coef))
 table(d$analysis, is.na(d$adjusted))
 
@@ -71,13 +77,13 @@ d <- d %>% filter(!(
 unique(d$country)
 
 #Set up vector
-EAP <- c("Mongolia", "Tonga",  "Kiribati", "LaoPDR","Samoa")
+EAP <- c("Mongolia", "Tonga",  "Kiribati", "LaoPDR","Samoa","Fiji")
 ECA <- c("Georgia", "Kosovo")
-LAC <- c("Suriname","Paraguay", "DominicanRepublic", "Guyana", "Honduras")
+LAC <- c("Suriname","Paraguay", "DominicanRepublic", "Guyana", "Honduras",'Trinidad and Tobago')
 MENA <- c("Algeria","Iraq","Tunisia" )
-SA <- c("Bangladesh", "Nepal", "PakistanBaluchistan","PakistanPunjab","PakistanSindh")
-ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo","SierraLeone","Sao Tome and Principe")
+SA <- c("Bangladesh", "Nepal", "PakistanBaluchistan","PakistanPunjab","PakistanSindh",'Vietnam')
+ESA <- c("Lesotho", "Madagascar",  "Zimbabwe",'Eswatini')
+WCA <- c('Benin',"Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo","SierraLeone","Sao Tome and Principe")
 
 country_labs<-c(EAP, ECA, LAC, MENA, SA, ESA, WCA)
 unique(d$country)[!(unique(d$country) %in% country_labs)]

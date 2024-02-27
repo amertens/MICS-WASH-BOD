@@ -8,7 +8,11 @@ setwd("C:/Users/andre/Dropbox/MICS-WASH-data/")
 
 
 #New
-#Benin, Fiji, vietnam
+#Benin, Fiji, vietnam, eswatani, trinidad and tobago
+
+df_esw <- load_MICS_dataset("Eswatini", survey_round=6, saveCodebook=T)
+df_tat <- load_MICS_dataset("Trinidad and Tobago", survey_round=6, saveCodebook=T)
+
 
 df_benin <- load_MICS_dataset("Benin", survey_round=6, saveCodebook=T)
 df_fiji <- load_MICS_dataset("Fiji", survey_round=6, saveCodebook=T)
@@ -98,6 +102,7 @@ lab_sur <- readRDS(here("codebooks/wash_codes/Suriname_WASHvars.rds"))
 lab_tg <- readRDS(here("codebooks/wash_codes/Togo_WASHvars.rds"))
 lab_ta <- readRDS(here("codebooks/wash_codes/Tonga_WASHvars.rds"))
 lab_tun <- readRDS(here("codebooks/wash_codes/Tunisia_WASHvars.rds"))
+lab_ze <- readRDS(here("codebooks/wash_codes/Zimbabwe_WASHvars.rds"))
 lab_ze <- readRDS(here("codebooks/wash_codes/Zimbabwe_WASHvars.rds"))
 lab_DR <- readRDS(here("codebooks/wash_codes/DominicanRepublic_WASHvars.rds"))
 

@@ -6,13 +6,13 @@ df <- readRDS(here("results/pooled_raw_results.rds"))
 unique(df$country)
 
 #Set up vector
-EAP <- c("Mongolia", "Tonga",  "Kiribati", "LaoPDR","Samoa")
+EAP <- c("Mongolia", "Tonga",  "Kiribati", "LaoPDR","Samoa","Fiji")
 ECA <- c("Georgia", "Kosovo")
-LAC <- c("Suriname","Paraguay", "DominicanRepublic", "Guyana", "Honduras")
+LAC <- c("Suriname","Paraguay", "DominicanRepublic", "Guyana", "Honduras",'Trinidad and Tobago')
 MENA <- c("Algeria","Iraq","Tunisia" )
-SA <- c("Bangladesh", "Nepal", "PakistanBaluchistan","PakistanPunjab","PakistanSindh")
-ESA <- c("Lesotho", "Madagascar",  "Zimbabwe")
-WCA <- c("Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo","SierraLeone","Sao Tome and Principe")
+SA <- c("Bangladesh", "Nepal", "PakistanBaluchistan","PakistanPunjab","PakistanSindh",'Vietnam')
+ESA <- c("Lesotho", "Madagascar",  "Zimbabwe",'Eswatini')
+WCA <- c('Benin',"Chad","CAR","CoteIvoire","Congo",  "DRC", "Gambia", "Ghana", "Guinea Bissau", "Nigeria", "Togo","SierraLeone","Sao Tome and Principe")
 
 EAP <- EAP[order(EAP)]
 ECA <- ECA[order(ECA)]
@@ -21,6 +21,7 @@ MENA <- MENA[order(MENA)]
 SA <- SA[order(SA)]
 ESA <- ESA[order(ESA)]
 WCA <- WCA[order(WCA)]
+
 
 #XXXXXXXXXXXXXXXXXXXXXXXXX
 # TEMP drop san_imp_cat2

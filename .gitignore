@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+/data/compiled_raw_MICS_survey.rds
+/data/compiled_intermediate_MICS_survey.rds

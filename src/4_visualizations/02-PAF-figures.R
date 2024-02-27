@@ -152,13 +152,13 @@ p_pooled_PAF <- dpool %>% filter( X!="Improved WASH,\nno contamination") %>% dro
 
 p_PAF <- dPAF %>% filter( X!="Improved WASH,\nno contamination") %>% droplevels(.) %>%
   ggplot(., aes(y=PAF, x=country, color=country)) +
-  facet_grid(Y~X, switch = "y") +
+  facet_grid(Y~X, switch = "y", scales="free") +
   geom_point() + 
   geom_linerange(aes(ymin=PAF.lb, ymax=PAF.ub )) +
   #scale_color_manual(values=tableau10[1:3]) +
   geom_hline(yintercept = 0) +
-  #coord_flip(ylim=c(-5,60)) +
-  coord_flip(ylim=c(-100,100)) +
+  #coord_flip(ylim=c(-100,100)) +
+  coord_flip() +
   xlab("Country and outcome") + ylab("Population Attributable Fraction") +
   theme(strip.background = element_blank(),
         legend.position="none",

@@ -87,31 +87,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
   # }
   
   if(family=="gaussian"){
-    # #model formula
-    # f <- ifelse(is.null(Wscreen),
-    #             "Y ~ X + (1|id)",
-    #             paste0("Y ~ X + (1|id) + ", paste(colnames(Wdf), collapse = " + ")))
-    # #fit model
-    # fit <- lmer(as.formula(f),  data=df, weights = weight)
-    # 
-    # coef <- as.data.frame(t(summary(fit)$coefficients[2,]))
-    # res <- data.frame(Y=varnames[1],
-    #                   X=varnames[2],
-    #                   coef=coef$Estimate,
-    #                   se=coef$`Std. Error`,
-    #                   tval=coef$`t value`)
-    # 
-    # #Calc 95%CI
-    # res$ci.lb <- res$coef - 1.96*res$se
-    # res$ci.ub <- res$coef + 1.96*res$se
-    # 
-    # #calculate pvalue by normal approximation
-    # #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
-    # res$pval <- 2 * (1 - pnorm(abs(res$tval)))
-    # res$N<-nrow(df)
-    # res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
-    
-    
+
     if(length(unique(df$X))>1){
     
     #model formula
@@ -138,6 +114,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
       
       res$N<-nrow(df)
       res$W <-ifelse(is.null(Wdf), "unadjusted", paste(Wscreen, sep="", collapse=", "))
+        res$Xprev <- mean(as.numeric(df$X)-1, na.rm=T)
       
     }
     
@@ -158,35 +135,6 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
     fit=NULL
     res <- mpreg(varnames=varnames, formula = as.formula(f), df = df, family="modified possion", vcv=FALSE)
     
-      
-    #   #fit model
-    # tryCatch( { fit <- withTimeout( { 
-    #    geeglm(formula = as.formula(f),
-    #                 data    = df,
-    #                 weights = weight,
-    #                 family  = poisson(link = "log"),
-    #                 id      = id,
-    #                 corstr  = "exchangeable") 
-    #   },
-    #   timeout = 120) },
-    #   TimeoutException = function(ex) cat("Timed out\n"))
-    # 
-    #   coef <- as.data.frame(summary(fit)$coefficients[2,])
-    #   res <- data.frame(Y=varnames[1],
-    #                     X=varnames[2],
-    #                     coef=coef$Estimate,
-    #                     RR=exp(coef$Estimate),
-    #                     se=coef$Std.err,
-    #                     wald=coef$Wald,
-    #                     pval=coef$`Pr(>|W|)`)
-    #   
-    #   #Calc 95%CI
-    #   res$ci.lb <- exp(res$coef - 1.96*res$se)
-    #   res$ci.ub <- exp(res$coef + 1.96*res$se)
-    #   
-    #   #calculate pvalue by normal approximation
-    #   #https://www.r-bloggers.com/three-ways-to-get-parameter-specific-p-values-from-lmer/
-
     
       if(calc_PAF){
         
@@ -201,7 +149,9 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
       res$n<-sum(df$Y, na.rm=T)
       res$N<-nrow(df)
       res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
- 
+      res$Xprev <- mean(as.numeric(df$X)-1, na.rm=T)
+      print(res)
+      
     }else{
       res <- data.frame(Y=varnames[1],
                         X=varnames[2],
@@ -219,7 +169,7 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
       res$n<-sum(df$Y, na.rm=T)
       res$N<-nrow(df)
       res$W <-ifelse(is.null(Wscreen), "unadjusted", paste(Wscreen, sep="", collapse=", "))
-      
+      res$Xprev <- mean(as.numeric(df$X)-1, na.rm=T)
     }
     
   }  
@@ -233,7 +183,8 @@ mics_regression <- function(d, Y, X, W, weight = "ecpopweight_H", clustid= "clus
                       Zval=NA,
                       pval=NA,
                       n=0,
-                      N=0)
+                      N=0,
+                      Xprev=NA)
     }
   
   if(return_model){
@@ -881,6 +832,7 @@ fit.escalc <- function(data, ni, xi = NULL, yi = NULL, vi = NULL, measure, metho
 
 
 poolRR <- function(d, method="REML"){
+  d <- d %>% filter(!is.na(se))
   Ncountries <- d %>% ungroup() %>% summarise(N=n())
   
     fit<-NULL
