@@ -200,5 +200,6 @@ head(df)
 
 
 saveRDS(df, here("results/pooled_raw_results.rds"))
+unique(df$country)
 
 
